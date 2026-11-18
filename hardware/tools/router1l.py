@@ -99,8 +99,13 @@ class Grid:
 
 
 class Router:
-    def __init__(self, board, classes, no_jumper_classes=("BATT", "MOTOR"), log=print, reserved=()):
+    def __init__(self, board, classes, no_jumper_classes=("BATT", "MOTOR"), log=print, reserved=(),
+                 two_layer=False, via_sizes=None):
         self.board = board
+        # two_layer=True: F.Cu es una capa de cobre real (PCB de 2 capas, vias normales)
+        self.two_layer = two_layer
+        self.via_sizes = via_sizes or {}
+        self.treesF = {}
         self.classes = classes  # name -> (width, clearance)
         self.no_jumper = set(no_jumper_classes)
         self.log = log
@@ -133,6 +138,7 @@ class Router:
                 b.Remove(t)
         for n in names:
             self.trees.pop(n, None)
+            self.treesF.pop(n, None)
         self.jumpers = [j for j in self.jumpers if j[0] not in names]
         self._rebuild()
 
@@ -305,7 +311,12 @@ class Router:
             else:
                 self._mark_shape(t, pads[order[0]][1], 1, rm=-0.06)
             self.trees[name] = [t, done0, pts0]
+            tf = np.zeros(self.g.B.shape, np.int8)
+            for k2 in done0:
+                self._mark_shape(tf, pads[k2][1], 1, rm=-0.06)
+            self.treesF[name] = tf
         self.tree, done, tree_pts = self.trees[name]
+        self.treeF = self.treesF[name]
         remaining = [k for k in range(len(pads)) if k not in done
                      and (pad_filter is None or pad_filter(pads[k][0]))]
         while remaining:
@@ -332,6 +343,7 @@ class Router:
             tree_pts.append(center(shp))
             if ok:
                 self._mark_shape(self.tree, shp, 1, rm=-0.06)
+                self._mark_shape(self.treeF, shp, 1, rm=-0.06)
                 done.add(k)
 
     # ------------------------------------------------------------------
@@ -362,8 +374,30 @@ class Router:
         fpad = (self.P != 0) & (self.P != code) & (self.P != -1)
         dpad = ndimage.distance_transform_edt(~fpad) * G
         self.pen = ((dpad < need + 1.2) & ~tgt).astype(np.uint8).ravel().tobytes()
-        path = self._astar(freeB, src, tgt, (tx, ty), None, 8.0)
         freeF = None
+        self.cur_via = self.via_sizes.get(cls, (JUMPER_PAD, JUMPER_DRILL))
+        if self.two_layer and allow_j:
+            vd, vdr = self.cur_via
+            distF = self._dist(g.F, code)
+            freeF = distF >= need
+            viaok = (distB >= vd / 2 + clr + RM) & (distF >= vd / 2 + clr + RM) & ~self.noVia
+            tgtF = np.zeros_like(freeB)
+            if shp[0] == "c":
+                tgtF = ((g.XX - tx) ** 2 + (g.YY - ty) ** 2 <= tr * tr)
+            else:
+                tgtF = (np.abs(g.XX - tx) <= max(hw, G)) & (np.abs(g.YY - ty) <= max(hh, G))
+            tgtF &= freeF
+            srcF = (self.treeF == 1) & freeF & ~((g.XX - tx) ** 2 + (g.YY - ty) ** 2 <= 4.0)
+            self.extra = (tgtF, srcF)
+            path = self._astar(freeB, src, tgt, (tx, ty), (freeF, viaok), 150.0 if relaxed else 60.0)
+            self.extra = None
+            if path is None:
+                return False
+            self._commit(name, code, path, w, (tx, ty), freeB, freeF)
+            for (i, j, lay) in path[::8]:
+                tree_pts.append(g.xy(i, j))
+            return True
+        path = self._astar(freeB, src, tgt, (tx, ty), None, 8.0)
         if path is None and allow_j:
             distF = self._dist(g.F, code)
             freeF = distF >= JUMPER_WIRE / 2 + JUMPER_CLR + RM
@@ -397,9 +431,11 @@ class Router:
         SQ2 = 1.41421356
         nbrs = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
                 (-1, -1, SQ2), (-1, 1, SQ2), (1, -1, SQ2), (1, 1, SQ2)]
-        lcost = (1.0, WIRE_COST_FACTOR)
+        lcost = (1.0, 1.15 if self.two_layer else WIRE_COST_FACTOR)
+        extra = getattr(self, "extra", None)
+        tgF = extra[0].ravel().tobytes() if extra is not None else None
         pen = self.pen
-        vcost = VIA_COST_MM / G
+        vcost = (3.0 if self.two_layer else VIA_COST_MM) / G
 
         def h(i, j):
             di, dj = abs(i - ti), abs(j - tj)
@@ -414,6 +450,13 @@ class Router:
             gs[k] = 0.0
             prev[k] = -1
             heap.append((h(i, j), 0.0, k))
+        if extra is not None:
+            si, sj = np.nonzero(extra[1])
+            for i, j in zip(si.tolist(), sj.tolist()):
+                k = N + i * nx + j
+                gs[k] = 0.0
+                prev[k] = -1
+                heap.append((h(i, j), 0.0, k))
         heapq.heapify(heap)
         closed = set()
         t0 = time.time()
@@ -424,7 +467,7 @@ class Router:
                 continue
             closed.add(node)
             lay, k = divmod(node, N)
-            if lay == 0 and tg[k]:
+            if (lay == 0 and tg[k]) or (lay == 1 and tgF is not None and tgF[k]):
                 out = []
                 while node != -1:
                     l2, k2 = divmod(node, N)
@@ -507,6 +550,8 @@ class Router:
         if layer == pcbnew.B_Cu:
             self.g.mark_seg(self.g.E, a[0], a[1], c[0], c[1], w, code, rm=-0.06)
             self.g.mark_seg(self.tree, a[0], a[1], c[0], c[1], w, 1, rm=-0.06)
+        elif getattr(self, "treeF", None) is not None:
+            self.g.mark_seg(self.treeF, a[0], a[1], c[0], c[1], w, 1, rm=-0.06)
 
     def _commit(self, name, code, path, w, target_xy, freeB, freeF):
         g = self.g
@@ -530,35 +575,47 @@ class Router:
             else:
                 pts = self._smooth(run, freeF)
                 xy = [g.xy(i, j) for (i, j) in pts]
-                for (x, y) in (xy[0], xy[-1]):
+                if ri == len(runs) - 1:
+                    xy.append(target_xy)
+                vd, vdr = getattr(self, "cur_via", (JUMPER_PAD, JUMPER_DRILL))
+                ends = []
+                if ri > 0:
+                    ends.append(xy[0])
+                if ri < len(runs) - 1:
+                    ends.append(xy[-1])
+                if not self.two_layer:
+                    ends = [xy[0], xy[-1]]
+                    vd, vdr = JUMPER_PAD, JUMPER_DRILL
+                for (x, y) in ends:
                     v = pcbnew.PCB_VIA(b)
                     v.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
-                    v.SetWidth(pcbnew.FromMM(JUMPER_PAD))
-                    v.SetDrill(pcbnew.FromMM(JUMPER_DRILL))
+                    v.SetWidth(pcbnew.FromMM(vd))
+                    v.SetDrill(pcbnew.FromMM(vdr))
                     v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
                     v.SetNet(net)
                     b.Add(v)
-                    g.mark_circle(g.B, x, y, JUMPER_PAD / 2, code)
-                    g.mark_circle(g.F, x, y, JUMPER_PAD / 2, code)
-                    g.mark_circle(self.tree, x, y, JUMPER_PAD / 2, 1, rm=-0.06)
-                    g.mark_circle(g.E, x, y, JUMPER_PAD / 2, code, rm=-0.06)
-                    self._mark_hole(x, y, JUMPER_DRILL / 2)
+                    g.mark_circle(g.B, x, y, vd / 2, code)
+                    g.mark_circle(g.F, x, y, vd / 2, code)
+                    g.mark_circle(self.tree, x, y, vd / 2, 1, rm=-0.06)
+                    g.mark_circle(self.treeF, x, y, vd / 2, 1, rm=-0.06)
+                    g.mark_circle(g.E, x, y, vd / 2, code, rm=-0.06)
+                    self._mark_hole(x, y, vdr / 2)
                 L = 0.0
                 for a, c in zip(xy, xy[1:]):
-                    self._add_track(net, code, a, c, JUMPER_WIRE, pcbnew.F_Cu, g.F)
+                    self._add_track(net, code, a, c, w if self.two_layer else JUMPER_WIRE, pcbnew.F_Cu, g.F)
                     L += math.hypot(c[0] - a[0], c[1] - a[1])
                 self.jumpers.append((name, xy[0][0], xy[0][1], xy[-1][0], xy[-1][1], L))
 
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
-          reserved=(), early_refs=None, late=(), first=()):
+          reserved=(), early_refs=None, late=(), first=(), two_layer=False, via_sizes=None):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
     Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
     senales largas, senales cortas, resto de +5V y GND, pasada relajada.
     early_refs: {red: set(referencias)} pads que van en la etapa de potencia.
     """
-    r = Router(board, classes, log=log, reserved=reserved)
+    r = Router(board, classes, log=log, reserved=reserved, two_layer=two_layer, via_sizes=via_sizes)
     nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1]
     early_refs = early_refs or {}
 

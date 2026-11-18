@@ -82,17 +82,16 @@ RPI_PINS = {
 # ---------------------------------------------------------------------------
 # NET CLASSES
 # ---------------------------------------------------------------------------
-# PCB de UNA capa (cobre solo en B.Cu): pistas anchas y holguras generosas,
-# aptas para fabricacion casera (planchado/CNC) o comercial.
-# Las "vias" son los barrenos de los puentes de alambre (pad 2.0 / taladro 1.0).
+# PCB de 2 capas (F.Cu arriba, B.Cu abajo) con vias normales.
+LAYERS = 2
 NETCLASSES = [
     # name, track, clearance, via_d, via_drill, patterns
-    ("BATT", 3.0, 0.5, 2.0, 1.0, ["VBAT_IN", "VBAT_F"]),
-    ("MOTOR", 2.0, 0.4, 2.0, 1.0, ["M?_A", "M?_B"]),
-    ("PWR", 2.0, 0.4, 2.0, 1.0, ["+5V", "SERVO_V"]),
-    ("GND", 1.5, 0.4, 2.0, 1.0, ["GND"]),
+    ("BATT", 3.0, 0.5, 1.6, 0.8, ["VBAT_IN", "VBAT_F"]),
+    ("MOTOR", 2.0, 0.4, 1.6, 0.8, ["M?_A", "M?_B"]),
+    ("PWR", 2.0, 0.4, 1.2, 0.6, ["+5V", "SERVO_V"]),
+    ("GND", 1.5, 0.4, 1.0, 0.5, ["GND"]),
 ]
-DEFAULT_CLASS = (0.6, 0.4, 2.0, 1.0)
+DEFAULT_CLASS = (0.6, 0.4, 0.8, 0.4)
 
 # ---------------------------------------------------------------------------
 # GUIAS DE RUTEO (una capa)
@@ -283,8 +282,8 @@ def build():
     pi[10] = "PI_RXD0"
     add("U1", "RaspberryPi5_GPIO", "rover:RaspberryPi5_GPIO", "rover:RPi5_HAT_Header_2x20",
         pi, (135.0, 93.5, 0), (190.5, 76.2),
-        desc="Stacking header 2x20 de pines largos (Pi 5 debajo, soldar por la cara de cobre)",
-        mpn="Stacking header 2x20 2.54mm pines largos")
+        desc="Header hembra 2x20 en la cara inferior (Pi 5 debajo); o stacking header para acceder a los GPIO por arriba",
+        mpn="Header hembra 2x20 2.54mm (o stacking header 2x20)")
 
     # ======================= ESP32-A (traccion) =============================
     espa = {i: None for i in range(1, 31)}

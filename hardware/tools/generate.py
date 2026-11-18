@@ -305,8 +305,8 @@ def footprint_rpi():
     px0 = g["pin1"][0] - 1.6
     L.append(fp_rect(px0, g["row_even_y"] - 1.6, px0 + 2.54 * 19 + 3.2, g["pin1"][1] + 1.6, "F.CrtYd", 0.05))
     L.append(fp_text("user", "RASPBERRY PI 5 (montada debajo)", 32.5, 22, "F.SilkS", 2.0))
-    L.append(fp_text("user", "Stacking header 2x20 (pines largos) desde ABAJO", 32.5, 27, "F.SilkS", 1.4))
-    L.append(fp_text("user", "soldar por la cara de cobre - standoffs M2.5", 32.5, 31, "F.SilkS", 1.2))
+    L.append(fp_text("user", "Header hembra 2x20 en la cara INFERIOR", 32.5, 27, "F.SilkS", 1.4))
+    L.append(fp_text("user", "(soldar por arriba) - standoffs M2.5", 32.5, 31, "F.SilkS", 1.2))
     L.append(fp_text("user", "USB/ETH ->", 60, 45, "F.SilkS", 1.5))
     for (x, y) in g["holes"]:
         L.append(fp_npth(x, y, g["hole_drill"]))
@@ -607,7 +607,7 @@ def build_pcb(comps, netnames, assignments, route=False):
         t.SetTextAngleDegrees(rot)
         board.Add(t)
 
-    silk("ROVER CONTROLLER v%s  -  RPi5 + 2xESP32 + 3xL298N  -  1 CAPA" % D.REVISION, 100, 21.0, 1.4, bold=True)
+    silk("ROVER CONTROLLER v%s  -  RPi5 + 2xESP32 + 3xL298N  -  %d CAPAS" % (D.REVISION, D.LAYERS), 100, 21.0, 1.4, bold=True)
     for m in range(1, 7):
         c = next(cc for cc in comps if cc["ref"] == "J%d" % (10 + m))
         x = c["pcb"][0] - 2.54
@@ -664,8 +664,10 @@ def build_pcb(comps, netnames, assignments, route=False):
         return z
 
     rect = [(0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)]
-    # una sola capa de cobre: plano de GND solo en B.Cu (cara de soldadura)
+    # plano de GND (en las dos caras si la PCB es de 2 capas)
     zone(pcbnew.B_Cu, "GND", rect, clearance=0.5)
+    if D.LAYERS == 2:
+        zone(pcbnew.F_Cu, "GND", rect, clearance=0.5)
 
     # keepout de cobre bajo las antenas de los ESP32
     for ref in ("U2", "U3"):
@@ -738,7 +740,11 @@ def route_board(relaxed_pass=True):
     assignments = write_project(D.nets())
     ox, oy = 30.0, 30.0
     reserved = [(x0 + ox, y0 + oy, x1 + ox, y1 + oy, a) for (x0, y0, x1, y1, a) in D.routing_reserved()]
+    via_sizes = {"Default": D.DEFAULT_CLASS[2:4]}
+    for (name, tw, clr, vd, vdr, pats) in D.NETCLASSES:
+        via_sizes[name] = (vd, vdr)
     r = router1l.route(board, classes, assignments, relaxed_pass=relaxed_pass,
+                       two_layer=(D.LAYERS == 2), via_sizes=via_sizes,
                        reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE,
                        first=D.ROUTING_FIRST)
     # limpieza: quitar tramos/vias colgantes (no aportan conexion)
@@ -750,11 +756,21 @@ def route_board(relaxed_pass=True):
             break
         for t in dangling:
             board.Remove(t)
-    label_jumpers(board, r.jumpers)
+    if D.LAYERS == 1:
+        label_jumpers(board, r.jumpers)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)
     write_project(D.nets())
+    if D.LAYERS == 2:
+        nv = sum(1 for t in board.GetTracks() if t.GetClass() == "PCB_VIA")
+        print("Vias: %d   Fallidas: %d" % (nv, len(r.failed)))
+        for f_ in r.failed:
+            print("  FALLO", f_)
+        stale = os.path.join(OUT, "puentes_alambre.csv")
+        if os.path.exists(stale):
+            os.remove(stale)
+        return r
     # lista de puentes de alambre
     with open(os.path.join(OUT, "puentes_alambre.csv"), "w") as fh:
         fh.write("Puente;Red;X1(mm);Y1(mm);X2(mm);Y2(mm);Largo(mm)\n")
