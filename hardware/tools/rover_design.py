@@ -137,8 +137,9 @@ def preroutes():
     ys = [esp_pin_y(ESPB_POS, SERVOS[n][0]) for n in range(1, 9)]
     for n in range(1, 9):
         out.append(("SERVO%d" % n, [(ESPB_POS[0] + 12.7, ys[n - 1]), (sx - 5.08, ys[n - 1])], 0.6))
-    out.append(("SERVO_V", [(sx - 2.54, 99.0), (sx - 2.54, ys[-1])], 1.4))
-    out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5), (sx, ys[-1])], 1.4))
+    # columnas partidas en cada pad (KiCad conecta pistas por sus extremos)
+    out.append(("SERVO_V", [(sx - 2.54, 99.0)] + [(sx - 2.54, y) for y in ys], 1.4))
+    out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5)] + [(sx, y) for y in ys], 1.4))
     for k in range(2):
         enb = L298N_CX[k] + L298N["header_first"][0] + 2.54 * 5
         ena = L298N_CX[k + 1] + L298N["header_first"][0]
@@ -149,7 +150,8 @@ def preroutes():
 # orden de ruteo de senales: primero el abanico ESP32-A -> L298N (planar),
 # luego el enable, las UART y el resto; los encoders cruzan con puentes.
 ROUTING_FIRST = ["U%d_IN%d" % (u, i) for u in (4, 5, 6) for i in (1, 2, 3, 4)] + \
-    ["MOTOR_EN", "ESPA_RX", "ESPA_TX", "PI_TXD0", "PI_RXD0", "ESPB_TX", "ESPB_RX",
+    ["MOTOR_EN", "PI_TXD2", "PI_RXD2", "ESPA_RX", "ESPA_TX",
+     "PI_TXD0", "PI_RXD0", "ESPB_TX", "ESPB_RX",
      "SERVO1", "SERVO2", "SERVO3", "SERVO4", "SERVO5", "SERVO6", "SERVO7", "SERVO8"]
 ROUTING_LATE = []
 

@@ -725,6 +725,15 @@ def route_board(relaxed_pass=True):
     r = router1l.route(board, classes, assignments, relaxed_pass=relaxed_pass,
                        reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE,
                        first=D.ROUTING_FIRST)
+    # limpieza: quitar tramos/vias colgantes (no aportan conexion)
+    for _ in range(10):
+        board.BuildConnectivity()
+        conn = board.GetConnectivity()
+        dangling = [t for t in board.GetTracks() if conn.TestTrackEndpointDangling(t, False)]
+        if not dangling:
+            break
+        for t in dangling:
+            board.Remove(t)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)

@@ -47,6 +47,7 @@ class Grid:
         self.nx = int(math.ceil((mm(bb.GetWidth()) + 2.0) / G)) + 1
         self.ny = int(math.ceil((mm(bb.GetHeight()) + 2.0) / G)) + 1
         self.B = np.zeros((self.ny, self.nx), np.int32)
+        self.E = np.zeros((self.ny, self.nx), np.int32)   # cobre "exacto" (centros dentro del cobre)
         self.F = np.zeros((self.ny, self.nx), np.int32)
         ys = self.y0 + np.arange(self.ny) * G
         xs = self.x0 + np.arange(self.nx) * G
@@ -65,26 +66,26 @@ class Grid:
         j1 = min(self.nx, int((max(xa, xb) + pad - self.x0) / G) + 2)
         return i0, i1, j0, j1
 
-    def mark_circle(self, arr, x, y, r, val, only_free=False):
-        i0, i1, j0, j1 = self.window(x, y, x, y, r + RM)
+    def mark_circle(self, arr, x, y, r, val, only_free=False, rm=RM):
+        i0, i1, j0, j1 = self.window(x, y, x, y, r + abs(rm))
         X, Y = self.XX[i0:i1, j0:j1], self.YY[i0:i1, j0:j1]
-        m = (X - x) ** 2 + (Y - y) ** 2 <= (r + RM) ** 2
+        m = (X - x) ** 2 + (Y - y) ** 2 <= (r + rm) ** 2
         sub = arr[i0:i1, j0:j1]
         if only_free:
             m &= sub == 0
         sub[m] = val
 
-    def mark_rect(self, arr, xa, ya, xb, yb, val, only_free=False):
-        i0, i1, j0, j1 = self.window(xa, ya, xb, yb, RM)
+    def mark_rect(self, arr, xa, ya, xb, yb, val, only_free=False, rm=RM):
+        i0, i1, j0, j1 = self.window(xa, ya, xb, yb, abs(rm))
         X, Y = self.XX[i0:i1, j0:j1], self.YY[i0:i1, j0:j1]
-        m = (X >= xa - RM) & (X <= xb + RM) & (Y >= ya - RM) & (Y <= yb + RM)
+        m = (X >= xa - rm) & (X <= xb + rm) & (Y >= ya - rm) & (Y <= yb + rm)
         sub = arr[i0:i1, j0:j1]
         if only_free:
             m &= sub == 0
         sub[m] = val
 
-    def mark_seg(self, arr, xa, ya, xb, yb, w, val):
-        r = w / 2 + RM
+    def mark_seg(self, arr, xa, ya, xb, yb, w, val, rm=RM):
+        r = w / 2 + rm
         i0, i1, j0, j1 = self.window(xa, ya, xb, yb, r)
         X, Y = self.XX[i0:i1, j0:j1], self.YY[i0:i1, j0:j1]
         dx, dy = xb - xa, yb - ya
@@ -115,6 +116,37 @@ class Router:
             m = (self.g.XX >= x0) & (self.g.XX <= x1) & (self.g.YY >= y0) & (self.g.YY <= y1)
             self.reserved.append((m, set(allowed)))
         self._bridge_twins()
+        self.protected = set(t.m_Uuid.AsString() for t in board.GetTracks())
+
+    def _rebuild(self):
+        twins = self.twins
+        self.g = Grid(self.board)
+        self._build_obstacles()
+        self.twins = twins
+
+    def rip(self, names):
+        """Levanta (borra) las pistas/puentes ruteados de las redes dadas."""
+        b = self.board
+        names = set(names)
+        for t in list(b.GetTracks()):
+            if t.GetNetname() in names and t.m_Uuid.AsString() not in self.protected:
+                b.Remove(t)
+        for n in names:
+            self.trees.pop(n, None)
+        self.jumpers = [j for j in self.jumpers if j[0] not in names]
+        self._rebuild()
+
+    def blockers(self, pad, radius=3.5, own=None):
+        g = self.g
+        x, y = mm(pad.GetPosition().x), mm(pad.GetPosition().y)
+        i0, i1, j0, j1 = g.window(x, y, x, y, radius)
+        sub = g.B[i0:i1, j0:j1]
+        codes = set(int(c) for c in np.unique(sub) if c > 0 and c != own)
+        out = []
+        for name, ni in self.board.GetNetsByName().items():
+            if ni.GetNetCode() in codes:
+                out.append(str(name))
+        return out
 
     # ------------------------------------------------------------------
     def code(self, netname):
@@ -128,11 +160,16 @@ class Router:
         bb = pad.GetBoundingBox()
         return ("r", mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()), mm(bb.GetY() + bb.GetHeight()))
 
-    def _mark_shape(self, arr, shp, val):
+    def _mark_shape(self, arr, shp, val, rm=RM):
         if shp[0] == "c":
-            self.g.mark_circle(arr, shp[1], shp[2], shp[3], val)
+            self.g.mark_circle(arr, shp[1], shp[2], shp[3], val, rm=rm)
         else:
-            self.g.mark_rect(arr, shp[1], shp[2], shp[3], shp[4], val)
+            self.g.mark_rect(arr, shp[1], shp[2], shp[3], shp[4], val, rm=rm)
+
+    def _mark_hole(self, x, y, r):
+        m = np.zeros(self.g.B.shape, np.int8)
+        self.g.mark_circle(m, x, y, r + JUMPER_DRILL / 2 + 0.35, 1)
+        self.noVia |= m.astype(bool)
 
     def _build_obstacles(self):
         g = self.g
@@ -170,6 +207,7 @@ class Router:
                 code = pad.GetNetCode()
                 self._mark_shape(g.B, shp, code)
                 self._mark_shape(g.F, shp, code)
+                self._mark_shape(g.E, shp, code, rm=-0.06)
                 key = (ref, pad.GetNumber())
                 if key in seen:
                     self.twins.append((seen[key], pad))
@@ -177,6 +215,12 @@ class Router:
                 seen[key] = pad
                 self.pads_by_net.setdefault(pad.GetNetname(), []).append((pad, shp))
         self.P = g.B.copy()   # solo pads (para el costo de "halo")
+        # mapa de barrenos: donde NO se puede poner el barreno de un puente
+        self.noVia = np.zeros(g.B.shape, bool)
+        for fp in b.GetFootprints():
+            for pad in fp.Pads():
+                if pad.GetDrillSize().x > 0:
+                    self._mark_hole(mm(pad.GetPosition().x), mm(pad.GetPosition().y), mm(pad.GetDrillSize().x) / 2)
         # pistas y vias ya existentes (permite rutear de forma incremental)
         for t in b.GetTracks():
             code = t.GetNetCode()
@@ -184,10 +228,14 @@ class Router:
                 p = t.GetPosition()
                 for arr in (g.B, g.F):
                     g.mark_circle(arr, mm(p.x), mm(p.y), mm(t.GetWidth()) / 2, code)
+                g.mark_circle(g.E, mm(p.x), mm(p.y), mm(t.GetWidth()) / 2, code, rm=-0.06)
+                self._mark_hole(mm(p.x), mm(p.y), JUMPER_DRILL / 2)
             else:
                 arr = g.B if t.GetLayer() == pcbnew.B_Cu else g.F
                 a, c = t.GetStart(), t.GetEnd()
                 g.mark_seg(arr, mm(a.x), mm(a.y), mm(c.x), mm(c.y), mm(t.GetWidth()), code)
+                if t.GetLayer() == pcbnew.B_Cu:
+                    g.mark_seg(g.E, mm(a.x), mm(a.y), mm(c.x), mm(c.y), mm(t.GetWidth()), code, rm=-0.06)
         # zonas de exclusion (antenas)
         for z in b.Zones():
             if z.GetIsRuleArea() and (z.GetDoNotAllowTracks() or z.GetDoNotAllowVias()):
@@ -216,6 +264,7 @@ class Router:
             t.SetNet(p1.GetNet())
             b.Add(t)
             g.mark_seg(g.B, mm(a.x), mm(a.y), mm(c.x), mm(c.y), 0.8, p1.GetNetCode())
+            g.mark_seg(g.E, mm(a.x), mm(a.y), mm(c.x), mm(c.y), 0.8, p1.GetNetCode(), rm=-0.06)
 
     # ------------------------------------------------------------------
     def _dist(self, arr, code):
@@ -245,7 +294,7 @@ class Router:
         if name not in self.trees:
             order = sorted(range(len(pads)), key=lambda k: -size(pads[k][1]))
             # arbol inicial = cobre ya existente conectado al primer pad (pistas pre-trazadas)
-            lab, _ = ndimage.label(self.g.B == code, structure=np.ones((3, 3)))
+            lab, _ = ndimage.label(self.g.E == code, structure=np.ones((3, 3)))
             c0 = center(pads[order[0]][1])
             i0, j0 = self.g.ij(*c0)
             t = np.zeros(self.g.B.shape, np.int8)
@@ -259,7 +308,7 @@ class Router:
                         done0.add(k2)
                         pts0.append(center(s2))
             else:
-                self._mark_shape(t, pads[order[0]][1], 1)
+                self._mark_shape(t, pads[order[0]][1], 1, rm=-0.06)
             self.trees[name] = [t, done0, pts0]
         self.tree, done, tree_pts = self.trees[name]
         remaining = [k for k in range(len(pads)) if k not in done
@@ -287,7 +336,7 @@ class Router:
                 self.log("   !! no se pudo conectar %s -> %s.%s" % (name, pad.GetParent().GetReference(), pad.GetNumber()))
             tree_pts.append(center(shp))
             if ok:
-                self._mark_shape(self.tree, shp, 1)
+                self._mark_shape(self.tree, shp, 1, rm=-0.06)
                 done.add(k)
 
     # ------------------------------------------------------------------
@@ -324,6 +373,7 @@ class Router:
             distF = self._dist(g.F, code)
             freeF = distF >= JUMPER_WIRE / 2 + JUMPER_CLR + RM
             viaok = (distB >= JUMPER_PAD / 2 + clr + RM) & (distF >= JUMPER_PAD / 2 + JUMPER_CLR + RM)
+            viaok &= ~self.noVia
             for (m, allowed) in self.reserved:
                 if cls not in allowed:
                     viaok &= ~m
@@ -459,7 +509,9 @@ class Router:
         t.SetNet(net)
         b.Add(t)
         self.g.mark_seg(arr, a[0], a[1], c[0], c[1], w, code)
-        self.g.mark_seg(self.tree, a[0], a[1], c[0], c[1], w, 1)
+        if layer == pcbnew.B_Cu:
+            self.g.mark_seg(self.g.E, a[0], a[1], c[0], c[1], w, code, rm=-0.06)
+            self.g.mark_seg(self.tree, a[0], a[1], c[0], c[1], w, 1, rm=-0.06)
 
     def _commit(self, name, code, path, w, target_xy, freeB, freeF):
         g = self.g
@@ -493,7 +545,9 @@ class Router:
                     b.Add(v)
                     g.mark_circle(g.B, x, y, JUMPER_PAD / 2, code)
                     g.mark_circle(g.F, x, y, JUMPER_PAD / 2, code)
-                    g.mark_circle(self.tree, x, y, JUMPER_PAD / 2, 1)
+                    g.mark_circle(self.tree, x, y, JUMPER_PAD / 2, 1, rm=-0.06)
+                    g.mark_circle(g.E, x, y, JUMPER_PAD / 2, code, rm=-0.06)
+                    self._mark_hole(x, y, JUMPER_DRILL / 2)
                 L = 0.0
                 for a, c in zip(xy, xy[1:]):
                     self._add_track(net, code, a, c, JUMPER_WIRE, pcbnew.F_Cu, g.F)
@@ -555,6 +609,37 @@ def route(board, classes, assignments, order_classes=None, log=print, relaxed_pa
         t0 = time.time()
         r.route_net(n, c, None, relaxed=True)
         log("  (relajada) %-12s %5.1fs" % (n, time.time() - t0))
+    # rip-up & reroute de lo que siga fallando (solo se levantan senales)
+    def pending_list():
+        out = []
+        for n in nets:
+            t = r.trees.get(n)
+            done = t[1] if t else set()
+            for k, (pad, shp) in enumerate(r.pads_by_net[n]):
+                if k not in done:
+                    out.append((n, pad))
+        return out
+
+    ripped_count = {}
+    for it in range(3):
+        pend = pending_list()
+        if not pend:
+            break
+        for (n, pad) in pend:
+            t = r.trees.get(n)
+            if t and any(p is pad for (p, s_) in []):
+                continue
+            bl = [b for b in r.blockers(pad, own=r.code(n))
+                  if cls(b) == "Default" and ripped_count.get(b, 0) < 2]
+            if not bl:
+                continue
+            for b in bl:
+                ripped_count[b] = ripped_count.get(b, 0) + 1
+            log("  rip-up para %s (%s.%s): %s" % (n, pad.GetParent().GetReference(), pad.GetNumber(), ", ".join(bl)))
+            r.rip(bl)
+            r.route_net(n, cls(n), None, relaxed=True)
+            for b in bl:
+                r.route_net(b, "Default", None, relaxed=True)
     r.failed = []
     for n in nets:
         t = r.trees.get(n)
