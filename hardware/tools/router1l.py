@@ -190,7 +190,13 @@ class Router:
                 g.mark_seg(arr, mm(a.x), mm(a.y), mm(c.x), mm(c.y), mm(t.GetWidth()), code)
         # zonas de exclusion (antenas)
         for z in b.Zones():
-            if z.GetIsRuleArea() and z.GetDoNotAllowTracks():
+            if z.GetIsRuleArea() and (z.GetDoNotAllowTracks() or z.GetDoNotAllowVias()):
+                bb = z.GetBoundingBox()
+                if not z.GetDoNotAllowTracks():
+                    # solo prohibe barrenos de puente: se marca en F (capa de alambres)
+                    g.mark_rect(g.F, mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()),
+                                mm(bb.GetY() + bb.GetHeight()), -1)
+                    continue
                 bb = z.GetBoundingBox()
                 g.mark_rect(g.B, mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()),
                             mm(bb.GetY() + bb.GetHeight()), -1)
@@ -482,7 +488,7 @@ class Router:
 
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
-          reserved=(), early_refs=None):
+          reserved=(), early_refs=None, late=()):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
     Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
@@ -516,10 +522,11 @@ def route(board, classes, assignments, order_classes=None, log=print, relaxed_pa
         stages += [(n, c, None) for n in sorted(nets, key=span) if cls(n) == c]
     stages += [(n, "PWR", early(n)) for n in nets if cls(n) == "PWR"]
     stages += [(n, "GND", early(n)) for n in nets if cls(n) == "GND"]
-    sig = [n for n in nets if cls(n) == "Default"]
+    sig = [n for n in nets if cls(n) == "Default" and n not in late]
     longs = sorted([n for n in sig if span(n) > 60], key=span, reverse=True)
     shorts = sorted([n for n in sig if span(n) <= 60], key=span)
     stages += [(n, "Default", None) for n in longs + shorts]
+    stages += [(n, "Default", None) for n in late if n in nets]
     stages += [(n, cls(n), None) for n in nets if cls(n) in ("PWR", "GND")]
     for (n, c, flt) in stages:
         t0 = time.time()

@@ -22,30 +22,27 @@ Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;J25;Pololu37D_M5;Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical;Header macho 1x6 2.54mm;Header 1x6 macho: cable Pololu 37D (M+, M-, GND, VCC, A, B)
 1;J26;Pololu37D_M6;Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical;Header macho 1x6 2.54mm;Header 1x6 macho: cable Pololu 37D (M+, M-, GND, VCC, A, B)
 1;J3;12V OUT -> buck 5V;TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Salida 12V protegida hacia el step-down de 5V/5A
-1;J31;SERVO1;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 1 - Direccion DI (GND, V+, SIG)
-1;J32;SERVO2;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 2 - Direccion DD (GND, V+, SIG)
-1;J33;SERVO3;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 3 - Direccion TI (GND, V+, SIG)
-1;J34;SERVO4;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 4 - Direccion TD (GND, V+, SIG)
-1;J35;SERVO5;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 5 - Brazo base (GND, V+, SIG)
-1;J36;SERVO6;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 6 - Brazo hombro (GND, V+, SIG)
-1;J37;SERVO7;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 7 - Brazo pinza (GND, V+, SIG)
-1;J38;SERVO8;Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical;Header macho 1x3 2.54mm;Servo 8 - Reserva (GND, V+, SIG)
+1;J31;SERVO1;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 1 - Direccion DI (GND, V+, SIG)
+1;J32;SERVO2;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 2 - Direccion DD (GND, V+, SIG)
+1;J33;SERVO3;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 3 - Direccion TI (GND, V+, SIG)
+1;J34;SERVO4;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 4 - Direccion TD (GND, V+, SIG)
+1;J35;SERVO5;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 5 - Brazo base (GND, V+, SIG)
+1;J36;SERVO6;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 6 - Brazo hombro (GND, V+, SIG)
+1;J37;SERVO7;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 7 - Brazo pinza (GND, V+, SIG)
+1;J38;SERVO8;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 8 - Reserva (GND, V+, SIG)
 1;J4;12V OUT -> BEC servos;TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Salida 12V protegida hacia el BEC de servos 6V
-1;J41;AUX ESP32-A;Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical;Header macho 1x4;Header auxiliar ESP32-A
-1;J42;AUX ESP32-B (I2C);Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical;Header macho 1x8;Header auxiliar ESP32-B (I2C + GPIO)
 1;J43;AUX RPi (I2C);Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical;Header macho 1x8;Header auxiliar Raspberry Pi (I2C + GPIO)
-1;J5;5V IN (buck 5V 5A);TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Entrada 5V/5A desde step-down (alimenta Pi 5, ESP32 y encoders)
-2;J6,J7;SERVO PWR IN (6V);TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Entrada BEC servos 6V #1
-2;Q1,Q2;2N3904;Package_TO_SOT_THT:TO-92_Inline_Wide;2N3904;Reset ESP32-A (Pi GPIO17)
-9;R1,R2,R3,R4,R5,R6,R19,R20,R21;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder (serie)
-6;R13,R14,R15,R16,R17,R18;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD0 -> ESP32-A RX2
+1;J5;5V IN (buck 5V 5A);TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Entrada 5V/5A desde step-down (alimenta Pi 5 y ESP32)
+1;J6;SERVO PWR IN (6V);TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Entrada BEC servos 6V
+7;R1,R2,R3,R4,R5,R6,R21;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder (serie)
+4;R13,R14,R15,R16;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD2 -> ESP32-A RX
 1;R22;100k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 100k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (alto)
 1;R23;27k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 27k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (bajo)
 1;R24;2.2k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 2.2k 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 12V
 1;R25;330;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 330 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 5V
 1;R26;470;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 470 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED servos
 6;R7,R8,R9,R10,R11,R12;20k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 20k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder (a GND)
-1;U1;RaspberryPi5_GPIO;rover:RPi5_HAT_Header_2x20;Header hembra 2x20 2.54mm (o stacking header 2x20);Header hembra 2x20 (montar en cara INFERIOR, Pi 5 debajo)
+1;U1;RaspberryPi5_GPIO;rover:RPi5_HAT_Header_2x20;Stacking header 2x20 2.54mm pines largos;Stacking header 2x20 de pines largos (Pi 5 debajo, soldar por la cara de cobre)
 1;U2;ESP32-A_Traccion;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 CP2102 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15
 1;U3;ESP32-B_Servos;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 CP2102 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15
-3;U4,U5,U6;L298N_Module;rover:L298N_Module_Pins;Modulo puente H L298N (HW-095);Modulo L298N (bornas sustituidas por pines, quitar jumpers ENA/ENB)
+3;U4,U5,U6;L298N_Module;rover:L298N_Module_Pins;Modulo puente H L298N (HW-095);Modulo L298N (bornas sustituidas por pines, quitar jumpers ENA/ENB, dejar el jumper 5V-EN: su +5V alimenta los encoders)

@@ -98,22 +98,22 @@ DEFAULT_CLASS = (0.6, 0.4, 2.0, 1.0)
 # GUIAS DE RUTEO (una capa)
 # ---------------------------------------------------------------------------
 def routing_reserved():
-    """Corredor de senales bajo los headers logicos de los L298N: ahi no pasan
-    pistas de potencia, para que la ESP32-A llegue a IN1..IN4/ENA/ENB."""
-    out = [(20.0, 66.0, 186.0, 75.5, {"Default"}),
-           # entre la ESP32-A / divisores y el corredor de los L298N
-           (28.0, 75.5, 66.0, 97.0, {"Default"}),
-           # entre los headers de servo y la ESP32-B
-           (66.0, 84.0, 109.0, 97.0, {"Default"})]
+    """Zonas donde solo pasan senales (clase Default)."""
+    out = [(20.0, 66.0, 186.0, 75.5, {"Default"})]          # corredor bajo los L298N
     for cx in L298N_CX:
         out.append((cx - 0.5, L298N_CY + 16.0, cx + 16.5, 66.0, {"Default"}))
+    # franja sobre la fila exterior del header de la Pi (desde el pin 6)
+    out.append((148.0, 89.0, 196.0, 94.6, {"Default"}))
     return out
 
+
+# redes que unen los extremos de una fila de pines (ENA/ENB): al final
+ROUTING_LATE = ["MOTOR_EN"]
 
 # pads que se rutean en la etapa de potencia (el resto de la red va al final)
 ROUTING_EARLY = {
     "+5V": {"J5", "C2", "D1", "U1"},
-    "SERVO_V": {"J6", "J7", "C3", "C4", "J31", "J32", "J33", "J34", "J35", "J36", "J37", "J38"},
+    "SERVO_V": {"J6", "C3", "C4", "J31", "J32", "J33", "J34", "J35", "J36", "J37", "J38"},
 }
 
 # ---------------------------------------------------------------------------
@@ -138,13 +138,14 @@ FP_H1x6 = "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
 FP_H1x8 = "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
 FP_MH = "MountingHole:MountingHole_3.2mm_M3"
 FP_XT60 = "Connector_AMASS:AMASS_XT60-M_1x02_P7.20mm_Vertical"
+FP_SERVO = "rover:Servo_Header_1x03"
 
 COMPONENTS = []
 
 # Barrenos M3 en las orillas para atornillar la PCB al chasis
 # (ademas de los 4 agujeros M2.5 de la Raspberry Pi).
 CHASSIS_HOLES = [(4.0, 4.0), (68.0, 4.0), (132.0, 4.0), (196.0, 4.0),
-                 (4.0, 45.0), (196.0, 45.0), (4.0, 146.0), (128.0, 146.5)]
+                 (4.0, 45.0), (196.0, 45.0), (4.0, 93.5), (128.0, 146.0)]
 
 
 def add(ref, value, symbol, footprint, pins, pcb, sch, **kw):
@@ -168,21 +169,36 @@ MOTORS = {
     5: "Trasero Izq", 6: "Trasero Der",
 }
 
-# ESP32-A (traccion): pines de control de cada L298N
-ESPA_IN = {  # (L298N index) -> [IN1, IN2, IN3, IN4] GPIO
-    0: ["IO32", "IO33", "IO25", "IO26"],
-    1: ["IO27", "IO13", "IO23", "IO22"],
-    2: ["IO21", "IO19", "IO18", "IO5"],
+# ---------------------------------------------------------------------------
+# ASIGNACION DE PINES (pensada para UNA capa: el orden fisico de los pines
+# coincide con el orden de los destinos, asi las pistas no se cruzan)
+# ---------------------------------------------------------------------------
+# ESP32-A (traccion) va HORIZONTAL bajo los L298N: su fila superior (IO23..3V3)
+# mira a los headers logicos y los IN1..IN4 bajan "en abanico" sin cruzarse.
+ESPA_IN = {  # indice L298N -> [IN1, IN2, IN3, IN4]
+    0: ["IO23", "IO22", "TX0/IO1", "IO21"],
+    1: ["IO19", "IO18", "IO5", "TX2/IO17"],
+    2: ["RX2/IO16", "IO4", "IO2", "IO15"],
 }
-ESPA_ENC = {1: "VP/IO36", 2: "VN/IO39", 3: "IO34", 4: "IO35", 5: "IO14", 6: "IO4"}
+ESPA_ENC = {1: "VP/IO36", 2: "VN/IO39", 3: "IO34", 4: "IO35", 5: "IO32", 6: "IO33"}
+ESPA_UART_RX = "IO26"
+ESPA_UART_TX = "IO27"
+ESPA_MOTOR_EN = "IO13"
 
-# ESP32-B (servos + brazo)
+# ESP32-B (servos) va vertical a la izquierda; cada header de servo queda a la
+# MISMA altura que su GPIO (pista recta).
 SERVOS = {  # n -> (gpio, descripcion)
-    1: ("IO32", "Direccion DI"), 2: ("IO33", "Direccion DD"),
-    3: ("IO25", "Direccion TI"), 4: ("IO26", "Direccion TD"),
-    5: ("IO27", "Brazo base"), 6: ("IO13", "Brazo hombro"),
-    7: ("IO23", "Brazo pinza"), 8: ("IO4", "Reserva"),
+    1: ("IO23", "Direccion DI"), 2: ("IO22", "Direccion DD"),
+    3: ("IO21", "Direccion TI"), 4: ("IO19", "Direccion TD"),
+    5: ("IO18", "Brazo base"), 6: ("TX2/IO17", "Brazo hombro"),
+    7: ("RX2/IO16", "Brazo pinza"), 8: ("IO4", "Reserva"),
 }
+ESPB_UART_TX = "IO2"
+ESPB_UART_RX = "IO15"
+ESPB_VBAT = "IO34"
+
+ESPA_POS = (98.0, 96.7, 90)     # horizontal: antena a la izquierda, USB a la derecha
+ESPB_POS = (22.0, 124.0, 0)     # vertical: antena arriba, USB abajo
 
 
 def esp_pin_number(name):
@@ -191,76 +207,66 @@ def esp_pin_number(name):
     return ESP32_RIGHT.index(name) + 16
 
 
+def esp_pin_y(pos, name):
+    """Y de un pin de la fila derecha de una ESP32 vertical (rot 0)."""
+    i = ESP32_RIGHT.index(name)
+    return pos[1] - 17.78 + 2.54 * i
+
+
 def build():
     COMPONENTS.clear()
     # ======================= RASPBERRY PI 5 =================================
     pi = {n: None for n in range(1, 41)}
-    for n, name in RPI_PINS.items():
-        if name == "GND":
-            pi[n] = "GND"
-        elif name == "5V":
-            pi[n] = "+5V"
-        elif name == "3V3":
-            pi[n] = "+3V3_PI"
+    for n in (2, 4):
+        pi[n] = "+5V"
+    for n in (6, 9, 14, 25, 39):          # GND (el resto esta unido dentro de la Pi)
+        pi[n] = "GND"
+    pi[1] = "+3V3_PI"
     pi[3] = "PI_SDA"
     pi[5] = "PI_SCL"
-    pi[8] = "PI_TXD0"
-    pi[10] = "PI_RXD0"
-    pi[7] = "PI_TXD2"
+    pi[7] = "PI_TXD2"      # UART2 -> ESP32-A (fila interior)
     pi[29] = "PI_RXD2"
-    pi[11] = "PI_RST_A"
-    pi[13] = "PI_RST_B"
+    pi[8] = "PI_TXD0"      # UART0 -> ESP32-B (fila exterior)
+    pi[10] = "PI_RXD0"
     pi[15] = "PI_GPIO22"
-    pi[16] = "PI_GPIO23"
-    pi[18] = "PI_GPIO24"
-    pi[22] = "PI_GPIO25"
+    pi[31] = "PI_GPIO6"
+    pi[33] = "PI_GPIO13"
+    pi[37] = "PI_GPIO26"
     add("U1", "RaspberryPi5_GPIO", "rover:RaspberryPi5_GPIO", "rover:RPi5_HAT_Header_2x20",
         pi, (135.0, 93.5, 0), (190.5, 76.2),
-        desc="Header hembra 2x20 (montar en cara INFERIOR, Pi 5 debajo)",
-        mpn="Header hembra 2x20 2.54mm (o stacking header 2x20)")
+        desc="Stacking header 2x20 de pines largos (Pi 5 debajo, soldar por la cara de cobre)",
+        mpn="Stacking header 2x20 2.54mm pines largos")
 
     # ======================= ESP32-A (traccion) =============================
     espa = {i: None for i in range(1, 31)}
-    espa[esp_pin_number("EN")] = "ESPA_EN"
     espa[esp_pin_number("VIN")] = "+5V"
     espa[14] = "GND"
     espa[29] = "GND"
-    espa[esp_pin_number("3V3")] = "+3V3_A"
     for k, gp in ESPA_IN.items():
         for j, g in enumerate(gp):
             espa[esp_pin_number(g)] = "U%d_IN%d" % (k + 4, j + 1)
     for m, g in ESPA_ENC.items():
         espa[esp_pin_number(g)] = "ENC%d_A" % m
-    espa[esp_pin_number("IO12")] = "MOTOR_EN"
-    espa[esp_pin_number("TX2/IO17")] = "ESPA_TX"
-    espa[esp_pin_number("RX2/IO16")] = "ESPA_RX"
-    espa[esp_pin_number("IO2")] = "AUXA_IO2"
-    espa[esp_pin_number("IO15")] = "AUXA_IO15"
+    espa[esp_pin_number(ESPA_MOTOR_EN)] = "MOTOR_EN"
+    espa[esp_pin_number(ESPA_UART_TX)] = "ESPA_TX"
+    espa[esp_pin_number(ESPA_UART_RX)] = "ESPA_RX"
     add("U2", "ESP32-A_Traccion", "rover:ESP32_DevKitV1_30P", "rover:ESP32_DevKitV1_30P_DualPitch",
-        espa, (42.0, 124.0, 0), (330.2, 76.2),
+        espa, ESPA_POS, (330.2, 76.2),
         desc="ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15",
         mpn="ESP32 DevKit V1 CP2102 + 2x header hembra 1x15")
 
     # ======================= ESP32-B (servos) ===============================
     espb = {i: None for i in range(1, 31)}
-    espb[esp_pin_number("EN")] = "ESPB_EN"
     espb[esp_pin_number("VIN")] = "+5V"
     espb[14] = "GND"
     espb[29] = "GND"
-    espb[esp_pin_number("3V3")] = "+3V3_B"
     for n, (g, _) in SERVOS.items():
         espb[esp_pin_number(g)] = "SERVO%d" % n
-    espb[esp_pin_number("IO34")] = "VBAT_SENSE"
-    espb[esp_pin_number("TX2/IO17")] = "ESPB_TX"
-    espb[esp_pin_number("RX2/IO16")] = "ESPB_RX"
-    espb[esp_pin_number("IO21")] = "AUXB_SDA"
-    espb[esp_pin_number("IO22")] = "AUXB_SCL"
-    espb[esp_pin_number("IO18")] = "AUXB_IO18"
-    espb[esp_pin_number("IO19")] = "AUXB_IO19"
-    espb[esp_pin_number("IO35")] = "AUXB_IO35"
-    espb[esp_pin_number("VN/IO39")] = "AUXB_IO39"
+    espb[esp_pin_number(ESPB_VBAT)] = "VBAT_SENSE"
+    espb[esp_pin_number(ESPB_UART_TX)] = "ESPB_TX"
+    espb[esp_pin_number(ESPB_UART_RX)] = "ESPB_RX"
     add("U3", "ESP32-B_Servos", "rover:ESP32_DevKitV1_30P", "rover:ESP32_DevKitV1_30P_DualPitch",
-        espb, (106.0, 124.0, 0), (457.2, 76.2),
+        espb, ESPB_POS, (457.2, 76.2),
         desc="ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15",
         mpn="ESP32 DevKit V1 CP2102 + 2x header hembra 1x15")
 
@@ -268,156 +274,128 @@ def build():
     for k in range(3):
         ref = "U%d" % (k + 4)
         ma, mb = 2 * k + 1, 2 * k + 2
+        v5 = "5V_%s" % ref   # regulador 78M05 del propio modulo -> encoders
         pins = {1: "M%d_A" % ma, 2: "M%d_B" % ma, 3: "M%d_A" % mb, 4: "M%d_B" % mb,
-                5: "VBAT_F", 6: "GND", 7: None,
+                5: "VBAT_F", 6: "GND", 7: v5,
                 8: "MOTOR_EN", 9: "%s_IN1" % ref, 10: "%s_IN2" % ref,
                 11: "%s_IN3" % ref, 12: "%s_IN4" % ref, 13: "MOTOR_EN"}
         cx = L298N_CX[k]
         add(ref, "L298N_Module", "rover:L298N_Module", "rover:L298N_Module_Pins",
             pins, (cx, L298N_CY, 0), (38.1 + 101.6 * k, 241.3),
-            desc="Modulo L298N (bornas sustituidas por pines, quitar jumpers ENA/ENB)",
+            desc="Modulo L298N (bornas sustituidas por pines, quitar jumpers ENA/ENB, "
+                 "dejar el jumper 5V-EN: su +5V alimenta los encoders)",
             mpn="Modulo puente H L298N (HW-095)")
-        # conectores por motor
         for side, m in (("A", ma), ("B", mb)):
-            # Una sola capa: los pines de motor del header y de la bornera quedan
-            # alineados sobre OUT1/OUT3 para no cruzar las lineas del encoder.
             if side == "A":
                 tb_x, hd_x, hd_rot = cx - 17.0, cx - 17.0, -90
                 tb_pins = {1: "M%d_A" % m, 2: "M%d_B" % m}
             else:
                 tb_x, hd_x, hd_rot = cx + 22.08, cx + 17.0, 90
                 tb_pins = {1: "M%d_B" % m, 2: "M%d_A" % m}
-            # bornera (rot 180: entrada de cable hacia el borde superior)
             add("J%d" % (10 + m), "Motor M%d" % m, "Connector:Screw_Terminal_01x02", FP_TB2,
                 tb_pins, (tb_x, 6.0, 180),
                 (38.1 + 101.6 * k + (0 if side == "A" else 50.8), 304.8),
                 side=side, desc="Bornera 2P 5.08mm motor M%d (%s)" % (m, MOTORS[m]),
                 mpn="KF301-2P / DG301 5.08mm")
-            # header compatible con cable Pololu 37D (rojo, negro, verde, azul, amarillo, blanco)
             add("J%d" % (20 + m), "Pololu37D_M%d" % m, "rover:Pololu_37D_Encoder", FP_H1x6,
-                {1: "M%d_A" % m, 2: "M%d_B" % m, 3: "GND", 4: "+5V", 5: "ENC%d_A5V" % m, 6: None},
+                {1: "M%d_A" % m, 2: "M%d_B" % m, 3: "GND", 4: v5, 5: "ENC%d_A5V" % m, 6: None},
                 (hd_x, 16.0, hd_rot),
                 (38.1 + 101.6 * k + (0 if side == "A" else 50.8), 335.28),
                 side=side, desc="Header 1x6 macho: cable Pololu 37D (M+, M-, GND, VCC, A, B)",
                 mpn="Header macho 1x6 2.54mm")
 
-    # ======================= Divisores de encoder ===========================
-    col_x = [60.0, 64.5, 69.0, 73.5, 78.0, 82.5]
+    # ======================= Divisores de encoder (bajo la ESP32-A) =========
     for m in range(1, 7):
+        x = 76.0 + 8.0 * (m - 1)
         add("R%d" % m, "10k", "Device:R", FP_R,
-            {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m}, (col_x[m - 1], 100.0, -90),
+            {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m}, (x, 121.62, 90),
             (20.32 + 25.4 * (m - 1), 391.16), desc="Divisor encoder (serie)")
         add("R%d" % (m + 6), "20k", "Device:R", FP_R,
-            {1: "ENC%d_A" % m, 2: "GND"}, (col_x[m - 1], 111.0, -90),
+            {1: "ENC%d_A" % m, 2: "GND"}, (x + 4.0, 114.0, -90),
             (30.48 + 25.4 * (m - 1), 391.16), desc="Divisor encoder (a GND)")
 
-    # ======================= UART Pi <-> ESP32 ==============================
-    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD0", 2: "ESPA_RX"}, (col_x[0], 122.0, -90),
-        (190.5, 175.26), desc="Serie UART Pi TXD0 -> ESP32-A RX2")
-    add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD0"}, (col_x[1], 122.0, -90),
-        (200.66, 175.26), desc="Serie UART ESP32-A TX2 -> Pi RXD0")
-    add("R15", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPB_RX"}, (col_x[2], 122.0, -90),
-        (210.82, 175.26), desc="Serie UART Pi TXD2 -> ESP32-B RX2")
-    add("R16", "1k", "Device:R", FP_R, {1: "ESPB_TX", 2: "PI_RXD2"}, (col_x[3], 122.0, -90),
-        (220.98, 175.26), desc="Serie UART ESP32-B TX2 -> Pi RXD2")
-
-    # ======================= Reset de ESP32 desde la Pi =====================
-    add("R17", "1k", "Device:R", FP_R, {1: "PI_RST_A", 2: "QA_B"}, (col_x[4], 122.0, -90),
-        (238.76, 175.26), desc="Base Q1")
-    add("R18", "1k", "Device:R", FP_R, {1: "PI_RST_B", 2: "QB_B"}, (col_x[5], 122.0, -90),
-        (264.16, 175.26), desc="Base Q2")
-    add("R19", "10k", "Device:R", FP_R, {1: "QA_B", 2: "GND"}, (col_x[0], 133.0, -90),
-        (248.92, 185.42), desc="Pull-down base Q1")
-    add("R20", "10k", "Device:R", FP_R, {1: "QB_B", 2: "GND"}, (col_x[1], 133.0, -90),
-        (274.32, 185.42), desc="Pull-down base Q2")
-    add("Q1", "2N3904", "Device:Q_NPN_EBC", FP_TO92, {1: "GND", 2: "QA_B", 3: "ESPA_EN"},
-        (60.0, 145.0, 0), (246.38, 200.66), desc="Reset ESP32-A (Pi GPIO17)")
-    add("Q2", "2N3904", "Device:Q_NPN_EBC", FP_TO92, {1: "GND", 2: "QB_B", 3: "ESPB_EN"},
-        (68.0, 145.0, 0), (271.78, 200.66), desc="Reset ESP32-B (Pi GPIO27)")
+    # ======================= UART Pi <-> ESP32 (1k en serie) ===============
+    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (140.0, 104.0, -90),
+        (190.5, 175.26), desc="Serie UART Pi TXD2 -> ESP32-A RX")
+    add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD2"}, (144.0, 104.0, -90),
+        (200.66, 175.26), desc="Serie UART ESP32-A TX -> Pi RXD2")
+    add("R15", "1k", "Device:R", FP_R, {1: "PI_TXD0", 2: "ESPB_RX"}, (62.0, 137.0, -90),
+        (210.82, 175.26), desc="Serie UART Pi TXD0 -> ESP32-B RX")
+    add("R16", "1k", "Device:R", FP_R, {1: "ESPB_TX", 2: "PI_RXD0"}, (66.0, 137.0, -90),
+        (220.98, 175.26), desc="Serie UART ESP32-B TX -> Pi RXD0")
 
     # ======================= MOTOR_EN pull-down =============================
-    add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (col_x[2], 133.0, -90),
+    add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (126.0, 98.0, -90),
         (365.76, 175.26), desc="Pull-down MOTOR_EN (motores apagados durante el arranque)")
 
-    # ======================= Sensor de bateria ==============================
-    add("R22", "100k", "Device:R", FP_R, {1: "VBAT_F", 2: "VBAT_SENSE"}, (13.0, 125.0, -90),
-        (497.84, 175.26), desc="Divisor VBAT (alto)")
-    add("R23", "27k", "Device:R", FP_R, {1: "VBAT_SENSE", 2: "GND"}, (17.0, 125.0, -90),
-        (497.84, 198.12), desc="Divisor VBAT (bajo)")
-    add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (21.0, 125.0, -90),
-        (510.54, 198.12), desc="Filtro ADC VBAT")
-
-    # ======================= Alimentacion ===================================
+    # ======================= Alimentacion 12V ===============================
     # XT60 macho vertical (soldar las copas en barrenos de 4.5 mm). La bateria
     # Gens Ace 3S trae XT60 hembra. Convencion XT60: lado RECTO = (+),
     # lado BISELADO = (-). En el footprint AMASS el pad 1 es el lado biselado.
     add("J1", "XT60 BAT 12V", "rover:XT60_Battery", FP_XT60,
-        {1: "GND", 2: "VBAT_IN"}, (7.0, 79.0, -90), (25.4, 50.8),
+        {1: "GND", 2: "VBAT_IN"}, (7.0, 78.0, -90), (25.4, 50.8),
         desc="Conector XT60 macho para bateria LiPo 3S (lado biselado = -)",
         mpn="AMASS XT60 macho (copas para soldar) / XT60-M")
     add("F1", "ATO 15A", "Device:Fuse", FP_FUSE, {1: "VBAT_IN", 2: "VBAT_F"},
-        (19.0, 82.0, 0), (55.88, 50.8), desc="Portafusible ATO para PCB + fusible 15A",
+        (18.0, 81.0, 0), (55.88, 50.8), desc="Portafusible ATO para PCB + fusible 15A",
         mpn="Littelfuse/Pudenz 2 pin ATO holder")
+    add("C1", "1000uF 25V", "Device:C_Polarized", FP_CP12, {1: "VBAT_F", 2: "GND"},
+        (43.0, 81.0, 180), (116.84, 55.88), desc="Bulk VBAT")
     add("J3", "12V OUT -> buck 5V", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "GND", 2: "VBAT_F"}, (6.0, 102.0, -90), (86.36, 50.8),
+        {1: "GND", 2: "VBAT_F"}, (51.0, 80.0, 0), (86.36, 50.8),
         desc="Salida 12V protegida hacia el step-down de 5V/5A", mpn="KF301-2P 5.08mm")
     add("J4", "12V OUT -> BEC servos", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "VBAT_F", 2: "GND"}, (6.0, 113.0, -90), (86.36, 68.58),
+        {1: "VBAT_F", 2: "GND"}, (62.0, 80.0, 0), (86.36, 68.58),
         desc="Salida 12V protegida hacia el BEC de servos 6V", mpn="KF301-2P 5.08mm")
-    add("C1", "1000uF 25V", "Device:C_Polarized", FP_CP12, {1: "VBAT_F", 2: "GND"},
-        (22.0, 93.0, 180), (116.84, 55.88), desc="Bulk VBAT")
-    add("D2", "LED rojo 12V", "Device:LED", FP_LED, {1: "LED12_K", 2: "GND"},
-        (18.0, 108.0, 0), (139.7, 60.96), desc="Indicador 12V")
-    add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_K"}, (16.0, 113.0, 0),
+    add("R22", "100k", "Device:R", FP_R, {1: "VBAT_F", 2: "VBAT_SENSE"}, (13.0, 90.0, 0),
+        (497.84, 175.26), desc="Divisor VBAT (alto)")
+    add("R23", "27k", "Device:R", FP_R, {1: "VBAT_SENSE", 2: "GND"}, (13.0, 93.5, 0),
+        (497.84, 198.12), desc="Divisor VBAT (bajo)")
+    add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (24.0, 92.0, 0),
+        (510.54, 198.12), desc="Filtro ADC VBAT")
+    add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_K"}, (52.0, 88.0, 0),
         (139.7, 48.26), desc="Resistencia LED 12V")
+    add("D2", "LED rojo 12V", "Device:LED", FP_LED, {1: "LED12_K", 2: "GND"},
+        (63.0, 88.0, 0), (139.7, 60.96), desc="Indicador 12V")
 
+    # ======================= Alimentacion 5V ================================
     add("J5", "5V IN (buck 5V 5A)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "+5V", 2: "GND"}, (195.0, 84.08, 90), (25.4, 101.6),
-        desc="Entrada 5V/5A desde step-down (alimenta Pi 5, ESP32 y encoders)",
+        {1: "+5V", 2: "GND"}, (129.0, 89.08, 90), (25.4, 101.6),
+        desc="Entrada 5V/5A desde step-down (alimenta Pi 5 y ESP32)",
         mpn="KF301-2P 5.08mm")
     add("C2", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "+5V", 2: "GND"},
-        (178.0, 87.0, 0), (55.88, 106.68), desc="Bulk 5V")
+        (136.0, 82.0, 0), (55.88, 106.68), desc="Bulk 5V")
     add("D1", "SA5.0A", "Device:D_Zener", FP_DO15, {1: "+5V", 2: "GND"},
-        (157.0, 90.0, 0), (76.2, 106.68), desc="TVS 5V (proteccion Pi)", mpn="SA5.0A DO-15")
-    add("D3", "LED verde 5V", "Device:LED", FP_LED, {1: "LED5_K", 2: "GND"},
-        (172.0, 80.0, 0), (101.6, 111.76), desc="Indicador 5V")
-    add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_K"}, (161.0, 80.0, 0),
+        (147.0, 84.0, 0), (76.2, 106.68), desc="TVS 5V (proteccion Pi)", mpn="SA5.0A DO-15")
+    add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_K"}, (163.0, 84.0, 0),
         (101.6, 99.06), desc="Resistencia LED 5V")
+    add("D3", "LED verde 5V", "Device:LED", FP_LED, {1: "LED5_K", 2: "GND"},
+        (174.0, 84.0, 0), (101.6, 111.76), desc="Indicador 5V")
 
-    add("J6", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "SERVO_V", 2: "GND"}, (118.08, 78.0, 180), (25.4, 139.7),
-        desc="Entrada BEC servos 6V #1", mpn="KF301-2P 5.08mm")
-    add("J7", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "GND", 2: "SERVO_V"}, (129.08, 78.0, 180), (25.4, 157.48),
-        desc="Entrada BEC servos 6V #2 (en paralelo)", mpn="KF301-2P 5.08mm")
-    add("C3", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (113.0, 89.0, 0), (55.88, 144.78), desc="Bulk servos")
-    add("C4", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (125.0, 89.0, 0), (66.04, 144.78), desc="Bulk servos")
-    add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "LEDS_K", 2: "GND"},
-        (140.0, 88.0, 0), (101.6, 149.86), desc="Indicador rail servos")
-    add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_K"}, (138.5, 82.0, 0),
-        (101.6, 137.16), desc="Resistencia LED servos")
-
-    # ======================= Servos =========================================
+    # ======================= Servos (junto a la ESP32-B) ====================
+    sx = ESPB_POS[0] + 25.08     # x del pad GND de cada header (SIG queda 5.08 a la izquierda)
     for n in range(1, 9):
         g, d = SERVOS[n]
-        add("J%d" % (30 + n), "SERVO%d" % n, "rover:Servo_Header", FP_H1x3,
+        add("J%d" % (30 + n), "SERVO%d" % n, "rover:Servo_Header", FP_SERVO,
             {1: "GND", 2: "SERVO_V", 3: "SERVO%d" % n},
-            (70.0 + 5.08 * (n - 1), 77.0, 0), (330.2 + 30.48 * (n - 1), 391.16),
+            (sx, esp_pin_y(ESPB_POS, g), -90), (330.2 + 30.48 * (n - 1), 391.16),
             desc="Servo %d - %s (GND, V+, SIG)" % (n, d), mpn="Header macho 1x3 2.54mm")
+    add("J6", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
+        {1: "GND", 2: "SERVO_V"}, (sx + 2.54, 99.0, 180), (25.4, 139.7),
+        desc="Entrada BEC servos 6V", mpn="KF301-2P 5.08mm")
+    add("C3", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
+        (sx + 5.0, 111.0, 0), (55.88, 144.78), desc="Bulk servos")
+    add("C4", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
+        (sx + 5.0, 123.0, 0), (66.04, 144.78), desc="Bulk servos")
+    add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_K"}, (sx + 5.0, 131.0, 0),
+        (101.6, 137.16), desc="Resistencia LED servos")
+    add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "LEDS_K", 2: "GND"},
+        (sx + 17.0, 131.0, 0), (101.6, 149.86), desc="Indicador rail servos")
 
-    # ======================= Headers auxiliares =============================
-    add("J41", "AUX ESP32-A", "rover:Aux_Header_4", FP_H1x4,
-        {1: "+3V3_A", 2: "GND", 3: "AUXA_IO2", 4: "AUXA_IO15"}, (24.0, 136.0, 0),
-        (330.2, 160.02), desc="Header auxiliar ESP32-A", mpn="Header macho 1x4")
-    add("J42", "AUX ESP32-B (I2C)", "rover:Aux_Header_8", FP_H1x8,
-        {1: "+3V3_B", 2: "GND", 3: "AUXB_SDA", 4: "AUXB_SCL", 5: "AUXB_IO18",
-         6: "AUXB_IO19", 7: "AUXB_IO35", 8: "AUXB_IO39"}, (125.0, 108.0, 0),
-        (457.2, 160.02), desc="Header auxiliar ESP32-B (I2C + GPIO)", mpn="Header macho 1x8")
+    # ======================= Header auxiliar de la Pi =======================
     add("J43", "AUX RPi (I2C)", "rover:Aux_Header_8", FP_H1x8,
         {1: "+3V3_PI", 2: "GND", 3: "PI_SDA", 4: "PI_SCL", 5: "PI_GPIO22",
-         6: "PI_GPIO23", 7: "PI_GPIO24", 8: "PI_GPIO25"}, (140.0, 78.0, 90),
+         6: "PI_GPIO6", 7: "PI_GPIO13", 8: "PI_GPIO26"}, (150.0, 114.0, 90),
         (238.76, 139.7), desc="Header auxiliar Raspberry Pi (I2C + GPIO)", mpn="Header macho 1x8")
 
     # ======================= Agujeros de montaje ============================

@@ -274,6 +274,21 @@ def footprint_esp32():
     return "\n".join(L)
 
 
+def footprint_servo():
+    """Header 1x3 para servo (GND, V+, SIG) con patio ajustado a 2.54 mm, para poder
+    apilar conectores de servo uno junto al otro como en un shield de servos."""
+    L = fp_header("Servo_Header_1x03", "Header macho 1x3 2.54mm para servo (GND, V+, SIG)",
+                  "servo header 1x3")
+    L.append(fp_text("reference", "REF**", 0, -2.2, "F.SilkS", 0.8, hide=True))
+    L.append(fp_text("value", "Servo", 0, 7.0, "F.Fab", 0.8))
+    L.append(fp_rect(-1.27, -1.27, 1.27, 6.35, "F.Fab", 0.1))
+    L.append(fp_rect(-1.25, -1.6, 1.25, 6.68, "F.CrtYd", 0.05))
+    for i in range(3):
+        L.append(fp_pad(str(i + 1), 0, 2.54 * i, 1.7, 1.0, "rect" if i == 0 else "circle"))
+    L.append(")")
+    return "\n".join(L)
+
+
 def footprint_rpi():
     g = D.RPI
     L = fp_header("RPi5_HAT_Header_2x20",
@@ -285,7 +300,10 @@ def footprint_rpi():
     L.append(fp_text("value", "RaspberryPi5", 30, 30, "F.Fab", 1.5))
     L.append(fp_rect(0, 0, g["pi_w"], g["pi_h"], "F.Fab", 0.1))
     L.append(fp_rect(0, 0, g["hat_w"], g["hat_h"], "F.SilkS", 0.15))
-    L.append(fp_rect(-0.5, -0.5, g["hat_w"] + 0.5, g["hat_h"] + 0.5, "F.CrtYd", 0.05))
+    # patio solo alrededor del header: el resto del area de la Pi admite componentes
+    # de perfil bajo (resistencias/transistores con patas cortadas al ras)
+    px0 = g["pin1"][0] - 1.6
+    L.append(fp_rect(px0, g["row_even_y"] - 1.6, px0 + 2.54 * 19 + 3.2, g["pin1"][1] + 1.6, "F.CrtYd", 0.05))
     L.append(fp_text("user", "RASPBERRY PI 5 (montada debajo)", 32.5, 22, "F.SilkS", 2.0))
     L.append(fp_text("user", "Stacking header 2x20 (pines largos) desde ABAJO", 32.5, 27, "F.SilkS", 1.4))
     L.append(fp_text("user", "soldar por la cara de cobre - standoffs M2.5", 32.5, 31, "F.SilkS", 1.2))
@@ -601,27 +619,33 @@ def build_pcb(comps, netnames, assignments, route=False):
             silk("B A V G - +", h["pcb"][0] - 6.35, 18.7, 0.7)
         else:
             silk("+ - G V A B", h["pcb"][0] + 6.35, 18.7, 0.7)
-    # polaridad de borneras de potencia (texto a 90 grados: se lee de abajo hacia arriba)
-    silk("BAT", 13.2, 75.0, 1.0, bold=True)
-    silk("-", 13.0, 79.0, 1.6, bold=True)
-    silk("+", 13.0, 86.2, 1.6, bold=True)
-    silk("XT60", 7.0, 92.6, 0.9)
-    for ref, txt in [("J3", "+  12V>5V  -"), ("J4", "-  12V>BEC  +")]:
-        c = next(cc for cc in comps if cc["ref"] == ref)
-        silk(txt, c["pcb"][0] + 5.6, c["pcb"][1] + 2.54, 0.8, rot=90)
-    silk("ESP32-A TRACCION", 42, 97.5 - 2.5, 1.2, bold=True)
-    silk("ESP32-B SERVOS", 106, 97.5 - 2.5, 1.2, bold=True)
-    silk("ENC 5V->3V3", 71.25, 97.0, 0.9)
-    silk("1:GND 2:V+ 3:SIG", 87.8, 82.5, 0.9)
+    # polaridad / etiquetas (posiciones en funcion de rover_design)
+    def at(ref):
+        return next(cc for cc in comps if cc["ref"] == ref)["pcb"]
+    silk("BAT", 13.0, 74.6, 1.0, bold=True)
+    silk("-", 12.6, 78.0, 1.6, bold=True)
+    silk("+", 12.6, 85.2, 1.6, bold=True)
+    silk("XT60", 7.0, 91.8, 0.9)
+    x, y, _ = at("J3")
+    silk("- 12V>5V +", x + 2.54, y + 5.4, 0.8)
+    x, y, _ = at("J4")
+    silk("+ 12V>BEC -", x + 2.54, y + 5.4, 0.8)
+    x, y, _ = at("J6")
+    silk("V+  SERVO 6V  -", x - 2.54, y - 5.4, 0.8)
+    x, y, _ = at("J5")
+    silk("+ 5V/5A IN -", x - 5.2, y - 2.54, 0.8, rot=90)
+    x, y, _ = at("J31")
+    silk("SIG V+ GND", x - 2.54, y - 2.4, 0.7)
     for n in range(1, 9):
-        silk("S%d" % n, 70.0 + 5.08 * (n - 1), 73.6, 0.9)
-    silk("-  SERVO 6V IN  +", 115.5, 72.8, 0.8)
-    silk("+  SERVO 6V IN  -", 126.5, 72.8, 0.8)
-    silk("+  5V/5A IN  -", 189.6, 81.5, 0.8, rot=90)
-    silk("PI AUX: 3V3 GND SDA SCL 22 23 24 25", 155, 74.8, 0.8)
-    silk("AUX-B: 3V3 GND SDA SCL 18 19 35 39", 121.0, 118.5, 0.7, rot=90)
-    silk("AUX-A: 3V3 GND IO2 IO15", 21.0, 140.0, 0.7, rot=90)
-    silk("Pi GPIO17/27 -> RESET", 67.0, 148.6, 0.7)
+        x, y, _ = at("J%d" % (30 + n))
+        silk("S%d" % n, x + 2.4, y, 0.8)
+    x, y, _ = at("U2")
+    silk("ESP32-A TRACCION (antena izq, USB der)", x, y - 15.6, 1.0, bold=True)
+    x, y, _ = at("U3")
+    silk("ESP32-B SERVOS", x, y - 28.6, 1.0, bold=True)
+    silk("ENCODERS 5V->3V3", 98.0, 125.6, 0.8)
+    x, y, _ = at("J43")
+    silk("PI AUX: 3V3 GND SDA SCL 22 6 13 26", x + 8.9, y + 2.6, 0.8)
 
     # zonas de GND en ambas caras
     def zone(layer, netname, pts, prio=0, clearance=0.4):
@@ -652,7 +676,8 @@ def build_pcb(comps, netnames, assignments, route=False):
         z = pcbnew.ZONE(board)
         z.SetIsRuleArea(True)
         z.SetDoNotAllowCopperPour(True)
-        z.SetDoNotAllowTracks(True)
+        # sin plano de cobre bajo la antena; se permiten pistas finas
+        z.SetDoNotAllowTracks(False)
         z.SetDoNotAllowVias(True)
         z.SetDoNotAllowPads(False)
         z.SetDoNotAllowFootprints(False)
@@ -690,7 +715,7 @@ def route_board(relaxed_pass=True):
     ox, oy = 30.0, 30.0
     reserved = [(x0 + ox, y0 + oy, x1 + ox, y1 + oy, a) for (x0, y0, x1, y1, a) in D.routing_reserved()]
     r = router1l.route(board, classes, assignments, relaxed_pass=relaxed_pass,
-                       reserved=reserved, early_refs=D.ROUTING_EARLY)
+                       reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)
@@ -726,7 +751,8 @@ def main():
     write_symbol_lib(syms)
     for name, txt in (("L298N_Module_Pins", footprint_l298n()),
                       ("ESP32_DevKitV1_30P_DualPitch", footprint_esp32()),
-                      ("RPi5_HAT_Header_2x20", footprint_rpi())):
+                      ("RPi5_HAT_Header_2x20", footprint_rpi()),
+                      ("Servo_Header_1x03", footprint_servo())):
         open(os.path.join(OUT, "rover.pretty", name + ".kicad_mod"), "w").write(txt + "\n")
     write_tables()
     used = write_schematic(comps, syms)
