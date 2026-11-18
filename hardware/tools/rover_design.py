@@ -102,8 +102,11 @@ def routing_reserved():
     out = [(20.0, 66.0, 186.0, 75.5, {"Default"})]          # corredor bajo los L298N
     for cx in L298N_CX:
         out.append((cx - 0.5, L298N_CY + 16.0, cx + 16.5, 66.0, {"Default"}))
-    # franja sobre la fila exterior del header de la Pi (desde el pin 6)
-    out.append((148.0, 89.0, 196.0, 94.6, {"Default"}))
+    # franjas junto al header de la Pi: solo sus UART y GND (se aceptan nombres de red)
+    out.append((141.0, 89.0, 196.0, 94.6, {"PI_TXD0", "PI_RXD0", "GND", "+5V"}))
+    out.append((139.0, 99.4, 196.0, 105.0, {"PI_TXD2", "PI_RXD2", "GND"}))
+    # orilla derecha: unica salida de la UART de los pines exteriores de la Pi
+    out.append((186.0, 62.0, 200.0, 150.0, {"PI_TXD0", "PI_RXD0", "GND"}))
     return out
 
 

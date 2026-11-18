@@ -189,13 +189,8 @@ class Router:
         seen = {}
         for fp in b.GetFootprints():
             ref = fp.GetReference()
-            # bajo componentes de perfil bajo no pueden pasar puentes de alambre
-            if not (ref.startswith("U") or ref.startswith("H")):
-                cy = fp.GetCourtyard(pcbnew.F_CrtYd)
-                if cy.OutlineCount():
-                    bb = cy.BBox()
-                    g.mark_rect(g.F, mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()),
-                                mm(bb.GetY() + bb.GetHeight()), -1)
+            # los puentes son alambre AISLADO: pueden pasar por encima de componentes;
+            # solo se evitan pads y barrenos (marcados abajo)
             for pad in fp.Pads():
                 shp = self._pad_shape(pad)
                 if pad.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH or not pad.GetNetname():
@@ -345,7 +340,7 @@ class Router:
         need = w / 2 + clr + RM
         freeB = distB >= need
         for (m, allowed) in self.reserved:
-            if cls not in allowed:
+            if cls not in allowed and name not in allowed:
                 freeB &= ~m
         tx, ty = (shp[1], shp[2]) if shp[0] == "c" else ((shp[1] + shp[3]) / 2, (shp[2] + shp[4]) / 2)
         # celdas objetivo: dentro del pad destino
@@ -375,7 +370,7 @@ class Router:
             viaok = (distB >= JUMPER_PAD / 2 + clr + RM) & (distF >= JUMPER_PAD / 2 + JUMPER_CLR + RM)
             viaok &= ~self.noVia
             for (m, allowed) in self.reserved:
-                if cls not in allowed:
+                if cls not in allowed and name not in allowed:
                     viaok &= ~m
             path = self._astar(freeB, src, tgt, (tx, ty), (freeF, viaok), 150.0 if relaxed else 60.0)
         if path is None:

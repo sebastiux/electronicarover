@@ -92,7 +92,7 @@ L298N (regulador 78M05 del módulo) ─► +5V de los encoders de sus 2 motores
 ```
 
 - **Pi 5 por GPIO:** en `/boot/firmware/config.txt` agrega `usb_max_current_enable=1`. Además corre `sudo rpi-eeprom-config -e` y pon `PSU_MAX_CURRENT=5000`. Para proteger la Pi hay un TVS SA5.0A (D1) y 1000 µF (C2).
-- **UART sin cables:** la Pi tiene UART2 (GPIO4/5) hacia la ESP32-A y UART0 (GPIO14/15) hacia la ESP32-B, con 1k en serie. Activa `dtoverlay=uart2-pi5` y `dtoverlay=uart0-pi5`.
+- **UART sin cables:** la Pi tiene UART2 (GPIO4/5, `/dev/ttyAMA2`) hacia la ESP32-A y UART0 (GPIO14/15, `/dev/ttyAMA0`) hacia la ESP32-B, con 1k en serie. Activa `dtoverlay=uart2-pi5` y `dtoverlay=uart0-pi5`.
 - **Asignación de pines** (ver `firmware/common/rover_pins.h`): está pensada para que la placa de una capa se pueda rutear.
   - En la ESP32-A, los IN1–IN4 de los tres L298N siguen el mismo orden que la fila de pines, así que las pistas bajan en abanico sin cruzarse.
   - En la ESP32-B, cada servo queda a la misma altura que su GPIO.
