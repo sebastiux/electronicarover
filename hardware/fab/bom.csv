@@ -1,11 +1,13 @@
 Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;C1;1000uF 25V;Capacitor_THT:CP_Radial_D12.5mm_P5.00mm;1000uF 25V;Bulk VBAT
+6;C11,C12,C13,C14,C15,C16;1nF;Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm;1nF;Filtro de ruido encoder M1
 3;C2,C3,C4;1000uF 10V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 10V;Bulk 5V
 1;C5;100nF;Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm;100nF;Filtro ADC VBAT
 1;D1;SA5.0A;Diode_THT:D_DO-15_P10.16mm_Horizontal;SA5.0A DO-15;TVS 5V (proteccion Pi)
 1;D2;LED rojo 12V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (rojo);Indicador 12V
 1;D3;LED verde 5V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (verde);Indicador 5V
 1;D4;LED azul SERVO;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (azul);Indicador rail servos
+2;D5,D6;1N5819;Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal;1N5819 DO-41;Schottky +5V -> VIN ESP32-A
 1;F1;ATO 15A;Fuse:Fuseholder_Blade_ATO_Littelfuse_Pudenz_2_Pin;Littelfuse/Pudenz 2 pin ATO holder;Portafusible ATO para PCB + fusible 15A
 8;H1,H2,H3,H4,H5,H6,H7,H8;M3;MountingHole:MountingHole_3.2mm_M3;M3;Agujero de montaje M3
 1;J1;XT60 BAT 12V;Connector_AMASS:AMASS_XT60-M_1x02_P7.20mm_Vertical;AMASS XT60 macho (copas para soldar) / XT60-M;Conector XT60 macho para bateria LiPo 3S (lado biselado = -)
