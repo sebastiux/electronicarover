@@ -620,7 +620,7 @@ def build_pcb(comps, netnames, assignments, route=False):
     silk("+  5V/5A IN  -", 189.6, 81.5, 0.8, rot=90)
     silk("PI AUX: 3V3 GND SDA SCL 22 23 24 25", 155, 74.8, 0.8)
     silk("AUX-B: 3V3 GND SDA SCL 18 19 35 39", 121.0, 118.5, 0.7, rot=90)
-    silk("AUX-A: 3V3 GND IO2 IO15", 21.0, 136.0, 0.7, rot=90)
+    silk("AUX-A: 3V3 GND IO2 IO15", 21.0, 140.0, 0.7, rot=90)
     silk("Pi GPIO17/27 -> RESET", 67.0, 148.6, 0.7)
 
     # zonas de GND en ambas caras

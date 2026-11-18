@@ -100,7 +100,11 @@ DEFAULT_CLASS = (0.6, 0.4, 2.0, 1.0)
 def routing_reserved():
     """Corredor de senales bajo los headers logicos de los L298N: ahi no pasan
     pistas de potencia, para que la ESP32-A llegue a IN1..IN4/ENA/ENB."""
-    out = [(20.0, 66.0, 186.0, 75.5, {"Default"})]
+    out = [(20.0, 66.0, 186.0, 75.5, {"Default"}),
+           # entre la ESP32-A / divisores y el corredor de los L298N
+           (28.0, 75.5, 66.0, 97.0, {"Default"}),
+           # entre los headers de servo y la ESP32-B
+           (66.0, 84.0, 109.0, 97.0, {"Default"})]
     for cx in L298N_CX:
         out.append((cx - 0.5, L298N_CY + 16.0, cx + 16.5, 66.0, {"Default"}))
     return out
@@ -336,11 +340,11 @@ def build():
         (365.76, 175.26), desc="Pull-down MOTOR_EN (motores apagados durante el arranque)")
 
     # ======================= Sensor de bateria ==============================
-    add("R22", "100k", "Device:R", FP_R, {1: "VBAT_F", 2: "VBAT_SENSE"}, (col_x[3], 133.0, -90),
+    add("R22", "100k", "Device:R", FP_R, {1: "VBAT_F", 2: "VBAT_SENSE"}, (13.0, 125.0, -90),
         (497.84, 175.26), desc="Divisor VBAT (alto)")
-    add("R23", "27k", "Device:R", FP_R, {1: "VBAT_SENSE", 2: "GND"}, (col_x[4], 133.0, -90),
+    add("R23", "27k", "Device:R", FP_R, {1: "VBAT_SENSE", 2: "GND"}, (17.0, 125.0, -90),
         (497.84, 198.12), desc="Divisor VBAT (bajo)")
-    add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (77.0, 145.0, 0),
+    add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (21.0, 125.0, -90),
         (510.54, 198.12), desc="Filtro ADC VBAT")
 
     # ======================= Alimentacion ===================================
@@ -405,7 +409,7 @@ def build():
 
     # ======================= Headers auxiliares =============================
     add("J41", "AUX ESP32-A", "rover:Aux_Header_4", FP_H1x4,
-        {1: "+3V3_A", 2: "GND", 3: "AUXA_IO2", 4: "AUXA_IO15"}, (24.0, 132.0, 0),
+        {1: "+3V3_A", 2: "GND", 3: "AUXA_IO2", 4: "AUXA_IO15"}, (24.0, 136.0, 0),
         (330.2, 160.02), desc="Header auxiliar ESP32-A", mpn="Header macho 1x4")
     add("J42", "AUX ESP32-B (I2C)", "rover:Aux_Header_8", FP_H1x8,
         {1: "+3V3_B", 2: "GND", 3: "AUXB_SDA", 4: "AUXB_SCL", 5: "AUXB_IO18",

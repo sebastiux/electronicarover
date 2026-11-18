@@ -258,6 +258,8 @@ class Router:
             w = min(w_cls, self._pad_maxw(shp, distB, clr))
             if size(shp) < 2.0 and cls in ("BATT", "MOTOR", "PWR", "GND"):
                 w = min(w, 1.4)
+            if size(shp) < 2.0 and cls == "BATT":
+                w = min(w, 0.8)   # ramas de senal (LED, divisor) de VBAT
             w = max(0.5, round(w * 10 - 0.5) / 10)
             ok = self._connect(name, code, shp, w, clr, distB, allow_j, tree_pts, cls)
             if not ok and not relaxed:
