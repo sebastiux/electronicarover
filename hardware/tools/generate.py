@@ -210,7 +210,7 @@ def footprint_l298n():
     g = D.L298N
     s = g["size"] / 2
     L = fp_header("L298N_Module_Pins",
-                  "Modulo L298N rojo (HW-095) 43x43mm montado con pines en lugar de bornas. "
+                  "Modulo L298N rojo (HW-095) 43.9x43.9mm (barrenos 36.5-38.5 mm) montado con pines en lugar de bornas. "
                   "VERIFICAR cotas imprimiendo 1:1 antes de fabricar.",
                   "L298N module motor driver")
     L.append(fp_text("reference", "REF**", 0, -s - 1.5, "F.SilkS", 1.2))
@@ -596,6 +596,28 @@ def build_pcb(comps, netnames, assignments, route=False):
         fp.Reference().SetTextThickness(FromMM(0.15))
         fps[c["ref"]] = fp
 
+    # prototipado sin metalizar: anillo de cobre >= 0.5 mm donde el paso lo permite
+    if D.FAB == "proto":
+        for fp in fps.values():
+            pads = [p for p in fp.Pads() if p.GetAttribute() == pcbnew.PAD_ATTRIB_PTH]
+            for p in pads:
+                d = pcbnew.ToMM(p.GetDrillSize().x)
+                cur = pcbnew.ToMM(min(p.GetSize().x, p.GetSize().y))
+                pc = p.GetPosition()
+                dmin = 99.0
+                for q in pads:
+                    if q is p:
+                        continue
+                    qc = q.GetPosition()
+                    dd = math.hypot(pcbnew.ToMM(pc.x - qc.x), pcbnew.ToMM(pc.y - qc.y))
+                    if dd > 0.01:
+                        dmin = min(dmin, dd)
+                new = min(max(cur, d + 1.0), max(cur, dmin - 0.5))
+                if new > cur + 0.01:
+                    sx, sy = pcbnew.ToMM(p.GetSize().x), pcbnew.ToMM(p.GetSize().y)
+                    k = new / cur
+                    p.SetSize(VECTOR2I(FromMM(sx * k), FromMM(sy * k)))
+
     # textos de serigrafia
     def silk(text, x, y, size=1.2, layer=pcbnew.F_SilkS, rot=0, bold=False):
         t = pcbnew.PCB_TEXT(board)
@@ -666,7 +688,7 @@ def build_pcb(comps, netnames, assignments, route=False):
     rect = [(0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)]
     # plano de GND (en las dos caras si la PCB es de 2 capas)
     zone(pcbnew.B_Cu, "GND", rect, clearance=0.5)
-    if D.LAYERS == 2:
+    if D.LAYERS == 2 and D.FAB != "proto":
         zone(pcbnew.F_Cu, "GND", rect, clearance=0.5)
 
     # keepout de cobre bajo las antenas de los ESP32
@@ -724,6 +746,16 @@ def route_board(relaxed_pass=True):
         board.Remove(t)
     nets_by_name = board.GetNetsByName()
     for pr in D.preroutes():
+        if pr[0] == "VIA":
+            vd, vdr = D.DEFAULT_CLASS[2:4]
+            v = pcbnew.PCB_VIA(board)
+            v.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(pr[2] + 30.0), pcbnew.FromMM(pr[3] + 30.0)))
+            v.SetWidth(pcbnew.FromMM(vd))
+            v.SetDrill(pcbnew.FromMM(vdr))
+            v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+            v.SetNet(nets_by_name[pr[1]])
+            board.Add(v)
+            continue
         net, pts, w = pr[:3]
         lay = pcbnew.F_Cu if (len(pr) > 3 and pr[3] == "F.Cu") else pcbnew.B_Cu
         for a, c in zip(pts, pts[1:]):
@@ -747,6 +779,8 @@ def route_board(relaxed_pass=True):
         via_sizes[name] = (vd, vdr)
     r = router1l.route(board, classes, assignments, relaxed_pass=relaxed_pass,
                        two_layer=(D.LAYERS == 2), via_sizes=via_sizes,
+                       pad_side=D.pad_side, via_cost_mm=(12.0 if D.FAB == "proto" else 3.0),
+                       no_via_under_parts=(D.FAB == "proto"),
                        reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE,
                        first=D.ROUTING_FIRST)
     # limpieza: quitar tramos/vias colgantes (no aportan conexion)

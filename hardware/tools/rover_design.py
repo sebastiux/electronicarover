@@ -26,9 +26,12 @@ BOARD_H = 150.0
 # Modulo L298N rojo (HW-095), 43 x 43 mm. Origen = centro del modulo,
 # disipador hacia arriba (-Y), header logico hacia abajo (+Y).
 L298N = {
-    "size": 43.0,
-    "mount_holes": [(-18.3, -18.3), (18.3, -18.3), (-18.3, 18.3), (18.3, 18.3)],
-    "mount_drill": 3.2,
+    # Cotas segun el plano del modulo comprado: 43.90 x 43.90 mm, barrenos a 38.00 mm.
+    # Otras fuentes dan 36.6 / 37 / 37.2 mm. Barreno de 4.0 mm centrado a +-18.75:
+    # con tornillo M3 acepta cualquier separacion entre 36.5 y 38.5 mm.
+    "size": 43.9,
+    "mount_holes": [(-18.75, -18.75), (18.75, -18.75), (-18.75, 18.75), (18.75, 18.75)],
+    "mount_drill": 4.0,
     # bornas de motor (se sustituyen por pines), paso 5.0/5.08 mm
     "OUT1": (-17.5, 1.0), "OUT2": (-17.5, 6.0),
     "OUT3": (17.5, 1.0), "OUT4": (17.5, 6.0),
@@ -82,16 +85,30 @@ RPI_PINS = {
 # ---------------------------------------------------------------------------
 # NET CLASSES
 # ---------------------------------------------------------------------------
-# PCB de 2 capas (F.Cu arriba, B.Cu abajo) con vias normales.
+# PCB de 2 capas (F.Cu arriba, B.Cu abajo).
 LAYERS = 2
+# FAB = "proto": prototipado por fresado CNC SIN barrenos metalizados, sin mascara
+#   ni serigrafia. Cada pad conecta solo por la cara donde se suelda; la cara
+#   superior solo lleva pistas de via a via; las vias son pines soldados arriba y
+#   abajo (taladro 1.0 mm). El header de la Pi (montado abajo) conecta por ARRIBA.
+# FAB = "pro": fabricacion industrial con PTH, mascara y serigrafia.
+FAB = "proto"
+TOP_SOLDERED = {"U1"}      # componentes montados abajo -> se sueldan (y conectan) arriba
+
+
+def pad_side(ref):
+    if FAB != "proto":
+        return "BF"
+    return "F" if ref in TOP_SOLDERED else "B"
 NETCLASSES = [
     # name, track, clearance, via_d, via_drill, patterns
-    ("BATT", 3.0, 0.5, 1.6, 0.8, ["VBAT_IN", "VBAT_F"]),
-    ("MOTOR", 2.0, 0.4, 1.6, 0.8, ["M?_A", "M?_B"]),
-    ("PWR", 2.0, 0.4, 1.2, 0.6, ["+5V", "SERVO_V"]),
-    ("GND", 3.0, 0.4, 1.0, 0.5, ["GND"]),   # retorno de motores: igual que VBAT
+    ("BATT", 3.0, 0.5, 2.2, 1.0, ["VBAT_IN", "VBAT_F"]),
+    ("MOTOR", 2.0, 0.4, 2.2, 1.0, ["M?_A", "M?_B"]),
+    ("PWR", 2.0, 0.45, 2.2, 1.0, ["+5V", "SERVO_V"]),
+    ("GND", 3.0, 0.45, 2.2, 1.0, ["GND"]),   # retorno de motores: igual que VBAT
 ]
-DEFAULT_CLASS = (0.6, 0.4, 0.8, 0.4)
+# vias de 2.2/1.0 mm: en prototipado son un pin soldado arriba y abajo
+DEFAULT_CLASS = (0.6, 0.45, 2.2, 1.0)
 
 # ---------------------------------------------------------------------------
 # GUIAS DE RUTEO (una capa)
@@ -141,7 +158,7 @@ def preroutes():
         out.append(("SERVO%d" % n, [(ESPB_POS[0] + 12.7, ys[n - 1]), (sx - 5.08, ys[n - 1])], 0.6))
     # columnas partidas en cada pad (KiCad conecta pistas por sus extremos)
     # alimentacion de servos duplicada en las DOS caras (2 x 1.4 mm en paralelo)
-    for lay in ("B.Cu", "F.Cu"):
+    for lay in (("B.Cu", "F.Cu") if FAB != "proto" else ("B.Cu",)):
         out.append(("SERVO_V", [(sx - 2.54, 99.0)] + [(sx - 2.54, y) for y in ys], 1.4, lay))
         out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5)] + [(sx, y) for y in ys], 1.4, lay))
     # salida de la UART0 por los pines exteriores de la Pi (8 y 10): suben, corren
@@ -150,8 +167,18 @@ def preroutes():
     px = 135.0 + RPI["pin1"][0]
     py = 93.5 + RPI["row_even_y"]
     p8, p10 = px + 2.54 * 3, px + 2.54 * 4
-    out.append(("PI_RXD0", [(p10, py), (p10, 93.3), (193.8, 93.3), (193.8, 104.0)], 0.6))
-    out.append(("PI_TXD0", [(p8, py), (p8, 91.3), (198.9, 91.3), (198.9, 104.0)], 0.6))
+    if FAB != "proto":   # en prototipado el header de la Pi se conecta por la cara superior
+        out.append(("PI_RXD0", [(p10, py), (p10, 93.3), (193.8, 93.3), (193.8, 104.0)], 0.6))
+        out.append(("PI_TXD0", [(p8, py), (p8, 91.3), (198.9, 91.3), (198.9, 104.0)], 0.6))
+    # prototipado: el pad +5V de cada L298N queda entre los buses de potencia y
+    # MOTOR_EN; se le da una via propia para subir a la cara superior
+    if FAB == "proto":
+        for k in range(3):
+            cx = L298N_CX[k]
+            px5, py5 = cx + L298N["+5V"][0], L298N_CY + L298N["+5V"][1]
+            vx, vy = cx - 1.2, py5 + 0.8
+            out.append(("5V_U%d" % (k + 4), [(px5, py5), (vx, vy)], 0.8))
+            out.append(("VIA", "5V_U%d" % (k + 4), vx, vy))
     for k in range(2):
         enb = L298N_CX[k] + L298N["header_first"][0] + 2.54 * 5
         ena = L298N_CX[k + 1] + L298N["header_first"][0]
@@ -357,8 +384,9 @@ def build():
                 mpn="Header macho 1x6 2.54mm")
 
     # ======================= Divisores de encoder (bajo la ESP32-A) =========
+    DIV_X0, DIV_PITCH = (70.0, 10.0) if FAB == "proto" else (76.0, 8.0)
     for m in range(1, 7):
-        x = 76.0 + 8.0 * (m - 1)
+        x = DIV_X0 + DIV_PITCH * (m - 1)
         add("R%d" % m, "10k", "Device:R", FP_R,
             {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m}, (x, 125.62, 90),
             (20.32 + 25.4 * (m - 1), 391.16), desc="Divisor encoder (serie)")
@@ -368,7 +396,7 @@ def build():
 
     # filtro RC del encoder: 1 nF del nodo ENCx_A a GND (con el 10k forma ~16 us)
     for m in range(1, 7):
-        x = 76.0 + 8.0 * (m - 1)
+        x = DIV_X0 + DIV_PITCH * (m - 1)
         add("C%d" % (10 + m), "1nF", "Device:C", FP_C25,
             {1: "ENC%d_A" % m, 2: "GND"}, (x, 114.5, 0),
             (25.4 * (m - 1) + 22.86, 406.4), desc="Filtro de ruido encoder M%d" % m)
@@ -376,14 +404,15 @@ def build():
     # diodos Schottky en el VIN de cada ESP32: con el USB conectado a la PC no se
     # retroalimenta el +5V de la Pi (ni el USB desde el regulador)
     add("D5", "1N5819", "Device:D_Schottky", FP_DO41, {1: "VIN_A", 2: "+5V"},
-        (106.0, 131.0, 0), (365.76, 205.74), desc="Schottky +5V -> VIN ESP32-A", mpn="1N5819 DO-41")
+        ((125.0, 131.0, 0) if FAB == "proto" else (106.0, 131.0, 0)), (365.76, 205.74),
+        desc="Schottky +5V -> VIN ESP32-A", mpn="1N5819 DO-41")
     add("D6", "1N5819", "Device:D_Schottky", FP_DO41, {1: "VIN_B", 2: "+5V"},
         (40.0, 146.0, 0), (391.16, 205.74), desc="Schottky +5V -> VIN ESP32-B", mpn="1N5819 DO-41")
 
     # ======================= UART Pi <-> ESP32 (1k en serie) ===============
-    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (131.62, 113.0, 180),
+    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, ((144.62, 108.0, 180) if FAB == "proto" else (131.62, 113.0, 180)),
         (190.5, 175.26), desc="Serie UART Pi TXD2 -> ESP32-A RX")
-    add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD2"}, (124.0, 116.5, 0),
+    add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD2"}, ((137.0, 112.0, 0) if FAB == "proto" else (124.0, 116.5, 0)),
         (200.66, 175.26), desc="Serie UART ESP32-A TX -> Pi RXD2")
     add("R15", "1k", "Device:R", FP_R, {1: "PI_TXD0", 2: "ESPB_RX"}, (62.0, 137.0, -90),
         (210.82, 175.26), desc="Serie UART Pi TXD0 -> ESP32-B RX")

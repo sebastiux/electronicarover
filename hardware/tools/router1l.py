@@ -100,8 +100,15 @@ class Grid:
 
 class Router:
     def __init__(self, board, classes, no_jumper_classes=("BATT", "MOTOR"), log=print, reserved=(),
-                 two_layer=False, via_sizes=None):
+                 two_layer=False, via_sizes=None, pad_side=None, via_cost_mm=3.0,
+                 no_via_under_parts=False):
         self.board = board
+        # pad_side(ref) -> "B", "F" o "BF": cara(s) por la que se puede soldar/conectar
+        # cada pad. En PCB SIN metalizado (prototipado) un pad solo conecta por la
+        # cara donde se suelda el componente.
+        self.pad_side = pad_side or (lambda ref: "BF")
+        self.via_cost_mm = via_cost_mm
+        self.no_via_under_parts = no_via_under_parts
         # two_layer=True: F.Cu es una capa de cobre real (PCB de 2 capas, vias normales)
         self.two_layer = two_layer
         self.via_sizes = via_sizes or {}
@@ -208,9 +215,11 @@ class Router:
                     self._mark_shape(g.F, shp, -1)
                     continue
                 code = pad.GetNetCode()
-                self._mark_shape(g.B, shp, code)
-                self._mark_shape(g.F, shp, code)
-                self._mark_shape(g.E, shp, code, rm=-0.06)
+                side = self.pad_side(ref)
+                self._mark_shape(g.B, shp, code if "B" in side else -1)
+                self._mark_shape(g.F, shp, code if "F" in side else -1)
+                if "B" in side:
+                    self._mark_shape(g.E, shp, code, rm=-0.06)
                 key = (ref, pad.GetNumber())
                 if key in seen:
                     self.twins.append((seen[key], pad))
@@ -224,6 +233,16 @@ class Router:
             for pad in fp.Pads():
                 if pad.GetDrillSize().x > 0:
                     self._mark_hole(mm(pad.GetPosition().x), mm(pad.GetPosition().y), mm(pad.GetDrillSize().x) / 2)
+            # el pin soldado de una via estorba bajo componentes de perfil bajo
+            ref = fp.GetReference()
+            if self.no_via_under_parts and not (ref.startswith("U") or ref.startswith("H")):
+                cyd = fp.GetCourtyard(pcbnew.F_CrtYd)
+                if cyd.OutlineCount():
+                    bb = cyd.BBox()
+                    m = np.zeros(g.B.shape, np.int8)
+                    g.mark_rect(m, mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()),
+                                mm(bb.GetY() + bb.GetHeight()), 1, rm=0.6)
+                    self.noVia |= m.astype(bool)
         # pistas y vias ya existentes (permite rutear de forma incremental)
         for t in b.GetTracks():
             code = t.GetNetCode()
@@ -310,12 +329,21 @@ class Router:
                     if lab[ii, jj] == lab[i0, j0]:
                         done0.add(k2)
                         pts0.append(center(s2))
-            else:
+            elif "B" in self.pad_side(pads[order[0]][0].GetParent().GetReference()):
                 self._mark_shape(t, pads[order[0]][1], 1, rm=-0.06)
             self.trees[name] = [t, done0, pts0]
             tf = np.zeros(self.g.B.shape, np.int8)
             for k2 in done0:
-                self._mark_shape(tf, pads[k2][1], 1, rm=-0.06)
+                if "F" in self.pad_side(pads[k2][0].GetParent().GetReference()):
+                    self._mark_shape(tf, pads[k2][1], 1, rm=-0.06)
+            # vias ya existentes de esta red conectadas al arbol: tambien sirven en F
+            if lab[i0, j0]:
+                for t2 in self.board.GetTracks():
+                    if t2.GetClass() == "PCB_VIA" and t2.GetNetCode() == code:
+                        vx, vy = mm(t2.GetPosition().x), mm(t2.GetPosition().y)
+                        vi, vj = self.g.ij(vx, vy)
+                        if lab[vi, vj] == lab[i0, j0]:
+                            self.g.mark_circle(tf, vx, vy, mm(t2.GetWidth()) / 2, 1, rm=-0.06)
             self.treesF[name] = tf
         self.tree, done, tree_pts = self.trees[name]
         self.treeF = self.treesF[name]
@@ -332,7 +360,11 @@ class Router:
             remaining.remove(k)
             pad, shp = pads[k]
             distB = self._dist(self.g.B, code)
-            w = min(w_cls, self._pad_maxw(shp, distB, clr))
+            pside = self.pad_side(pad.GetParent().GetReference())
+            if "B" in pside:
+                w = min(w_cls, self._pad_maxw(shp, distB, clr))
+            else:
+                w = min(w_cls, self._pad_maxw(shp, self._dist(self.g.F, code), clr))
             if size(shp) < 2.0 and cls in ("BATT", "MOTOR", "PWR", "GND"):
                 w = min(w, 1.4)
             if size(shp) < 2.0 and cls == "BATT":
@@ -344,8 +376,10 @@ class Router:
                 self.log("   !! no se pudo conectar %s -> %s.%s" % (name, pad.GetParent().GetReference(), pad.GetNumber()))
             tree_pts.append(center(shp))
             if ok:
-                self._mark_shape(self.tree, shp, 1, rm=-0.06)
-                self._mark_shape(self.treeF, shp, 1, rm=-0.06)
+                if "B" in pside:
+                    self._mark_shape(self.tree, shp, 1, rm=-0.06)
+                if "F" in pside:
+                    self._mark_shape(self.treeF, shp, 1, rm=-0.06)
                 done.add(k)
 
     # ------------------------------------------------------------------
@@ -368,7 +402,7 @@ class Router:
         tgt &= freeB
         # fuentes: cobre propio que no es este pad
         src = (self.tree == 1) & freeB & ~((g.XX - tx) ** 2 + (g.YY - ty) ** 2 <= 4.0)
-        if not tgt.any() or not src.any():
+        if not (self.two_layer and allow_j) and (not tgt.any() or not src.any()):
             self.log("     (sin %s libre para %s, w=%.1f)" % ("destino" if not tgt.any() else "origen", name, w))
             return False
         relaxed = getattr(self, "relaxed", False)
@@ -391,6 +425,10 @@ class Router:
             tgtF &= freeF
             srcF = (self.treeF == 1) & freeF & ~((g.XX - tx) ** 2 + (g.YY - ty) ** 2 <= 4.0)
             self.extra = (tgtF, srcF)
+            if not (tgt.any() or tgtF.any()) or not (src.any() or srcF.any()):
+                self.extra = None
+                self.log("     (sin destino/origen libre para %s)" % name)
+                return False
             path = self._astar(freeB, src, tgt, (tx, ty), (freeF, viaok), 150.0 if relaxed else 60.0)
             self.extra = None
             if path is None:
@@ -437,7 +475,7 @@ class Router:
         extra = getattr(self, "extra", None)
         tgF = extra[0].ravel().tobytes() if extra is not None else None
         pen = self.pen
-        vcost = (3.0 if self.two_layer else VIA_COST_MM) / G
+        vcost = (self.via_cost_mm if self.two_layer else VIA_COST_MM) / G
 
         def h(i, j):
             di, dj = abs(i - ti), abs(j - tj)
@@ -610,14 +648,16 @@ class Router:
 
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
-          reserved=(), early_refs=None, late=(), first=(), two_layer=False, via_sizes=None):
+          reserved=(), early_refs=None, late=(), first=(), two_layer=False, via_sizes=None,
+          pad_side=None, via_cost_mm=3.0, no_via_under_parts=False):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
     Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
     senales largas, senales cortas, resto de +5V y GND, pasada relajada.
     early_refs: {red: set(referencias)} pads que van en la etapa de potencia.
     """
-    r = Router(board, classes, log=log, reserved=reserved, two_layer=two_layer, via_sizes=via_sizes)
+    r = Router(board, classes, log=log, reserved=reserved, two_layer=two_layer, via_sizes=via_sizes,
+               pad_side=pad_side, via_cost_mm=via_cost_mm, no_via_under_parts=no_via_under_parts)
     nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1]
     early_refs = early_refs or {}
 
