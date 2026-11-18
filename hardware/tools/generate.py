@@ -642,7 +642,7 @@ def build_pcb(comps, netnames, assignments, route=False):
     x, y, _ = at("U2")
     silk("ESP32-A TRACCION (antena izq, USB der)", x, y - 15.6, 1.0, bold=True)
     x, y, _ = at("U3")
-    silk("ESP32-B SERVOS", x, y - 28.6, 1.0, bold=True)
+    silk("ESP32-B SERVOS", x, y - 23.3, 1.0, bold=True)
     silk("ENCODERS 5V->3V3", 98.0, 125.6, 0.8)
 
     # zonas de GND en ambas caras
@@ -723,13 +723,15 @@ def route_board(relaxed_pass=True):
     for t in list(board.GetTracks()):
         board.Remove(t)
     nets_by_name = board.GetNetsByName()
-    for (net, pts, w) in D.preroutes():
+    for pr in D.preroutes():
+        net, pts, w = pr[:3]
+        lay = pcbnew.F_Cu if (len(pr) > 3 and pr[3] == "F.Cu") else pcbnew.B_Cu
         for a, c in zip(pts, pts[1:]):
             t = pcbnew.PCB_TRACK(board)
             t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(a[0] + 30.0), pcbnew.FromMM(a[1] + 30.0)))
             t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(c[0] + 30.0), pcbnew.FromMM(c[1] + 30.0)))
             t.SetWidth(pcbnew.FromMM(w))
-            t.SetLayer(pcbnew.B_Cu)
+            t.SetLayer(lay)
             t.SetNet(nets_by_name[net])
             board.Add(t)
     classes = {"Default": D.DEFAULT_CLASS[:2]}

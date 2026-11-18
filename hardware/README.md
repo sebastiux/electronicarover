@@ -1,4 +1,4 @@
-# Rover Controller v1.0: PCB de 2 capas (KiCad)
+# Rover Controller v1.1: PCB de 2 capas (KiCad)
 
 PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
 
@@ -15,7 +15,7 @@ PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se 
 
 ![PCB](docs/img/pcb_completa.png)
 
-**Estado:** ruteada al 100 %. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Lleva 39 vías y plano de GND en las dos caras.
+**Estado:** ruteada al 100 %. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Lleva 78 vías y plano de GND en las dos caras.
 
 | Vista | Archivo |
 |---|---|
@@ -23,6 +23,25 @@ PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se 
 | Cara superior (F.Cu) | `docs/img/pcb_top.png`, `docs/cobre_FCu_1a1.pdf` |
 | Cara inferior (B.Cu) | `docs/img/pcb_bottom.png`, `docs/cobre_BCu_espejo_1a1.pdf` (espejado) |
 | Gerbers + taladros | `fab/rover_controller_gerbers_2capas.zip` |
+
+## Cambios en la v1.1 (revisión de diseño)
+
+| Cambio | Por qué |
+|---|---|
+| Retorno de **GND de potencia de 3 mm**, igual que VBAT | Con 6 motores el retorno puede pasar de 10 A. La versión anterior usaba 1.4 mm (~6.8 A con 2 oz). |
+| **Alimentación de servos duplicada en ambas caras**: V+ y GND, 2 × 1.4 mm en paralelo | 7 servos 1501MG pueden pedir más de 7 A con el brazo y la dirección cargados. |
+| **1 nF del nodo de cada encoder a GND** (C11–C16) | Junto con los 10k forma un filtro RC de ~7 µs (la señal del encoder es ≤ 2.7 kHz) contra el ruido del PWM de los motores. |
+| **Schottky 1N5819 en el VIN de cada ESP32** (D5, D6) | Al conectar el USB a la PC, no se retroalimenta el +5 V de la Pi ni el puerto USB. |
+| R21 y J5 movidos | Dejan libre la entrada del cable USB de la ESP32-A. |
+| Serigrafía | Ya no se enciman los textos. |
+
+| Corriente máx. aprox. (IPC-2221, +20 °C, cobre externo) | 1 oz | 2 oz |
+|---|---|---|
+| 3.0 mm: VBAT y GND de potencia | 7.2 A | 11.9 A |
+| 2.0 mm: motores y +5V | 5.4 A | 8.9 A |
+| 2 × 1.4 mm: rail de servos | 8.2 A | 13.6 A |
+
+**Pide cobre de 2 oz.**
 
 **Tierra común:** existe una sola red `GND` que une batería, L298N, Pi, ESP32, servos y encoders. Además hay plano de GND relleno en las dos caras.
 

@@ -13,7 +13,7 @@ izquierda de la tarjeta, X hacia la derecha, Y hacia abajo (vista superior).
 """
 
 PROJECT = "rover_controller"
-REVISION = "1.0"
+REVISION = "1.1"
 TITLE = "Rover Controller - RPi5 + 2x ESP32 + 3x L298N"
 
 BOARD_W = 200.0
@@ -89,7 +89,7 @@ NETCLASSES = [
     ("BATT", 3.0, 0.5, 1.6, 0.8, ["VBAT_IN", "VBAT_F"]),
     ("MOTOR", 2.0, 0.4, 1.6, 0.8, ["M?_A", "M?_B"]),
     ("PWR", 2.0, 0.4, 1.2, 0.6, ["+5V", "SERVO_V"]),
-    ("GND", 1.5, 0.4, 1.0, 0.5, ["GND"]),
+    ("GND", 3.0, 0.4, 1.0, 0.5, ["GND"]),   # retorno de motores: igual que VBAT
 ]
 DEFAULT_CLASS = (0.6, 0.4, 0.8, 0.4)
 
@@ -140,8 +140,10 @@ def preroutes():
     for n in range(1, 9):
         out.append(("SERVO%d" % n, [(ESPB_POS[0] + 12.7, ys[n - 1]), (sx - 5.08, ys[n - 1])], 0.6))
     # columnas partidas en cada pad (KiCad conecta pistas por sus extremos)
-    out.append(("SERVO_V", [(sx - 2.54, 99.0)] + [(sx - 2.54, y) for y in ys], 1.4))
-    out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5)] + [(sx, y) for y in ys], 1.4))
+    # alimentacion de servos duplicada en las DOS caras (2 x 1.4 mm en paralelo)
+    for lay in ("B.Cu", "F.Cu"):
+        out.append(("SERVO_V", [(sx - 2.54, 99.0)] + [(sx - 2.54, y) for y in ys], 1.4, lay))
+        out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5)] + [(sx, y) for y in ys], 1.4, lay))
     # salida de la UART0 por los pines exteriores de la Pi (8 y 10): suben, corren
     # a la derecha en niveles distintos y bajan por la orilla a ambos lados del
     # agujero de montaje de la Pi
@@ -194,6 +196,8 @@ FP_H1x8 = "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
 FP_MH = "MountingHole:MountingHole_3.2mm_M3"
 FP_XT60 = "Connector_AMASS:AMASS_XT60-M_1x02_P7.20mm_Vertical"
 FP_SERVO = "rover:Servo_Header_1x03"
+FP_C25 = "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm"
+FP_DO41 = "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal"
 
 COMPONENTS = []
 
@@ -287,7 +291,7 @@ def build():
 
     # ======================= ESP32-A (traccion) =============================
     espa = {i: None for i in range(1, 31)}
-    espa[esp_pin_number("VIN")] = "+5V"
+    espa[esp_pin_number("VIN")] = "VIN_A"     # via diodo D5 (evita retroalimentar por USB)
     espa[14] = "GND"
     espa[29] = "GND"
     for k, gp in ESPA_IN.items():
@@ -305,7 +309,7 @@ def build():
 
     # ======================= ESP32-B (servos) ===============================
     espb = {i: None for i in range(1, 31)}
-    espb[esp_pin_number("VIN")] = "+5V"
+    espb[esp_pin_number("VIN")] = "VIN_B"     # via diodo D6
     espb[14] = "GND"
     espb[29] = "GND"
     for n, (g, _) in SERVOS.items():
@@ -362,6 +366,20 @@ def build():
             {1: "ENC%d_A" % m, 2: "GND"}, (x + 4.0, 118.0, -90),
             (30.48 + 25.4 * (m - 1), 391.16), desc="Divisor encoder (a GND)")
 
+    # filtro RC del encoder: 1 nF del nodo ENCx_A a GND (con el 10k forma ~16 us)
+    for m in range(1, 7):
+        x = 76.0 + 8.0 * (m - 1)
+        add("C%d" % (10 + m), "1nF", "Device:C", FP_C25,
+            {1: "ENC%d_A" % m, 2: "GND"}, (x, 114.5, 0),
+            (25.4 * (m - 1) + 22.86, 406.4), desc="Filtro de ruido encoder M%d" % m)
+
+    # diodos Schottky en el VIN de cada ESP32: con el USB conectado a la PC no se
+    # retroalimenta el +5V de la Pi (ni el USB desde el regulador)
+    add("D5", "1N5819", "Device:D_Schottky", FP_DO41, {1: "VIN_A", 2: "+5V"},
+        (106.0, 131.0, 0), (365.76, 205.74), desc="Schottky +5V -> VIN ESP32-A", mpn="1N5819 DO-41")
+    add("D6", "1N5819", "Device:D_Schottky", FP_DO41, {1: "VIN_B", 2: "+5V"},
+        (40.0, 146.0, 0), (391.16, 205.74), desc="Schottky +5V -> VIN ESP32-B", mpn="1N5819 DO-41")
+
     # ======================= UART Pi <-> ESP32 (1k en serie) ===============
     add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (131.62, 113.0, 180),
         (190.5, 175.26), desc="Serie UART Pi TXD2 -> ESP32-A RX")
@@ -373,7 +391,7 @@ def build():
         (220.98, 175.26), desc="Serie UART ESP32-B TX -> Pi RXD0")
 
     # ======================= MOTOR_EN pull-down =============================
-    add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (126.0, 98.0, -90),
+    add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (126.0, 102.5, -90),
         (365.76, 175.26), desc="Pull-down MOTOR_EN (motores apagados durante el arranque)")
 
     # ======================= Alimentacion 12V ===============================
@@ -408,7 +426,7 @@ def build():
 
     # ======================= Alimentacion 5V ================================
     add("J5", "5V IN (buck 5V 5A)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "+5V", 2: "GND"}, (129.0, 89.08, 90), (25.4, 101.6),
+        {1: "+5V", 2: "GND"}, (129.0, 86.08, 90), (25.4, 101.6),
         desc="Entrada 5V/5A desde step-down (alimenta Pi 5 y ESP32)",
         mpn="KF301-2P 5.08mm")
     add("C2", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "+5V", 2: "GND"},

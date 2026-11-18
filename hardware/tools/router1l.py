@@ -125,7 +125,9 @@ class Router:
 
     def _rebuild(self):
         twins = self.twins
-        self.g = Grid(self.board)
+        # misma geometria: solo se limpian las rejillas (evita volver a pedir el bbox)
+        for arr in (self.g.B, self.g.F, self.g.E):
+            arr[:] = 0
         self._build_obstacles()
         self.twins = twins
 
