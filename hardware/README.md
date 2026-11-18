@@ -68,7 +68,7 @@ hardware/
 firmware/common/rover_pins.h   mapa de pines para el firmware
 ```
 
-Para regenerar, usa el Python de KiCad 7 o posterior con `numpy` y `scipy` instalados. El ruteo es determinista y tarda unos 25 minutos. Sin `--route` el script no sobrescribe una PCB ya ruteada.
+Para regenerar, usa el Python de KiCad 7 o posterior con `numpy` y `scipy` instalados. En la v1.1, el ruteo automático deja pendiente la red `5V_U5`; se cierra con `tools/fix_net.py` (el comando exacto está en la cabecera del script). El ruteo es determinista y tarda unos 25 minutos. Sin `--route` el script no sobrescribe una PCB ya ruteada.
 
 ```bash
 python3 hardware/tools/generate.py --route
