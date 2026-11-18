@@ -355,13 +355,13 @@ def build():
         (19.0, 82.0, 0), (55.88, 50.8), desc="Portafusible ATO para PCB + fusible 15A",
         mpn="Littelfuse/Pudenz 2 pin ATO holder")
     add("J3", "12V OUT -> buck 5V", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "VBAT_F", 2: "GND"}, (6.0, 102.0, -90), (86.36, 50.8),
+        {1: "GND", 2: "VBAT_F"}, (6.0, 102.0, -90), (86.36, 50.8),
         desc="Salida 12V protegida hacia el step-down de 5V/5A", mpn="KF301-2P 5.08mm")
     add("J4", "12V OUT -> BEC servos", "Connector:Screw_Terminal_01x02", FP_TB2,
         {1: "VBAT_F", 2: "GND"}, (6.0, 113.0, -90), (86.36, 68.58),
         desc="Salida 12V protegida hacia el BEC de servos 6V", mpn="KF301-2P 5.08mm")
     add("C1", "1000uF 25V", "Device:C_Polarized", FP_CP12, {1: "VBAT_F", 2: "GND"},
-        (17.0, 93.0, 0), (116.84, 55.88), desc="Bulk VBAT")
+        (22.0, 93.0, 180), (116.84, 55.88), desc="Bulk VBAT")
     add("D2", "LED rojo 12V", "Device:LED", FP_LED, {1: "LED12_K", 2: "GND"},
         (18.0, 108.0, 0), (139.7, 60.96), desc="Indicador 12V")
     add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_K"}, (16.0, 113.0, 0),
@@ -384,7 +384,7 @@ def build():
         {1: "SERVO_V", 2: "GND"}, (118.08, 78.0, 180), (25.4, 139.7),
         desc="Entrada BEC servos 6V #1", mpn="KF301-2P 5.08mm")
     add("J7", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "SERVO_V", 2: "GND"}, (129.08, 78.0, 180), (25.4, 157.48),
+        {1: "GND", 2: "SERVO_V"}, (129.08, 78.0, 180), (25.4, 157.48),
         desc="Entrada BEC servos 6V #2 (en paralelo)", mpn="KF301-2P 5.08mm")
     add("C3", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
         (113.0, 89.0, 0), (55.88, 144.78), desc="Bulk servos")

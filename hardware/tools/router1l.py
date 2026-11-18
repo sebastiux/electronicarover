@@ -30,6 +30,7 @@ JUMPER_WIRE = 0.8   # ancho del alambre en F.Cu (guia)
 JUMPER_CLR = 0.3
 VIA_COST_MM = 14.0       # costo de cada barreno de puente (mm equivalentes)
 WIRE_COST_FACTOR = 2.5   # el alambre cuesta 2.5x por mm frente a la pista de cobre
+HALO_COST = 3.0          # costo extra por celda pegada a pads de otras redes
 
 
 def mm(v):
@@ -175,6 +176,18 @@ class Router:
                     continue
                 seen[key] = pad
                 self.pads_by_net.setdefault(pad.GetNetname(), []).append((pad, shp))
+        self.P = g.B.copy()   # solo pads (para el costo de "halo")
+        # pistas y vias ya existentes (permite rutear de forma incremental)
+        for t in b.GetTracks():
+            code = t.GetNetCode()
+            if t.GetClass() == "PCB_VIA":
+                p = t.GetPosition()
+                for arr in (g.B, g.F):
+                    g.mark_circle(arr, mm(p.x), mm(p.y), mm(t.GetWidth()) / 2, code)
+            else:
+                arr = g.B if t.GetLayer() == pcbnew.B_Cu else g.F
+                a, c = t.GetStart(), t.GetEnd()
+                g.mark_seg(arr, mm(a.x), mm(a.y), mm(c.x), mm(c.y), mm(t.GetWidth()), code)
         # zonas de exclusion (antenas)
         for z in b.Zones():
             if z.GetIsRuleArea() and z.GetDoNotAllowTracks():
@@ -276,8 +289,13 @@ class Router:
         # fuentes: cobre propio que no es este pad
         src = (self.tree == 1) & freeB & ~((g.XX - tx) ** 2 + (g.YY - ty) ** 2 <= 4.0)
         if not tgt.any() or not src.any():
+            self.log("     (sin %s libre para %s, w=%.1f)" % ("destino" if not tgt.any() else "origen", name, w))
             return False
         relaxed = getattr(self, "relaxed", False)
+        # halo: pasar pegado a pads de otras redes cuesta mas (deja salida a esos pads)
+        fpad = (self.P != 0) & (self.P != code) & (self.P != -1)
+        dpad = ndimage.distance_transform_edt(~fpad) * G
+        self.pen = ((dpad < need + 1.2) & ~tgt).astype(np.uint8).ravel().tobytes()
         path = self._astar(freeB, src, tgt, (tx, ty), None, 8.0)
         freeF = None
         if path is None and allow_j:
@@ -313,6 +331,7 @@ class Router:
         nbrs = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
                 (-1, -1, SQ2), (-1, 1, SQ2), (1, -1, SQ2), (1, 1, SQ2)]
         lcost = (1.0, WIRE_COST_FACTOR)
+        pen = self.pen
         vcost = VIA_COST_MM / G
 
         def h(i, j):
@@ -365,7 +384,7 @@ class Router:
                 nn = base + kk
                 if nn in closed:
                     continue
-                ng = gc + c * lc
+                ng = gc + c * lc + (HALO_COST if (lay == 0 and pen[kk]) else 0.0)
                 if ng < gs.get(nn, 1e18):
                     gs[nn] = ng
                     prev[nn] = node

@@ -606,7 +606,7 @@ def build_pcb(comps, netnames, assignments, route=False):
     silk("-", 13.0, 79.0, 1.6, bold=True)
     silk("+", 13.0, 86.2, 1.6, bold=True)
     silk("XT60", 7.0, 92.6, 0.9)
-    for ref, txt in [("J3", "-  12V>5V  +"), ("J4", "-  12V>BEC  +")]:
+    for ref, txt in [("J3", "+  12V>5V  -"), ("J4", "-  12V>BEC  +")]:
         c = next(cc for cc in comps if cc["ref"] == ref)
         silk(txt, c["pcb"][0] + 5.6, c["pcb"][1] + 2.54, 0.8, rot=90)
     silk("ESP32-A TRACCION", 42, 97.5 - 2.5, 1.2, bold=True)
@@ -616,7 +616,7 @@ def build_pcb(comps, netnames, assignments, route=False):
     for n in range(1, 9):
         silk("S%d" % n, 70.0 + 5.08 * (n - 1), 73.6, 0.9)
     silk("-  SERVO 6V IN  +", 115.5, 72.8, 0.8)
-    silk("-  SERVO 6V IN  +", 126.5, 72.8, 0.8)
+    silk("+  SERVO 6V IN  -", 126.5, 72.8, 0.8)
     silk("+  5V/5A IN  -", 189.6, 81.5, 0.8, rot=90)
     silk("PI AUX: 3V3 GND SDA SCL 22 23 24 25", 155, 74.8, 0.8)
     silk("AUX-B: 3V3 GND SDA SCL 18 19 35 39", 121.0, 118.5, 0.7, rot=90)
