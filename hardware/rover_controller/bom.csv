@@ -31,7 +31,6 @@ Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;J37;SERVO7;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 7 - Brazo pinza (GND, V+, SIG)
 1;J38;SERVO8;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 8 - Reserva (GND, V+, SIG)
 1;J4;12V OUT -> BEC servos;TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Salida 12V protegida hacia el BEC de servos 6V
-1;J43;AUX RPi (I2C);Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical;Header macho 1x8;Header auxiliar Raspberry Pi (I2C + GPIO)
 1;J5;5V IN (buck 5V 5A);TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Entrada 5V/5A desde step-down (alimenta Pi 5 y ESP32)
 1;J6;SERVO PWR IN (6V);TerminalBlock:TerminalBlock_bornier-2_P5.08mm;KF301-2P 5.08mm;Entrada BEC servos 6V
 7;R1,R2,R3,R4,R5,R6,R21;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder (serie)

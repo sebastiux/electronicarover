@@ -244,9 +244,23 @@ class Router:
 
         if name not in self.trees:
             order = sorted(range(len(pads)), key=lambda k: -size(pads[k][1]))
+            # arbol inicial = cobre ya existente conectado al primer pad (pistas pre-trazadas)
+            lab, _ = ndimage.label(self.g.B == code, structure=np.ones((3, 3)))
+            c0 = center(pads[order[0]][1])
+            i0, j0 = self.g.ij(*c0)
             t = np.zeros(self.g.B.shape, np.int8)
-            self._mark_shape(t, pads[order[0]][1], 1)
-            self.trees[name] = [t, {order[0]}, [center(pads[order[0]][1])]]
+            done0 = {order[0]}
+            pts0 = [c0]
+            if lab[i0, j0]:
+                t[lab == lab[i0, j0]] = 1
+                for k2, (p2, s2) in enumerate(pads):
+                    ii, jj = self.g.ij(*center(s2))
+                    if lab[ii, jj] == lab[i0, j0]:
+                        done0.add(k2)
+                        pts0.append(center(s2))
+            else:
+                self._mark_shape(t, pads[order[0]][1], 1)
+            self.trees[name] = [t, done0, pts0]
         self.tree, done, tree_pts = self.trees[name]
         remaining = [k for k in range(len(pads)) if k not in done
                      and (pad_filter is None or pad_filter(pads[k][0]))]
@@ -488,7 +502,7 @@ class Router:
 
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
-          reserved=(), early_refs=None, late=()):
+          reserved=(), early_refs=None, late=(), first=()):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
     Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
@@ -522,7 +536,8 @@ def route(board, classes, assignments, order_classes=None, log=print, relaxed_pa
         stages += [(n, c, None) for n in sorted(nets, key=span) if cls(n) == c]
     stages += [(n, "PWR", early(n)) for n in nets if cls(n) == "PWR"]
     stages += [(n, "GND", early(n)) for n in nets if cls(n) == "GND"]
-    sig = [n for n in nets if cls(n) == "Default" and n not in late]
+    sig = [n for n in nets if cls(n) == "Default" and n not in late and n not in first]
+    stages += [(n, "Default", None) for n in first if n in nets]
     longs = sorted([n for n in sig if span(n) > 60], key=span, reverse=True)
     shorts = sorted([n for n in sig if span(n) <= 60], key=span)
     stages += [(n, "Default", None) for n in longs + shorts]

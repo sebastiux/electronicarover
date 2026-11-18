@@ -644,8 +644,6 @@ def build_pcb(comps, netnames, assignments, route=False):
     x, y, _ = at("U3")
     silk("ESP32-B SERVOS", x, y - 28.6, 1.0, bold=True)
     silk("ENCODERS 5V->3V3", 98.0, 125.6, 0.8)
-    x, y, _ = at("J43")
-    silk("PI AUX: 3V3 GND SDA SCL 22 6 13 26", x + 8.9, y + 2.6, 0.8)
 
     # zonas de GND en ambas caras
     def zone(layer, netname, pts, prio=0, clearance=0.4):
@@ -706,6 +704,16 @@ def route_board(relaxed_pass=True):
     board = pcbnew.LoadBoard(pcb_path)
     for t in list(board.GetTracks()):
         board.Remove(t)
+    nets_by_name = board.GetNetsByName()
+    for (net, pts, w) in D.preroutes():
+        for a, c in zip(pts, pts[1:]):
+            t = pcbnew.PCB_TRACK(board)
+            t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(a[0] + 30.0), pcbnew.FromMM(a[1] + 30.0)))
+            t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(c[0] + 30.0), pcbnew.FromMM(c[1] + 30.0)))
+            t.SetWidth(pcbnew.FromMM(w))
+            t.SetLayer(pcbnew.B_Cu)
+            t.SetNet(nets_by_name[net])
+            board.Add(t)
     classes = {"Default": D.DEFAULT_CLASS[:2]}
     assignments = {}
     for (name, tw, clr, vd, vdr, pats) in D.NETCLASSES:
@@ -715,7 +723,8 @@ def route_board(relaxed_pass=True):
     ox, oy = 30.0, 30.0
     reserved = [(x0 + ox, y0 + oy, x1 + ox, y1 + oy, a) for (x0, y0, x1, y1, a) in D.routing_reserved()]
     r = router1l.route(board, classes, assignments, relaxed_pass=relaxed_pass,
-                       reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE)
+                       reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE,
+                       first=D.ROUTING_FIRST)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)

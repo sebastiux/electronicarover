@@ -107,8 +107,51 @@ def routing_reserved():
     return out
 
 
-# redes que unen los extremos de una fila de pines (ENA/ENB): al final
-ROUTING_LATE = ["MOTOR_EN"]
+def preroutes():
+    """Pistas trazadas a mano (geometria conocida), en coordenadas de tarjeta:
+    lista de (red, [(x, y), ...], ancho).
+
+    Abanico IN1..IN4 de los tres L298N hacia la fila superior de la ESP32-A:
+    baja vertical desde el header, corre horizontal en un nivel propio y baja
+    vertical al pin. Los niveles estan escalonados para que nada se cruce.
+    Tambien el tramo de MOTOR_EN entre modulos (ENB de uno -> ENA del siguiente)."""
+    hdr_y = L298N_CY + L298N["header_first"][1]
+    ex0 = ESPA_POS[0] - 17.78
+    ey = ESPA_POS[1] - 12.7
+    out = []
+    for k in range(3):
+        cx = L298N_CX[k]
+        for j in range(1, 5):
+            hx = cx + L298N["header_first"][0] + 2.54 * j
+            g = ESPA_IN[k][j - 1]
+            ex = ex0 + 2.54 * ESP32_RIGHT.index(g)
+            if k == 0:
+                yl = 68.0 + 1.2 * (4 - j)
+            elif k == 1:
+                yl = 68.0 + 1.2 * (j - 1)
+            else:
+                yl = 72.8 + 1.2 * (j - 1)
+            out.append(("U%d_IN%d" % (k + 4, j), [(hx, hdr_y), (hx, yl), (ex, yl), (ex, ey)], 0.6))
+    # servos: SIG recta desde la ESP32-B, columnas V+ y GND verticales
+    sx = ESPB_POS[0] + 25.08
+    ys = [esp_pin_y(ESPB_POS, SERVOS[n][0]) for n in range(1, 9)]
+    for n in range(1, 9):
+        out.append(("SERVO%d" % n, [(ESPB_POS[0] + 12.7, ys[n - 1]), (sx - 5.08, ys[n - 1])], 0.6))
+    out.append(("SERVO_V", [(sx - 2.54, 99.0), (sx - 2.54, ys[-1])], 1.4))
+    out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5), (sx, ys[-1])], 1.4))
+    for k in range(2):
+        enb = L298N_CX[k] + L298N["header_first"][0] + 2.54 * 5
+        ena = L298N_CX[k + 1] + L298N["header_first"][0]
+        out.append(("MOTOR_EN", [(enb, hdr_y), (enb, 66.5), (ena, 66.5), (ena, hdr_y)], 0.6))
+    return out
+
+
+# orden de ruteo de senales: primero el abanico ESP32-A -> L298N (planar),
+# luego el enable, las UART y el resto; los encoders cruzan con puentes.
+ROUTING_FIRST = ["U%d_IN%d" % (u, i) for u in (4, 5, 6) for i in (1, 2, 3, 4)] + \
+    ["MOTOR_EN", "ESPA_RX", "ESPA_TX", "PI_TXD0", "PI_RXD0", "ESPB_TX", "ESPB_RX",
+     "SERVO1", "SERVO2", "SERVO3", "SERVO4", "SERVO5", "SERVO6", "SERVO7", "SERVO8"]
+ROUTING_LATE = []
 
 # pads que se rutean en la etapa de potencia (el resto de la red va al final)
 ROUTING_EARLY = {
@@ -181,7 +224,7 @@ ESPA_IN = {  # indice L298N -> [IN1, IN2, IN3, IN4]
     2: ["RX2/IO16", "IO4", "IO2", "IO15"],
 }
 ESPA_ENC = {1: "VP/IO36", 2: "VN/IO39", 3: "IO34", 4: "IO35", 5: "IO32", 6: "IO33"}
-ESPA_UART_RX = "IO26"
+ESPA_UART_RX = "IO14"
 ESPA_UART_TX = "IO27"
 ESPA_MOTOR_EN = "IO13"
 
@@ -221,17 +264,10 @@ def build():
         pi[n] = "+5V"
     for n in (6, 9, 14, 25, 39):          # GND (el resto esta unido dentro de la Pi)
         pi[n] = "GND"
-    pi[1] = "+3V3_PI"
-    pi[3] = "PI_SDA"
-    pi[5] = "PI_SCL"
     pi[7] = "PI_TXD2"      # UART2 -> ESP32-A (fila interior)
     pi[29] = "PI_RXD2"
     pi[8] = "PI_TXD0"      # UART0 -> ESP32-B (fila exterior)
     pi[10] = "PI_RXD0"
-    pi[15] = "PI_GPIO22"
-    pi[31] = "PI_GPIO6"
-    pi[33] = "PI_GPIO13"
-    pi[37] = "PI_GPIO26"
     add("U1", "RaspberryPi5_GPIO", "rover:RaspberryPi5_GPIO", "rover:RPi5_HAT_Header_2x20",
         pi, (135.0, 93.5, 0), (190.5, 76.2),
         desc="Stacking header 2x20 de pines largos (Pi 5 debajo, soldar por la cara de cobre)",
@@ -308,16 +344,16 @@ def build():
     for m in range(1, 7):
         x = 76.0 + 8.0 * (m - 1)
         add("R%d" % m, "10k", "Device:R", FP_R,
-            {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m}, (x, 121.62, 90),
+            {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m}, (x, 125.62, 90),
             (20.32 + 25.4 * (m - 1), 391.16), desc="Divisor encoder (serie)")
         add("R%d" % (m + 6), "20k", "Device:R", FP_R,
-            {1: "ENC%d_A" % m, 2: "GND"}, (x + 4.0, 114.0, -90),
+            {1: "ENC%d_A" % m, 2: "GND"}, (x + 4.0, 118.0, -90),
             (30.48 + 25.4 * (m - 1), 391.16), desc="Divisor encoder (a GND)")
 
     # ======================= UART Pi <-> ESP32 (1k en serie) ===============
-    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (140.0, 104.0, -90),
+    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (131.62, 113.0, 180),
         (190.5, 175.26), desc="Serie UART Pi TXD2 -> ESP32-A RX")
-    add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD2"}, (144.0, 104.0, -90),
+    add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD2"}, (124.0, 116.5, 0),
         (200.66, 175.26), desc="Serie UART ESP32-A TX -> Pi RXD2")
     add("R15", "1k", "Device:R", FP_R, {1: "PI_TXD0", 2: "ESPB_RX"}, (62.0, 137.0, -90),
         (210.82, 175.26), desc="Serie UART Pi TXD0 -> ESP32-B RX")
@@ -391,12 +427,6 @@ def build():
         (101.6, 137.16), desc="Resistencia LED servos")
     add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "LEDS_K", 2: "GND"},
         (sx + 17.0, 131.0, 0), (101.6, 149.86), desc="Indicador rail servos")
-
-    # ======================= Header auxiliar de la Pi =======================
-    add("J43", "AUX RPi (I2C)", "rover:Aux_Header_8", FP_H1x8,
-        {1: "+3V3_PI", 2: "GND", 3: "PI_SDA", 4: "PI_SCL", 5: "PI_GPIO22",
-         6: "PI_GPIO6", 7: "PI_GPIO13", 8: "PI_GPIO26"}, (150.0, 114.0, 90),
-        (238.76, 139.7), desc="Header auxiliar Raspberry Pi (I2C + GPIO)", mpn="Header macho 1x8")
 
     # ======================= Agujeros de montaje ============================
     for i, (x, y) in enumerate(CHASSIS_HOLES):
