@@ -107,7 +107,9 @@ class Router:
         self.netcodes = {}
         self.jumpers = []
         self.failed = []
+        self.trees = {}
         self._build_obstacles()
+        self._bridge_twins()
 
     # ------------------------------------------------------------------
     def code(self, netname):
@@ -141,6 +143,8 @@ class Router:
         g.B[out] = -1
         g.F[out] = -1
         self.pads_by_net = {}
+        self.twins = []
+        seen = {}
         for fp in b.GetFootprints():
             ref = fp.GetReference()
             # bajo componentes de perfil bajo no pueden pasar puentes de alambre
@@ -161,6 +165,11 @@ class Router:
                 code = pad.GetNetCode()
                 self._mark_shape(g.B, shp, code)
                 self._mark_shape(g.F, shp, code)
+                key = (ref, pad.GetNumber())
+                if key in seen:
+                    self.twins.append((seen[key], pad))
+                    continue
+                seen[key] = pad
                 self.pads_by_net.setdefault(pad.GetNetname(), []).append((pad, shp))
         # zonas de exclusion (antenas)
         for z in b.Zones():
@@ -170,6 +179,20 @@ class Router:
                             mm(bb.GetY() + bb.GetHeight()), -1)
                 g.mark_rect(g.F, mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()),
                             mm(bb.GetY() + bb.GetHeight()), -1)
+
+    def _bridge_twins(self):
+        """Une los pads duplicados (fila doble del ESP32) antes de rutear nada."""
+        g, b = self.g, self.board
+        for p1, p2 in self.twins:
+            a, c = p1.GetPosition(), p2.GetPosition()
+            t = pcbnew.PCB_TRACK(b)
+            t.SetStart(a)
+            t.SetEnd(c)
+            t.SetWidth(pcbnew.FromMM(0.8))
+            t.SetLayer(pcbnew.B_Cu)
+            t.SetNet(p1.GetNet())
+            b.Add(t)
+            g.mark_seg(g.B, mm(a.x), mm(a.y), mm(c.x), mm(c.y), 0.8, p1.GetNetCode())
 
     # ------------------------------------------------------------------
     def _dist(self, arr, code):
@@ -181,12 +204,13 @@ class Router:
         i, j = self.g.ij(x, y)
         return 2 * (dist[i, j] - clr - RM - 0.05)
 
-    def route_net(self, name, cls):
+    def route_net(self, name, cls, pad_filter=None, relaxed=False):
         w_cls, clr = self.classes[cls]
         code = self.code(name)
         pads = self.pads_by_net.get(name, [])
         if len(pads) < 2:
             return
+        self.relaxed = relaxed
         allow_j = cls not in self.no_jumper
         # arbol tipo Prim desde el pad mas grande
         def size(s):
@@ -195,11 +219,14 @@ class Router:
         def center(s):
             return (s[1], s[2]) if s[0] == "c" else ((s[1] + s[3]) / 2, (s[2] + s[4]) / 2)
 
-        order = sorted(range(len(pads)), key=lambda k: -size(pads[k][1]))
-        tree_pts = [center(pads[order[0]][1])]
-        self.tree = np.zeros(self.g.B.shape, np.int8)
-        self._mark_shape(self.tree, pads[order[0]][1], 1)
-        remaining = order[1:]
+        if name not in self.trees:
+            order = sorted(range(len(pads)), key=lambda k: -size(pads[k][1]))
+            t = np.zeros(self.g.B.shape, np.int8)
+            self._mark_shape(t, pads[order[0]][1], 1)
+            self.trees[name] = [t, {order[0]}, [center(pads[order[0]][1])]]
+        self.tree, done, tree_pts = self.trees[name]
+        remaining = [k for k in range(len(pads)) if k not in done
+                     and (pad_filter is None or pad_filter(pads[k][0]))]
         while remaining:
             best = None
             for k in remaining:
@@ -216,12 +243,13 @@ class Router:
                 w = min(w, 1.4)
             w = max(0.5, round(w * 10 - 0.5) / 10)
             ok = self._connect(name, code, shp, w, clr, distB, allow_j, tree_pts)
-            if not ok:
-                self.failed.append((name, pad.GetParent().GetReference(), pad.GetNumber()))
+            if not ok and not relaxed:
+                self.failed.append((name, cls, pad.GetParent().GetReference(), pad.GetNumber()))
                 self.log("   !! no se pudo conectar %s -> %s.%s" % (name, pad.GetParent().GetReference(), pad.GetNumber()))
             tree_pts.append(center(shp))
             if ok:
                 self._mark_shape(self.tree, shp, 1)
+                done.add(k)
 
     # ------------------------------------------------------------------
     def _connect(self, name, code, shp, w, clr, distB, allow_j, tree_pts):
@@ -268,7 +296,8 @@ class Router:
         nbrs = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
                 (-1, -1, SQ2), (-1, 1, SQ2), (1, -1, SQ2), (1, 1, SQ2)]
         jcost = JUMPER_COST_MM / G
-        jmax = int(JUMPER_MAX_MM / G)
+        jmax = int((JUMPER_MAX_MM * (1.8 if getattr(self, "relaxed", False) else 1.0)) / G)
+        maxpush = 5 if getattr(self, "relaxed", False) else 2
         jmin = int(JUMPER_MIN_MM / G)
 
         def h(i, j):
@@ -301,7 +330,7 @@ class Router:
                     k = pk
                 out.reverse()
                 return out
-            if time.time() - t0 > 60:
+            if time.time() - t0 > (120 if getattr(self, "relaxed", False) else 45):
                 return None
             i, j = divmod(k, nx)
             for di, dj, c in nbrs:
@@ -333,7 +362,7 @@ class Router:
                             crossed = True
                             pushed = 0
                             continue
-                        if crossed and L >= jmin and vo[kk] and pushed < 2 and kk not in closed:
+                        if crossed and L >= jmin and vo[kk] and pushed < maxpush and kk not in closed:
                             ng = gc + jcost + L * 1.2
                             if ng < gs.get(kk, 1e18):
                                 gs[kk] = ng
@@ -424,23 +453,49 @@ class Router:
             self.jumpers.append((name, xa, ya, xc, yc))
 
 
-def route(board, classes, assignments, order_classes, log=print):
-    """classes: {clase: (ancho, holgura)}, assignments: {red: clase}."""
+def route(board, classes, assignments, order_classes=None, log=print):
+    """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
+
+    Orden: BATT, MOTOR, PWR, GND de potencia (pads >= 2 mm), senales,
+    resto de GND, y una ultima pasada relajada para lo que haya fallado.
+    """
     r = Router(board, classes, log=log)
     nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1]
 
-    def key(n):
-        cls = assignments.get(n, "Default")
+    def span(n):
         pads = r.pads_by_net[n]
         xs = [p[0].GetPosition().x for p in pads]
         ys = [p[0].GetPosition().y for p in pads]
-        span = (max(xs) - min(xs)) + (max(ys) - min(ys))
-        return (order_classes.index(cls) if cls in order_classes else len(order_classes), span)
+        return (max(xs) - min(xs)) + (max(ys) - min(ys))
 
-    for n in sorted(nets, key=key):
-        cls = assignments.get(n, "Default")
+    def big(pad):
+        return max(mm(pad.GetSize().x), mm(pad.GetSize().y)) >= 2.0
+
+    def cls(n):
+        return assignments.get(n, "Default")
+
+    stages = []
+    for c in ("BATT", "MOTOR", "PWR"):
+        stages += [(n, c, None) for n in sorted(nets, key=span) if cls(n) == c]
+    stages += [(n, "GND", big) for n in nets if cls(n) == "GND"]
+    stages += [(n, "Default", None) for n in sorted(nets, key=span) if cls(n) == "Default"]
+    stages += [(n, "GND", None) for n in nets if cls(n) == "GND"]
+    for (n, c, flt) in stages:
         t0 = time.time()
         nj = len(r.jumpers)
-        r.route_net(n, cls)
-        log("  %-12s %-8s %5.1fs  puentes=%d" % (n, cls, time.time() - t0, len(r.jumpers) - nj))
+        r.route_net(n, c, flt)
+        log("  %-12s %-8s %5.1fs  puentes=%d" % (n, c, time.time() - t0, len(r.jumpers) - nj))
+    # pasada relajada
+    pending = list(dict.fromkeys((f[0], f[1]) for f in r.failed))
+    r.failed = []
+    for (n, c) in pending:
+        r.route_net(n, c, None, relaxed=True)
+    # lo que siga sin conectar
+    r.failed = []
+    for n in nets:
+        t = r.trees.get(n)
+        done = t[1] if t else set()
+        for k, (pad, shp) in enumerate(r.pads_by_net[n]):
+            if k not in done:
+                r.failed.append((n, pad.GetParent().GetReference(), pad.GetNumber()))
     return r

@@ -116,6 +116,9 @@ def custom_symbols():
             ("4", "VCC (azul)"), ("5", "A (amarillo)"), ("6", "B (blanco)")]
     syms["Pololu_37D_Encoder"] = box_symbol("Pololu_37D_Encoder", "J", left, [], 17.78,
                                             descr="Conector cable Pololu 37D con encoder")
+    syms["XT60_Battery"] = box_symbol("XT60_Battery", "J", [("1", "- (biselado)"), ("2", "+ (recto)")], [], 12.7,
+                                      fp="Connector_AMASS:AMASS_XT60-M_1x02_P7.20mm_Vertical",
+                                      descr="Conector XT60 macho para bateria")
     syms["Servo_Header"] = box_symbol("Servo_Header", "J",
                                       [("1", "GND"), ("2", "V+"), ("3", "SIG")], [], 7.62,
                                       descr="Servo 3 pines")
@@ -599,8 +602,11 @@ def build_pcb(comps, netnames, assignments, route=False):
         else:
             silk("+ - G V A B", h["pcb"][0] + 6.35, 18.7, 0.7)
     # polaridad de borneras de potencia (texto a 90 grados: se lee de abajo hacia arriba)
-    for ref, txt in [("J1", "-  BAT 12V  +"), ("J2", "-  BAT 12V  +"),
-                     ("J3", "-  12V>5V  +"), ("J4", "-  12V>BEC  +")]:
+    silk("BAT", 13.2, 75.0, 1.0, bold=True)
+    silk("-", 13.0, 79.0, 1.6, bold=True)
+    silk("+", 13.0, 86.2, 1.6, bold=True)
+    silk("XT60", 7.0, 92.6, 0.9)
+    for ref, txt in [("J3", "-  12V>5V  +"), ("J4", "-  12V>BEC  +")]:
         c = next(cc for cc in comps if cc["ref"] == ref)
         silk(txt, c["pcb"][0] + 5.6, c["pcb"][1] + 2.54, 0.8, rot=90)
     silk("ESP32-A TRACCION", 42, 97.5 - 2.5, 1.2, bold=True)

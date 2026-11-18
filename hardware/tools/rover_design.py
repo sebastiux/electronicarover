@@ -115,6 +115,7 @@ FP_H1x4 = "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
 FP_H1x6 = "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
 FP_H1x8 = "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
 FP_MH = "MountingHole:MountingHole_3.2mm_M3"
+FP_XT60 = "Connector_AMASS:AMASS_XT60-M_1x02_P7.20mm_Vertical"
 
 COMPONENTS = []
 
@@ -325,12 +326,13 @@ def build():
         (510.54, 198.12), desc="Filtro ADC VBAT")
 
     # ======================= Alimentacion ===================================
-    add("J1", "BAT 12V IN", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "VBAT_IN", 2: "GND"}, (6.0, 80.0, -90), (25.4, 50.8),
-        desc="Entrada bateria 12V (3S) #1", mpn="KF301-2P 5.08mm")
-    add("J2", "BAT 12V IN", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "VBAT_IN", 2: "GND"}, (6.0, 91.0, -90), (25.4, 68.58),
-        desc="Entrada bateria 12V (3S) #2 (en paralelo, reparte corriente)", mpn="KF301-2P 5.08mm")
+    # XT60 macho vertical (soldar las copas en barrenos de 4.5 mm). La bateria
+    # Gens Ace 3S trae XT60 hembra. Convencion XT60: lado RECTO = (+),
+    # lado BISELADO = (-). En el footprint AMASS el pad 1 es el lado biselado.
+    add("J1", "XT60 BAT 12V", "rover:XT60_Battery", FP_XT60,
+        {1: "GND", 2: "VBAT_IN"}, (7.0, 79.0, -90), (25.4, 50.8),
+        desc="Conector XT60 macho para bateria LiPo 3S (lado biselado = -)",
+        mpn="AMASS XT60 macho (copas para soldar) / XT60-M")
     add("F1", "ATO 15A", "Device:Fuse", FP_FUSE, {1: "VBAT_IN", 2: "VBAT_F"},
         (19.0, 82.0, 0), (55.88, 50.8), desc="Portafusible ATO para PCB + fusible 15A",
         mpn="Littelfuse/Pudenz 2 pin ATO holder")
