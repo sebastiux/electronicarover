@@ -21,8 +21,8 @@ PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se 
 
 | Fabricación | Paquete | Para quién |
 |---|---|---|
-| **Prototipado CNC** (sin PTH, sin máscara) | `fab/rover_controller_prototipado.zip` | Servicio de prototipado de AG Electrónica (1 h a 1 día) |
-| **Industrial + ensamble THT** | `fab/pcbway/` | PCBWay, llave en mano: todo soldado menos L298N y Pi |
+| **Prototipado CNC** (sin PTH, sin máscara) | `fab/rover_controller_v1.2_prototipado.zip` | Servicio de prototipado de AG Electrónica (1 h a 1 día) |
+| **Industrial + ensamble THT** | `fab/rover_controller_v1.2_PCBWay.zip` (detalle en `fab/pcbway/`) | PCBWay, llave en mano: todo soldado menos L298N y Pi |
 
 ## Cambios en la v1.2
 
@@ -50,7 +50,7 @@ PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se 
 
 ## Fabricación A: prototipado CNC (sin metalizado)
 
-Sube `fab/rover_controller_prototipado.zip`: cobre superior, cobre inferior, contorno y **un solo archivo de taladros**. También incluye `vias_pines.csv` con la posición de cada vía-pin.
+Sube `fab/rover_controller_v1.2_prototipado.zip`: cobre superior, cobre inferior, contorno y **un solo archivo de taladros**. También incluye `vias_pines.csv` con la posición de cada vía-pin.
 
 1. Pide **2 caras, sin máscara ni serigrafía**. Si es posible, usa placa con cobre de 2 oz (o estaña las pistas de potencia).
 2. **Vías-pin (101):** mete un pin de header (o un alambre de 0.8–0.9 mm) en cada vía y **suéldalo arriba y abajo**. Hazlo **antes** de montar los L298N y las ESP32, porque algunas quedan debajo. Corta los pines a ras.

@@ -38,7 +38,7 @@ with open(sys.argv[2], "w") as f:
             f.write("V%d;%s;%.2f;%.2f;%.1f\n" % (k, t.GetNetname(), pcbnew.ToMM(p.x) - x0, pcbnew.ToMM(p.y) - y0, pcbnew.ToMM(t.GetDrillValue())))
 print("vias:", k)
 PY
-  (cd "$OUT" && rm -f ../rover_controller_prototipado.zip && zip -q ../rover_controller_prototipado.zip ./*)
+  (cd "$OUT" && rm -f ../rover_controller_prototipado.zip "../rover_controller_v${REV}_prototipado.zip" && zip -q "../rover_controller_v${REV}_prototipado.zip" ./*)
   kicad-cli pcb export pdf -o "$DOC/cobre_superior_FCu_1a1.pdf" --layers F.Cu,Edge.Cuts --black-and-white "$PCB" >/dev/null
   kicad-cli pcb export pdf -o "$DOC/cobre_inferior_BCu_espejo_1a1.pdf" --layers B.Cu,Edge.Cuts --black-and-white --mirror "$PCB" >/dev/null
 fi
@@ -55,6 +55,11 @@ kicad-cli pcb export pos -o "$PW/rover_controller_centroides.csv" --format csv -
 python3 "$ROOT/tools/bom_pcbway.py" 2>&1 | grep -v swig
 kicad-cli pcb export pdf -o "$PW/plano_montaje_superior.pdf" --layers F.Fab,F.SilkS,Edge.Cuts --black-and-white "$PCB" >/dev/null
 kicad-cli pcb export pdf -o "$PW/plano_montaje_inferior_espejo.pdf" --layers B.SilkS,B.Fab,Edge.Cuts --black-and-white --mirror "$PCB" >/dev/null
+# paquete unico para enviar a PCBWay (dentro va el zip de gerbers que se sube tal cual)
+(cd "$PW" && rm -f "$FAB/rover_controller_v${REV}_PCBWay.zip" && zip -q "$FAB/rover_controller_v${REV}_PCBWay.zip" \
+  "rover_controller_v${REV}_gerbers_PCBWay.zip" rover_controller_BOM_PCBWay.xlsx rover_controller_BOM_PCBWay.csv \
+  rover_controller_centroides.csv plano_montaje_superior.pdf plano_montaje_inferior_espejo.pdf \
+  $(ls cotizacion_PCBWay_*.png 2>/dev/null))
 
 kicad-cli pcb export pdf -o "$DOC/plantilla_1a1.pdf" --layers F.Fab,F.SilkS,Edge.Cuts --black-and-white "$PCB" >/dev/null
 for spec in "pcb_completa:F.Cu,B.Cu,F.SilkS,Edge.Cuts" "pcb_top:F.Cu,F.SilkS,Edge.Cuts" "pcb_bottom:B.Cu,Edge.Cuts"; do
