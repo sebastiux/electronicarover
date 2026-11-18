@@ -1,0 +1,11 @@
+# KiCad
+*.kicad_prl
+*-backups/
+fp-info-cache
+_autosave-*
+*.lck
+# Salidas temporales (Freerouting y gerbers de una PCB sin rutear)
+hardware/build/
+hardware/fab/
+*.jar
+__pycache__/
