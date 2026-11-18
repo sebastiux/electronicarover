@@ -4,7 +4,7 @@ PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se 
 
 | Bloque | Módulo | Función |
 |---|---|---|
-| U1 | **Raspberry Pi 5**, debajo de la PCB con stacking header 2x20 | Cerebro |
+| U1 | **Raspberry Pi 5**, debajo de la PCB con header hembra 2x20 | Cerebro |
 | U2 | **ESP32 DevKit V1 30p** (ESP32-A, horizontal) | Tracción: 6 motores + 6 encoders |
 | U3 | **ESP32 DevKit V1 30p** (ESP32-B, vertical) | 4 servos de dirección + 3 del brazo + 1 de reserva, voltaje de batería |
 | U4–U6 | **3× L298N (HW-095)** con pines en vez de bornas | 6× Pololu 37D 12V 30:1 |
