@@ -103,7 +103,7 @@ def routing_reserved():
     for cx in L298N_CX:
         out.append((cx - 0.5, L298N_CY + 16.0, cx + 16.5, 66.0, {"Default"}))
     # franjas junto al header de la Pi: solo sus UART y GND (se aceptan nombres de red)
-    out.append((141.0, 89.0, 196.0, 94.6, {"PI_TXD0", "PI_RXD0", "GND", "+5V"}))
+    out.append((147.6, 89.0, 196.0, 94.6, {"PI_TXD0", "PI_RXD0"}))
     out.append((139.0, 99.4, 196.0, 105.0, {"PI_TXD2", "PI_RXD2", "GND"}))
     # orilla derecha: unica salida de la UART de los pines exteriores de la Pi
     out.append((186.0, 62.0, 200.0, 150.0, {"PI_TXD0", "PI_RXD0", "GND"}))
@@ -143,6 +143,14 @@ def preroutes():
     # columnas partidas en cada pad (KiCad conecta pistas por sus extremos)
     out.append(("SERVO_V", [(sx - 2.54, 99.0)] + [(sx - 2.54, y) for y in ys], 1.4))
     out.append(("GND", [(sx + 2.54, 99.0), (sx + 2.54, 101.0), (sx, 103.5)] + [(sx, y) for y in ys], 1.4))
+    # salida de la UART0 por los pines exteriores de la Pi (8 y 10): suben, corren
+    # a la derecha en niveles distintos y bajan por la orilla a ambos lados del
+    # agujero de montaje de la Pi
+    px = 135.0 + RPI["pin1"][0]
+    py = 93.5 + RPI["row_even_y"]
+    p8, p10 = px + 2.54 * 3, px + 2.54 * 4
+    out.append(("PI_RXD0", [(p10, py), (p10, 93.3), (193.8, 93.3), (193.8, 104.0)], 0.6))
+    out.append(("PI_TXD0", [(p8, py), (p8, 91.3), (198.9, 91.3), (198.9, 104.0)], 0.6))
     for k in range(2):
         enb = L298N_CX[k] + L298N["header_first"][0] + 2.54 * 5
         ena = L298N_CX[k + 1] + L298N["header_first"][0]
@@ -267,7 +275,7 @@ def build():
     pi = {n: None for n in range(1, 41)}
     for n in (2, 4):
         pi[n] = "+5V"
-    for n in (6, 9, 14, 25, 39):          # GND (el resto esta unido dentro de la Pi)
+    for n in (9, 25, 39):                 # GND de la fila interior (el resto esta unido dentro de la Pi)
         pi[n] = "GND"
     pi[7] = "PI_TXD2"      # UART2 -> ESP32-A (fila interior)
     pi[29] = "PI_RXD2"
