@@ -4,8 +4,7 @@
 fp-info-cache
 _autosave-*
 *.lck
-# Salidas temporales (Freerouting y gerbers de una PCB sin rutear)
+# Salidas temporales
 hardware/build/
-hardware/fab/
 *.jar
 __pycache__/

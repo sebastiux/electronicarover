@@ -15,6 +15,15 @@ PCB de **una sola capa de cobre** de 200 × 150 mm. Los módulos se montan encim
 
 ![PCB](docs/img/pcb_completa.png)
 
+**Estado:** ruteada al 100 % en una capa. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Lleva **43 puentes de alambre** (669 mm en total, el más largo de 62 mm), numerados W1–W43 en la serigrafía y listados en `fab/puentes_alambre.csv`.
+
+| Vista | Archivo |
+|---|---|
+| Cobre (B.Cu) | `docs/img/pcb_cobre.png` |
+| Montaje y puentes | `docs/img/pcb_montaje.png`, `docs/montaje_y_puentes.pdf` |
+| Cobre espejado 1:1 para planchado/CNC | `docs/cobre_BCu_espejo_1a1.pdf` |
+| Gerbers de 1 capa | `fab/rover_controller_gerbers_1capa.zip` |
+
 **Tierra común:** existe una sola red `GND` que une batería, L298N, Pi, ESP32, servos y encoders. En la cara de cobre está además el plano de GND relleno.
 
 ## Cómo se fabrica una PCB de una capa
@@ -42,7 +51,7 @@ hardware/
 firmware/common/rover_pins.h   mapa de pines para el firmware
 ```
 
-Para regenerar, usa el Python de KiCad 7 o posterior con `numpy` y `scipy` instalados:
+Para regenerar, usa el Python de KiCad 7 o posterior con `numpy` y `scipy` instalados. El ruteo es determinista y tarda unos 25 minutos. Sin `--route` el script no sobrescribe una PCB ya ruteada.
 
 ```bash
 python3 hardware/tools/generate.py --route
