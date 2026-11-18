@@ -1,0 +1,119 @@
+Simulacion ESP32-A (traccion) sobre el netlist de rover_controller.kicad_pcb
+
+== Arranque seguro
+  [OK]   MOTOR_EN (GPIO13) en LOW despues de setup()
+  [OK]   MOTOR_EN llega a los 6 ENA/ENB de los L298N (6)
+  [OK]   MOTOR_EN tiene pull-down a GND en la PCB (motores apagados al encender)
+  [OK]   ningun motor recibe voltaje al arrancar
+
+== UART con la Raspberry Pi
+  [OK]   U2 RX=GPIO14 <- R13 (1k) <- Pi GPIO4/TXD2 [pin 7]
+  [OK]   U2 TX=GPIO27 -> R14 (1k) -> Pi GPIO5/RXD2 [pin 29]
+  [OK]   RX y TX usan el mismo UART de la Pi
+
+== Encoders: conector Pololu -> divisor -> GPIO
+  [OK]   M1: header J21 pin5 -> R1(10k) / R7(20k) / C11 1nF -> GPIO36 (firmware ENC1=GPIO36), nivel alto 3.33 V
+  [OK]   M1: interrupcion RISING configurada en GPIO36
+  [OK]   M2: header J22 pin5 -> R2(10k) / R8(20k) / C12 1nF -> GPIO39 (firmware ENC2=GPIO39), nivel alto 3.33 V
+  [OK]   M2: interrupcion RISING configurada en GPIO39
+  [OK]   M3: header J23 pin5 -> R3(10k) / R9(20k) / C13 1nF -> GPIO34 (firmware ENC3=GPIO34), nivel alto 3.33 V
+  [OK]   M3: interrupcion RISING configurada en GPIO34
+  [OK]   M4: header J24 pin5 -> R4(10k) / R10(20k) / C14 1nF -> GPIO35 (firmware ENC4=GPIO35), nivel alto 3.33 V
+  [OK]   M4: interrupcion RISING configurada en GPIO35
+  [OK]   M5: header J25 pin5 -> R5(10k) / R11(20k) / C15 1nF -> GPIO32 (firmware ENC5=GPIO32), nivel alto 3.33 V
+  [OK]   M5: interrupcion RISING configurada en GPIO32
+  [OK]   M6: header J26 pin5 -> R6(10k) / R12(20k) / C16 1nF -> GPIO33 (firmware ENC6=GPIO33), nivel alto 3.33 V
+  [OK]   M6: interrupcion RISING configurada en GPIO33
+
+== Cada comando de motor mueve el motor correcto, con la polaridad correcta
+  [OK]   M +700 en motor 1 -> conector M1 (J11/J21) recibe +0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M -700 en motor 1 -> conector M1 (J11/J21) recibe -0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M +700 en motor 2 -> conector M2 (J12/J22) recibe +0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M -700 en motor 2 -> conector M2 (J12/J22) recibe -0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M +700 en motor 3 -> conector M3 (J13/J23) recibe +0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M -700 en motor 3 -> conector M3 (J13/J23) recibe -0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M +700 en motor 4 -> conector M4 (J14/J24) recibe +0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M -700 en motor 4 -> conector M4 (J14/J24) recibe -0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M +700 en motor 5 -> conector M5 (J15/J25) recibe +0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M -700 en motor 5 -> conector M5 (J15/J25) recibe -0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M +700 en motor 6 -> conector M6 (J16/J26) recibe +0.70 x VBAT en M+ (rojo); los demas 0
+  [OK]   M -700 en motor 6 -> conector M6 (J16/J26) recibe -0.70 x VBAT en M+ (rojo); los demas 0
+
+== Telemetria de encoders (cuenta en el motor correcto)
+  [OK]   50 pulsos en el encoder de M1 -> telemetria cuenta 50 en la posicion 1
+  [OK]   50 pulsos en el encoder de M2 -> telemetria cuenta 50 en la posicion 2
+  [OK]   50 pulsos en el encoder de M3 -> telemetria cuenta 50 en la posicion 3
+  [OK]   50 pulsos en el encoder de M4 -> telemetria cuenta 50 en la posicion 4
+  [OK]   50 pulsos en el encoder de M5 -> telemetria cuenta 50 en la posicion 5
+  [OK]   50 pulsos en el encoder de M6 -> telemetria cuenta 50 en la posicion 6
+
+== Seguridad
+  [OK]   watchdog: sin comandos de la Pi por >300 ms -> MOTOR_EN=LOW y motores en 0
+  [OK]   bloqueo: PWM 800 sin pulsos de encoder -> motor 1 cortado (banderas=0x81)
+  [OK]   linea con checksum incorrecto se rechaza
+  [OK]   linea con checksum correcto se acepta
+
+== Restricciones del ESP32
+  [OK]   U2 GPIO2  -> U6_IN3     (debe quedar en LOW/flotante para grabar por USB)
+  [OK]   U2 GPIO5  -> U5_IN3     (pull-up interno; no forzar LOW)
+  [OK]   U2 GPIO12 -> sin conectar (debe quedar en LOW al arrancar (si no: flash a 1.8 V y no arranca))
+  [OK]   U2 GPIO15 -> U6_IN4     (solo cambia el log de arranque)
+  [OK]   12 canales PWM (LEDC tiene 16)
+  [OK]   frecuencia de PWM <= 25 kHz (limite practico del L298N)
+  [OK]   sin usos ilegales de GPIO en el firmware (0)
+
+RESULTADO ESP32-A: 48 OK, 0 FALLAS
+Simulacion ESP32-B (servos) sobre el netlist de rover_controller.kicad_pcb
+
+== UART con la Raspberry Pi
+  [OK]   U3 RX=GPIO15 <- R15 (1k) <- Pi GPIO14/TXD0 [pin 8]
+  [OK]   U3 TX=GPIO2 -> R16 (1k) -> Pi GPIO15/RXD0 [pin 10]
+  [OK]   RX y TX usan el mismo UART de la Pi
+
+== Servos: GPIO -> header (GND, V+, SIG)
+  [OK]   S1: GPIO23 -> SERVO1 -> J31 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S1: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S1: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S2: GPIO22 -> SERVO2 -> J32 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S2: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S2: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S3: GPIO21 -> SERVO3 -> J33 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S3: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S3: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S4: GPIO19 -> SERVO4 -> J34 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S4: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S4: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S5: GPIO18 -> SERVO5 -> J35 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S5: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S5: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S6: GPIO17 -> SERVO6 -> J36 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S6: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S6: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S7: GPIO16 -> SERVO7 -> J37 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S7: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S7: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+  [OK]   S8: GPIO4 -> SERVO8 -> J38 pin3 (SIG); pin1=GND pin2=SERVO_V
+  [OK]   S8: arranca centrado (1500 us @ 50 Hz)
+  [OK]   S8: 0 grados=800 us, 180 grados=2200 us, 5000 us se limita a 2200 us
+
+== Voltaje de bateria (XT60 -> fusible -> divisor -> ADC)
+  [OK]   GPIO34 -> VBAT_SENSE: R22(100k) a VBAT_F y R23(27k) a GND
+  [OK]   VBAT 9.0 V -> ADC 1.91 V (max 3.1 V) -> reporta 9.00 V, alarma=1
+  [OK]   VBAT 11.1 V -> ADC 2.36 V (max 3.1 V) -> reporta 11.10 V, alarma=0
+  [OK]   VBAT 12.6 V -> ADC 2.68 V (max 3.1 V) -> reporta 12.60 V, alarma=0
+  [OK]   VBAT 14.4 V -> ADC 3.06 V (max 3.1 V) -> reporta 14.40 V, alarma=0
+
+== Alimentacion de las ESP32 (diodos Schottky en VIN)
+  [OK]   U2 VIN=VIN_A <- D5 (catodo en VIN, anodo en +5V) 1N5819
+  [OK]   U3 VIN=VIN_B <- D6 (catodo en VIN, anodo en +5V) 1N5819
+
+== Restricciones del ESP32
+  [OK]   U3 GPIO2  -> ESPB_TX    (debe quedar en LOW/flotante para grabar por USB)
+  [OK]   U3 GPIO5  -> sin conectar (pull-up interno; no forzar LOW)
+  [OK]   U3 GPIO12 -> sin conectar (debe quedar en LOW al arrancar (si no: flash a 1.8 V y no arranca))
+  [OK]   U3 GPIO15 -> ESPB_RX    (solo cambia el log de arranque)
+  [OK]   sin usos ilegales de GPIO en el firmware (0)
+
+RESULTADO ESP32-B: 39 OK, 0 FALLAS
+
+selftest: 5 lineas del firmware validas, 0 invalidas

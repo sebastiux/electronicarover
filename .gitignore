@@ -8,3 +8,6 @@ _autosave-*
 hardware/build/
 *.jar
 __pycache__/
+
+# PlatformIO
+firmware/.pio/
