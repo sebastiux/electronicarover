@@ -1,6 +1,6 @@
-# Rover Controller v1.0: PCB de UNA capa (KiCad)
+# Rover Controller v1.0: PCB de 2 capas (KiCad)
 
-PCB de **una sola capa de cobre** de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
+PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
 
 | Bloque | Módulo | Función |
 |---|---|---|
@@ -15,23 +15,22 @@ PCB de **una sola capa de cobre** de 200 × 150 mm. Los módulos se montan encim
 
 ![PCB](docs/img/pcb_completa.png)
 
-**Estado:** ruteada al 100 % en una capa. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Lleva **43 puentes de alambre** (669 mm en total, el más largo de 62 mm), numerados W1–W43 en la serigrafía y listados en `fab/puentes_alambre.csv`.
+**Estado:** ruteada al 100 %. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Lleva 39 vías y plano de GND en las dos caras.
 
 | Vista | Archivo |
 |---|---|
-| Cobre (B.Cu) | `docs/img/pcb_cobre.png` |
-| Montaje y puentes | `docs/img/pcb_montaje.png`, `docs/montaje_y_puentes.pdf` |
-| Cobre espejado 1:1 para planchado/CNC | `docs/cobre_BCu_espejo_1a1.pdf` |
-| Gerbers de 1 capa | `fab/rover_controller_gerbers_1capa.zip` |
+| Ambas caras | `docs/img/pcb_completa.png` |
+| Cara superior (F.Cu) | `docs/img/pcb_top.png`, `docs/cobre_FCu_1a1.pdf` |
+| Cara inferior (B.Cu) | `docs/img/pcb_bottom.png`, `docs/cobre_BCu_espejo_1a1.pdf` (espejado) |
+| Gerbers + taladros | `fab/rover_controller_gerbers_2capas.zip` |
 
-**Tierra común:** existe una sola red `GND` que une batería, L298N, Pi, ESP32, servos y encoders. En la cara de cobre está además el plano de GND relleno.
+**Tierra común:** existe una sola red `GND` que une batería, L298N, Pi, ESP32, servos y encoders. Además hay plano de GND relleno en las dos caras.
 
-## Cómo se fabrica una PCB de una capa
+## Fabricación
 
-- **Cobre:** solo `B.Cu`, la cara de soldadura. Los componentes van del otro lado, en la cara superior.
-- **Puentes de alambre:** donde dos pistas tendrían que cruzarse se usa un puente de alambre. Cada puente tiene dos barrenos y en KiCad aparece como un tramo **rojo en `F.Cu`**. **`F.Cu` no se fabrica**: solo indica dónde va cada alambre. La lista con coordenadas y largo está en `rover_controller/puentes_alambre.csv`; usa alambre aislado (AWG22–24 en señales, AWG18 en potencia).
-- **Para hacerla en casa** (planchado, fotolito o CNC), usa `docs/cobre_BCu_espejo_1a1.pdf`. Es el cobre visto desde la cara de cobre, ya espejado, a escala 1:1.
-- **Para mandarla a fabricar**, usa `fab/rover_controller_gerbers_1capa.zip`, con solo las capas B.Cu, B.Mask, F.SilkS, Edge.Cuts y los taladros. Se genera con `tools/export_fab.sh`.
+- **2 capas**, 1.6 mm, cobre de **2 oz** (las pistas de motor y batería son anchas, de 2–3 mm), HASL.
+- Para JLCPCB, PCBWay o similares, sube `fab/rover_controller_gerbers_2capas.zip`.
+- **Vías:** 0.8/0.4 mm en señales, 1.0/0.5 en GND y 1.2/0.6 en +5V y servos. Las pistas de batería y de motores van solo en la cara inferior.
 - **Barrenos de montaje al chasis:** 8 M3 en las orillas (H1–H8), más los 4 M2.5 de la Raspberry Pi.
 
 ## Estructura
@@ -40,12 +39,11 @@ PCB de **una sola capa de cobre** de 200 × 150 mm. Los módulos se montan encim
 hardware/
 ├── rover_controller/          Proyecto KiCad (abrir rover_controller.kicad_pro)
 │   ├── rover.kicad_sym / rover.pretty/   símbolos y footprints propios
-│   ├── bom.csv                lista de materiales
-│   └── puentes_alambre.csv    puentes de alambre (posición y largo)
+│   └── bom.csv                lista de materiales
 ├── tools/
 │   ├── rover_design.py        FUENTE DE VERDAD: pines, redes, posiciones, cotas, guías de ruteo
-│   ├── generate.py            genera el esquemático y la PCB (--route: rutea en una capa)
-│   ├── router1l.py            ruteador de una capa con puentes de alambre
+│   ├── generate.py            genera el esquemático y la PCB (--route: rutea)
+│   ├── router1l.py            ruteador (2 capas; LAYERS = 1 en rover_design.py para una capa con puentes)
 │   └── export_fab.sh          Gerbers, PDFs 1:1 e imágenes
 └── docs/
 firmware/common/rover_pins.h   mapa de pines para el firmware
@@ -78,11 +76,9 @@ La fila doble de pads de cada ESP32 acepta clones con 25.4 o 22.86 mm entre fila
 
 ### Raspberry Pi 5
 
-En una PCB de una capa no se puede soldar un header por la cara de los componentes. Por eso:
-
-1. Usa un **stacking header 2x20 de pines largos**. Insértalo **desde abajo**, deja unos 3 mm entre el cuerpo y la PCB y suéldalo por la **cara de cobre**.
-2. La Pi se enchufa por debajo al lado hembra del header. Usa standoffs M2.5: 11 mm, o 16–18 mm con el Active Cooler.
-3. Los pines largos sobresalen por arriba de la PCB. Ahí puedes conectar con cables Dupont los GPIO que quedan libres (I2C, etc.).
+1. Suelda un **header hembra 2x20** en la **cara inferior**; los pines se sueldan por arriba.
+2. Si quieres acceder por arriba a los GPIO libres, usa en su lugar un **stacking header** de pines largos: los pines sobresalen sobre la PCB y ahí conectas cables Dupont.
+3. Monta la Pi debajo con standoffs M2.5: 11 mm, o 16–18 mm con el Active Cooler.
 
 ### ESP32
 
@@ -102,7 +98,7 @@ L298N (regulador 78M05 del módulo) ─► +5V de los encoders de sus 2 motores
 
 - **Pi 5 por GPIO:** en `/boot/firmware/config.txt` agrega `usb_max_current_enable=1`. Además corre `sudo rpi-eeprom-config -e` y pon `PSU_MAX_CURRENT=5000`. Para proteger la Pi hay un TVS SA5.0A (D1) y 1000 µF (C2).
 - **UART sin cables:** la Pi tiene UART2 (GPIO4/5, `/dev/ttyAMA2`) hacia la ESP32-A y UART0 (GPIO14/15, `/dev/ttyAMA0`) hacia la ESP32-B, con 1k en serie. Activa `dtoverlay=uart2-pi5` y `dtoverlay=uart0-pi5`.
-- **Asignación de pines** (ver `firmware/common/rover_pins.h`): está pensada para que la placa de una capa se pueda rutear.
+- **Asignación de pines** (ver `firmware/common/rover_pins.h`): está pensada para que el ruteo quede limpio.
   - En la ESP32-A, los IN1–IN4 de los tres L298N siguen el mismo orden que la fila de pines, así que las pistas bajan en abanico sin cruzarse.
   - En la ESP32-B, cada servo queda a la misma altura que su GPIO.
 - **`MOTOR_EN`** (IO13 de la ESP32-A, con pull-down) habilita los 6 canales. Los motores no se mueven mientras arranca la ESP32.
@@ -118,6 +114,5 @@ L298N (regulador 78M05 del módulo) ─► +5V de los encoders de sus 2 motores
 ## ⚠️ Limitaciones
 
 1. **L298N vs. Pololu 37D:** el motor pide hasta **5.5 A** cuando se bloquea y el L298N soporta unos 2 A continuos por canal. Además pierde 2–3 V. Usa rampas de PWM y detecta bloqueos con el encoder.
-2. Con una sola capa hacen falta **puentes de alambre**: revisa `puentes_alambre.csv`. Coloca los puentes **antes** que los módulos, porque algunos pasan por debajo de los L298N o de las ESP32.
-3. **ESP32-A:** GPIO1 (TX0) maneja un IN del L298N. No uses `Serial.print()` mientras controlas los motores; para telemetría usa `Serial2` hacia la Pi.
-4. No hay protección contra polaridad inversa. Respeta la polaridad del XT60: lado recto = +, lado biselado = −.
+2. **ESP32-A:** GPIO1 (TX0) maneja un IN del L298N. No uses `Serial.print()` mientras controlas los motores; para telemetría usa `Serial2` hacia la Pi.
+3. No hay protección contra polaridad inversa. Respeta la polaridad del XT60: lado recto = +, lado biselado = −.

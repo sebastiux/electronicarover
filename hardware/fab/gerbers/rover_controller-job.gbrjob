@@ -5,7 +5,7 @@
       "Application": "Pcbnew",
       "Version": "7.0.11+dfsg-1build4"
     },
-    "CreationDate": "2026-11-18T02:04:09+00:00"
+    "CreationDate": "2026-11-18T02:15:42+00:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
@@ -34,6 +34,11 @@
   ],
   "FilesAttributes": [
     {
+      "Path": "rover_controller-F_Cu.gtl",
+      "FileFunction": "Copper,L1,Top",
+      "FilePolarity": "Positive"
+    },
+    {
       "Path": "rover_controller-B_Cu.gbl",
       "FileFunction": "Copper,L2,Bot",
       "FilePolarity": "Positive"
@@ -42,6 +47,16 @@
       "Path": "rover_controller-F_Silkscreen.gto",
       "FileFunction": "Legend,Top",
       "FilePolarity": "Positive"
+    },
+    {
+      "Path": "rover_controller-B_Silkscreen.gbo",
+      "FileFunction": "Legend,Bot",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "rover_controller-F_Mask.gts",
+      "FileFunction": "SolderMask,Top",
+      "FilePolarity": "Negative"
     },
     {
       "Path": "rover_controller-B_Mask.gbs",

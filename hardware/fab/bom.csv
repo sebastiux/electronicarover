@@ -41,7 +41,7 @@ Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;R25;330;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 330 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 5V
 1;R26;470;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 470 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED servos
 6;R7,R8,R9,R10,R11,R12;20k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 20k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder (a GND)
-1;U1;RaspberryPi5_GPIO;rover:RPi5_HAT_Header_2x20;Stacking header 2x20 2.54mm pines largos;Stacking header 2x20 de pines largos (Pi 5 debajo, soldar por la cara de cobre)
+1;U1;RaspberryPi5_GPIO;rover:RPi5_HAT_Header_2x20;Header hembra 2x20 2.54mm (o stacking header 2x20);Header hembra 2x20 en la cara inferior (Pi 5 debajo); o stacking header para acceder a los GPIO por arriba
 1;U2;ESP32-A_Traccion;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 CP2102 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15
 1;U3;ESP32-B_Servos;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 CP2102 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15
 3;U4,U5,U6;L298N_Module;rover:L298N_Module_Pins;Modulo puente H L298N (HW-095);Modulo L298N (bornas sustituidas por pines, quitar jumpers ENA/ENB, dejar el jumper 5V-EN: su +5V alimenta los encoders)

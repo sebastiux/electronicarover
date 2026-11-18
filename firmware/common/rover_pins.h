@@ -1,7 +1,7 @@
-// rover_pins.h - Mapa de pines de la PCB Rover Controller v1.0 (una capa)
+// rover_pins.h - Mapa de pines de la PCB Rover Controller v1.0 (2 capas)
 // Fuente: hardware/tools/rover_design.py (mantener sincronizado).
 //
-// Las asignaciones estan elegidas para que la PCB de UNA capa se pueda rutear:
+// Las asignaciones estan elegidas para que el ruteo de la PCB quede limpio:
 // el orden fisico de los pines de la ESP32 coincide con el orden de los
 // destinos. Los UART del ESP32 se remapean (Serial2.begin(baud, cfg, RX, TX)).
 #pragma once
