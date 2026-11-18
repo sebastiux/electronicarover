@@ -95,6 +95,24 @@ NETCLASSES = [
 DEFAULT_CLASS = (0.6, 0.4, 2.0, 1.0)
 
 # ---------------------------------------------------------------------------
+# GUIAS DE RUTEO (una capa)
+# ---------------------------------------------------------------------------
+def routing_reserved():
+    """Corredor de senales bajo los headers logicos de los L298N: ahi no pasan
+    pistas de potencia, para que la ESP32-A llegue a IN1..IN4/ENA/ENB."""
+    out = [(20.0, 66.0, 186.0, 75.5, {"Default"})]
+    for cx in L298N_CX:
+        out.append((cx - 0.5, L298N_CY + 16.0, cx + 16.5, 66.0, {"Default"}))
+    return out
+
+
+# pads que se rutean en la etapa de potencia (el resto de la red va al final)
+ROUTING_EARLY = {
+    "+5V": {"J5", "C2", "D1", "U1"},
+    "SERVO_V": {"J6", "J7", "C3", "C4", "J31", "J32", "J33", "J34", "J35", "J36", "J37", "J38"},
+}
+
+# ---------------------------------------------------------------------------
 # COMPONENTES
 # ---------------------------------------------------------------------------
 # Cada componente: ref, value, symbol(lib_id), footprint(lib:name),

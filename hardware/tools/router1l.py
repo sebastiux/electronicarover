@@ -98,7 +98,7 @@ class Grid:
 
 
 class Router:
-    def __init__(self, board, classes, no_jumper_classes=("BATT", "MOTOR"), log=print):
+    def __init__(self, board, classes, no_jumper_classes=("BATT", "MOTOR"), log=print, reserved=()):
         self.board = board
         self.classes = classes  # name -> (width, clearance)
         self.no_jumper = set(no_jumper_classes)
@@ -109,6 +109,11 @@ class Router:
         self.failed = []
         self.trees = {}
         self._build_obstacles()
+        # corredores reservados: (x0, y0, x1, y1, clases_permitidas) en mm absolutos
+        self.reserved = []
+        for (x0, y0, x1, y1, allowed) in reserved:
+            m = (self.g.XX >= x0) & (self.g.XX <= x1) & (self.g.YY >= y0) & (self.g.YY <= y1)
+            self.reserved.append((m, set(allowed)))
         self._bridge_twins()
 
     # ------------------------------------------------------------------
@@ -242,7 +247,7 @@ class Router:
             if size(shp) < 2.0 and cls in ("BATT", "MOTOR", "PWR", "GND"):
                 w = min(w, 1.4)
             w = max(0.5, round(w * 10 - 0.5) / 10)
-            ok = self._connect(name, code, shp, w, clr, distB, allow_j, tree_pts)
+            ok = self._connect(name, code, shp, w, clr, distB, allow_j, tree_pts, cls)
             if not ok and not relaxed:
                 self.failed.append((name, cls, pad.GetParent().GetReference(), pad.GetNumber()))
                 self.log("   !! no se pudo conectar %s -> %s.%s" % (name, pad.GetParent().GetReference(), pad.GetNumber()))
@@ -252,10 +257,13 @@ class Router:
                 done.add(k)
 
     # ------------------------------------------------------------------
-    def _connect(self, name, code, shp, w, clr, distB, allow_j, tree_pts):
+    def _connect(self, name, code, shp, w, clr, distB, allow_j, tree_pts, cls="Default"):
         g = self.g
         need = w / 2 + clr + RM
         freeB = distB >= need
+        for (m, allowed) in self.reserved:
+            if cls not in allowed:
+                freeB &= ~m
         tx, ty = (shp[1], shp[2]) if shp[0] == "c" else ((shp[1] + shp[3]) / 2, (shp[2] + shp[4]) / 2)
         # celdas objetivo: dentro del pad destino
         tgt = np.zeros_like(freeB)
@@ -453,20 +461,23 @@ class Router:
             self.jumpers.append((name, xa, ya, xc, yc))
 
 
-def route(board, classes, assignments, order_classes=None, log=print):
+def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
+          reserved=(), early_refs=None):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
-    Orden: BATT, MOTOR, PWR, GND de potencia (pads >= 2 mm), senales,
-    resto de GND, y una ultima pasada relajada para lo que haya fallado.
+    Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
+    senales largas, senales cortas, resto de +5V y GND, pasada relajada.
+    early_refs: {red: set(referencias)} pads que van en la etapa de potencia.
     """
-    r = Router(board, classes, log=log)
+    r = Router(board, classes, log=log, reserved=reserved)
     nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1]
+    early_refs = early_refs or {}
 
     def span(n):
         pads = r.pads_by_net[n]
         xs = [p[0].GetPosition().x for p in pads]
         ys = [p[0].GetPosition().y for p in pads]
-        return (max(xs) - min(xs)) + (max(ys) - min(ys))
+        return mm((max(xs) - min(xs)) + (max(ys) - min(ys)))
 
     def big(pad):
         return max(mm(pad.GetSize().x), mm(pad.GetSize().y)) >= 2.0
@@ -474,23 +485,34 @@ def route(board, classes, assignments, order_classes=None, log=print):
     def cls(n):
         return assignments.get(n, "Default")
 
+    def early(n):
+        refs = early_refs.get(n)
+        if refs is None:
+            return big
+        return lambda pad: pad.GetParent().GetReference() in refs
+
     stages = []
-    for c in ("BATT", "MOTOR", "PWR"):
+    for c in ("BATT", "MOTOR"):
         stages += [(n, c, None) for n in sorted(nets, key=span) if cls(n) == c]
-    stages += [(n, "GND", big) for n in nets if cls(n) == "GND"]
-    stages += [(n, "Default", None) for n in sorted(nets, key=span) if cls(n) == "Default"]
-    stages += [(n, "GND", None) for n in nets if cls(n) == "GND"]
+    stages += [(n, "PWR", early(n)) for n in nets if cls(n) == "PWR"]
+    stages += [(n, "GND", early(n)) for n in nets if cls(n) == "GND"]
+    sig = [n for n in nets if cls(n) == "Default"]
+    longs = sorted([n for n in sig if span(n) > 60], key=span, reverse=True)
+    shorts = sorted([n for n in sig if span(n) <= 60], key=span)
+    stages += [(n, "Default", None) for n in longs + shorts]
+    stages += [(n, cls(n), None) for n in nets if cls(n) in ("PWR", "GND")]
     for (n, c, flt) in stages:
         t0 = time.time()
         nj = len(r.jumpers)
         r.route_net(n, c, flt)
         log("  %-12s %-8s %5.1fs  puentes=%d" % (n, c, time.time() - t0, len(r.jumpers) - nj))
     # pasada relajada
-    pending = list(dict.fromkeys((f[0], f[1]) for f in r.failed))
+    pending = list(dict.fromkeys((f[0], f[1]) for f in r.failed)) if relaxed_pass else []
     r.failed = []
     for (n, c) in pending:
+        t0 = time.time()
         r.route_net(n, c, None, relaxed=True)
-    # lo que siga sin conectar
+        log("  (relajada) %-12s %5.1fs" % (n, time.time() - t0))
     r.failed = []
     for n in nets:
         t = r.trees.get(n)

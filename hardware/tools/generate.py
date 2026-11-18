@@ -674,7 +674,7 @@ def build_pcb(comps, netnames, assignments, route=False):
 # ============================================================================
 #  RUTEO DE UNA CAPA
 # ============================================================================
-def route_board():
+def route_board(relaxed_pass=True):
     import pcbnew
     import router1l
     pcb_path = os.path.join(OUT, D.PROJECT + ".kicad_pcb")
@@ -685,10 +685,12 @@ def route_board():
     assignments = {}
     for (name, tw, clr, vd, vdr, pats) in D.NETCLASSES:
         classes[name] = (tw, clr)
-    for n, ni in board.GetNetsByName().items():
-        if str(n):
-            assignments[str(n)] = ni.GetNetClassName()
-    r = router1l.route(board, classes, assignments, ["BATT", "MOTOR", "PWR", "GND", "Default"])
+    # clases a partir de rover_design (no depender del .kicad_pro cacheado)
+    assignments = write_project(D.nets())
+    ox, oy = 30.0, 30.0
+    reserved = [(x0 + ox, y0 + oy, x1 + ox, y1 + oy, a) for (x0, y0, x1, y1, a) in D.routing_reserved()]
+    r = router1l.route(board, classes, assignments, relaxed_pass=relaxed_pass,
+                       reserved=reserved, early_refs=D.ROUTING_EARLY)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)
