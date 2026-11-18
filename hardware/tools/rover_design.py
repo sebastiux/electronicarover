@@ -82,14 +82,17 @@ RPI_PINS = {
 # ---------------------------------------------------------------------------
 # NET CLASSES
 # ---------------------------------------------------------------------------
+# PCB de UNA capa (cobre solo en B.Cu): pistas anchas y holguras generosas,
+# aptas para fabricacion casera (planchado/CNC) o comercial.
+# Las "vias" son los barrenos de los puentes de alambre (pad 2.0 / taladro 1.0).
 NETCLASSES = [
     # name, track, clearance, via_d, via_drill, patterns
-    ("BATT", 3.0, 0.5, 1.6, 0.8, ["VBAT_IN", "VBAT_F"]),
-    ("MOTOR", 2.0, 0.4, 1.6, 0.8, ["M?_A", "M?_B"]),
-    ("PWR", 2.0, 0.35, 1.2, 0.6, ["+5V", "SERVO_V"]),
-    ("GND", 1.0, 0.3, 1.0, 0.5, ["GND"]),
+    ("BATT", 3.0, 0.5, 2.0, 1.0, ["VBAT_IN", "VBAT_F"]),
+    ("MOTOR", 2.0, 0.4, 2.0, 1.0, ["M?_A", "M?_B"]),
+    ("PWR", 2.0, 0.4, 2.0, 1.0, ["+5V", "SERVO_V"]),
+    ("GND", 1.5, 0.4, 2.0, 1.0, ["GND"]),
 ]
-DEFAULT_CLASS = (0.3, 0.25, 0.8, 0.4)
+DEFAULT_CLASS = (0.6, 0.4, 2.0, 1.0)
 
 # ---------------------------------------------------------------------------
 # COMPONENTES
@@ -115,6 +118,11 @@ FP_MH = "MountingHole:MountingHole_3.2mm_M3"
 
 COMPONENTS = []
 
+# Barrenos M3 en las orillas para atornillar la PCB al chasis
+# (ademas de los 4 agujeros M2.5 de la Raspberry Pi).
+CHASSIS_HOLES = [(4.0, 4.0), (68.0, 4.0), (132.0, 4.0), (196.0, 4.0),
+                 (4.0, 45.0), (196.0, 45.0), (4.0, 146.0), (128.0, 146.5)]
+
 
 def add(ref, value, symbol, footprint, pins, pcb, sch, **kw):
     if symbol == "Device:R":
@@ -127,7 +135,7 @@ def add(ref, value, symbol, footprint, pins, pcb, sch, **kw):
 
 # ---- L298N: centros en la PCB --------------------------------------------
 L298N_CX = [36.0, 100.0, 164.0]
-L298N_CY = 50.0
+L298N_CY = 46.0
 
 # ---- Mapeo de motores ------------------------------------------------------
 # Ux -> (motor lado A (OUT1/OUT2), motor lado B (OUT3/OUT4))
@@ -248,22 +256,26 @@ def build():
             mpn="Modulo puente H L298N (HW-095)")
         # conectores por motor
         for side, m in (("A", ma), ("B", mb)):
+            # Una sola capa: los pines de motor del header y de la bornera quedan
+            # alineados sobre OUT1/OUT3 para no cruzar las lineas del encoder.
             if side == "A":
-                tb_x, hd_x = cx - 24.42, cx - 29.5
+                tb_x, hd_x, hd_rot = cx - 17.0, cx - 17.0, -90
+                tb_pins = {1: "M%d_A" % m, 2: "M%d_B" % m}
             else:
-                tb_x, hd_x = cx + 25.08, cx + 17.8
+                tb_x, hd_x, hd_rot = cx + 22.08, cx + 17.0, 90
+                tb_pins = {1: "M%d_B" % m, 2: "M%d_A" % m}
             # bornera (rot 180: entrada de cable hacia el borde superior)
             add("J%d" % (10 + m), "Motor M%d" % m, "Connector:Screw_Terminal_01x02", FP_TB2,
-                {1: "M%d_A" % m, 2: "M%d_B" % m}, (tb_x, 6.0, 180),
+                tb_pins, (tb_x, 6.0, 180),
                 (38.1 + 101.6 * k + (0 if side == "A" else 50.8), 304.8),
-                desc="Bornera 2P 5.08mm motor M%d (%s)" % (m, MOTORS[m]),
+                side=side, desc="Bornera 2P 5.08mm motor M%d (%s)" % (m, MOTORS[m]),
                 mpn="KF301-2P / DG301 5.08mm")
             # header compatible con cable Pololu 37D (rojo, negro, verde, azul, amarillo, blanco)
             add("J%d" % (20 + m), "Pololu37D_M%d" % m, "rover:Pololu_37D_Encoder", FP_H1x6,
                 {1: "M%d_A" % m, 2: "M%d_B" % m, 3: "GND", 4: "+5V", 5: "ENC%d_A5V" % m, 6: None},
-                (hd_x, 16.0, 90),
+                (hd_x, 16.0, hd_rot),
                 (38.1 + 101.6 * k + (0 if side == "A" else 50.8), 335.28),
-                desc="Header 1x6 macho: cable Pololu 37D (M+, M-, GND, VCC, A, B)",
+                side=side, desc="Header 1x6 macho: cable Pololu 37D (M+, M-, GND, VCC, A, B)",
                 mpn="Header macho 1x6 2.54mm")
 
     # ======================= Divisores de encoder ===========================
@@ -385,7 +397,7 @@ def build():
         (238.76, 139.7), desc="Header auxiliar Raspberry Pi (I2C + GPIO)", mpn="Header macho 1x8")
 
     # ======================= Agujeros de montaje ============================
-    for i, (x, y) in enumerate([(3.5, 22.0), (196.5, 22.0), (3.5, 146.5), (128.0, 146.5)]):
+    for i, (x, y) in enumerate(CHASSIS_HOLES):
         add("H%d" % (i + 1), "M3", "Mechanical:MountingHole", FP_MH, {}, (x, y, 0),
             (543.56 + 12.7 * i, 25.4), desc="Agujero de montaje M3")
     return COMPONENTS

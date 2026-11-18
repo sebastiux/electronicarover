@@ -11,9 +11,10 @@ Genera el proyecto KiCad completo del Rover Controller:
 
 Uso (requiere KiCad 7+ con su python, que trae el modulo pcbnew):
     python3 hardware/tools/generate.py            # sch + pcb sin rutear
-    python3 hardware/tools/generate.py --route    # + autoruteo con Freerouting
+    python3 hardware/tools/generate.py --route    # + ruteo de una capa
 
-El ruteo usa freerouting.jar (variable FREEROUTING_JAR o hardware/tools/freerouting.jar).
+El ruteo (--route) usa router1l.py: UNA sola capa de cobre (B.Cu) + puentes de
+alambre (dibujados en F.Cu solo como guia). Requiere numpy y scipy.
 """
 import json
 import math
@@ -273,8 +274,9 @@ def footprint_esp32():
 def footprint_rpi():
     g = D.RPI
     L = fp_header("RPi5_HAT_Header_2x20",
-                  "Raspberry Pi 5 montada DEBAJO de la PCB (estilo HAT). Header hembra 2x20 "
-                  "soldado por la cara inferior. Agujeros M2.5 58x49mm.",
+                  "Raspberry Pi 5 montada DEBAJO de la PCB (estilo HAT). PCB de una capa: usar "
+                  "stacking header 2x20 de pines largos insertado desde abajo y soldado por la "
+                  "cara de cobre. Agujeros M2.5 58x49mm.",
                   "raspberry pi 5 hat gpio")
     L.append(fp_text("reference", "REF**", 4, 9, "F.SilkS", 1.2))
     L.append(fp_text("value", "RaspberryPi5", 30, 30, "F.Fab", 1.5))
@@ -282,8 +284,8 @@ def footprint_rpi():
     L.append(fp_rect(0, 0, g["hat_w"], g["hat_h"], "F.SilkS", 0.15))
     L.append(fp_rect(-0.5, -0.5, g["hat_w"] + 0.5, g["hat_h"] + 0.5, "F.CrtYd", 0.05))
     L.append(fp_text("user", "RASPBERRY PI 5 (montada debajo)", 32.5, 22, "F.SilkS", 2.0))
-    L.append(fp_text("user", "Header 2x20 HEMBRA en cara INFERIOR", 32.5, 27, "F.SilkS", 1.5))
-    L.append(fp_text("user", "Standoffs M2.5 (11mm, 16-18mm con Active Cooler)", 32.5, 31, "F.SilkS", 1.2))
+    L.append(fp_text("user", "Stacking header 2x20 (pines largos) desde ABAJO", 32.5, 27, "F.SilkS", 1.4))
+    L.append(fp_text("user", "soldar por la cara de cobre - standoffs M2.5", 32.5, 31, "F.SilkS", 1.2))
     L.append(fp_text("user", "USB/ETH ->", 60, 45, "F.SilkS", 1.5))
     for (x, y) in g["holes"]:
         L.append(fp_npth(x, y, g["hole_drill"]))
@@ -573,22 +575,6 @@ def build_pcb(comps, netnames, assignments, route=False):
         fp.Reference().SetTextThickness(FromMM(0.15))
         fps[c["ref"]] = fp
 
-    # puentes de la fila doble del ESP32 (25.4 <-> 22.86)
-    for ref in ("U2", "U3"):
-        fp = fps[ref]
-        by_num = {}
-        for pad in fp.Pads():
-            by_num.setdefault(pad.GetNumber(), []).append(pad)
-        for num, pads in by_num.items():
-            if len(pads) == 2 and pads[0].GetNetname():
-                t = pcbnew.PCB_TRACK(board)
-                t.SetStart(pads[0].GetPosition())
-                t.SetEnd(pads[1].GetPosition())
-                t.SetWidth(FromMM(1.0 if pads[0].GetNetname() in ("GND", "+5V") else 0.5))
-                t.SetLayer(pcbnew.F_Cu)
-                t.SetNet(pads[0].GetNet())
-                board.Add(t)
-
     # textos de serigrafia
     def silk(text, x, y, size=1.2, layer=pcbnew.F_SilkS, rot=0, bold=False):
         t = pcbnew.PCB_TEXT(board)
@@ -600,14 +586,18 @@ def build_pcb(comps, netnames, assignments, route=False):
         t.SetTextAngleDegrees(rot)
         board.Add(t)
 
-    silk("ROVER CONTROLLER v%s  -  RPi5 + 2xESP32 + 3xL298N" % D.REVISION, 100, 23.5, 1.6, bold=True)
+    silk("ROVER CONTROLLER v%s  -  RPi5 + 2xESP32 + 3xL298N  -  1 CAPA" % D.REVISION, 100, 21.0, 1.4, bold=True)
     for m in range(1, 7):
         c = next(cc for cc in comps if cc["ref"] == "J%d" % (10 + m))
         x = c["pcb"][0] - 2.54
         silk("M%d %s" % (m, D.MOTORS[m]), x, 11.6, 0.9)
-        silk("M-  M+", x, 1.4, 0.8)
+        side = c.get("side", "A")
+        silk("M-  M+" if side == "A" else "M+  M-", x, 1.4, 0.8)
         h = next(cc for cc in comps if cc["ref"] == "J%d" % (20 + m))
-        silk("+ - G V A B", h["pcb"][0] + 6.35, 18.7, 0.7)
+        if side == "A":
+            silk("B A V G - +", h["pcb"][0] - 6.35, 18.7, 0.7)
+        else:
+            silk("+ - G V A B", h["pcb"][0] + 6.35, 18.7, 0.7)
     # polaridad de borneras de potencia (texto a 90 grados: se lee de abajo hacia arriba)
     for ref, txt in [("J1", "-  BAT 12V  +"), ("J2", "-  BAT 12V  +"),
                      ("J3", "-  12V>5V  +"), ("J4", "-  12V>BEC  +")]:
@@ -646,8 +636,8 @@ def build_pcb(comps, netnames, assignments, route=False):
         return z
 
     rect = [(0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)]
-    zone(pcbnew.B_Cu, "GND", rect)
-    zone(pcbnew.F_Cu, "GND", rect)
+    # una sola capa de cobre: plano de GND solo en B.Cu (cara de soldadura)
+    zone(pcbnew.B_Cu, "GND", rect, clearance=0.5)
 
     # keepout de cobre bajo las antenas de los ESP32
     for ref in ("U2", "U3"):
@@ -676,104 +666,37 @@ def build_pcb(comps, netnames, assignments, route=False):
 
 
 # ============================================================================
-#  AUTORUTEO (Freerouting)
+#  RUTEO DE UNA CAPA
 # ============================================================================
-def sexp_parse(txt):
-    toks = re.findall(r'\(|\)|"(?:[^"\\]|\\.)*"|[^\s()]+', txt)
-    stack, cur = [], []
-    for t in toks:
-        if t == "(":
-            stack.append(cur)
-            cur = []
-        elif t == ")":
-            done = cur
-            cur = stack.pop()
-            cur.append(done)
-        else:
-            cur.append(t[1:-1] if t.startswith('"') else t)
-    return cur[0]
-
-
-def find(node, key):
-    for n in node:
-        if isinstance(n, list) and n and n[0] == key:
-            yield n
-
-
-def import_ses(board, ses_path):
+def route_board():
     import pcbnew
-    tree = sexp_parse(open(ses_path).read())
-    routes = next(find(tree, "routes"))
-    res = next(find(routes, "resolution"))
-    unit, mult = res[1], float(res[2])
-    scale_mm = {"um": 0.001, "mm": 1.0, "mil": 0.0254, "inch": 25.4}[unit] / mult
-    nets = board.GetNetsByName()
-    vias = {}
-    lib = next(find(routes, "library_out"), [])
-    for ps in find(lib, "padstack"):
-        name = ps[1]
-        shp = next(find(ps, "shape"))
-        circ = shp[1]
-        vias[name] = float(circ[2]) * scale_mm
-    ntracks = nvias = 0
-    for netnode in find(next(find(routes, "network_out")), "net"):
-        name = netnode[1]
-        ni = nets[name]
-        for w in find(netnode, "wire"):
-            path = next(find(w, "path"))
-            layer = pcbnew.F_Cu if path[1] == "F.Cu" else pcbnew.B_Cu
-            width = float(path[2]) * scale_mm
-            coords = [float(v) * scale_mm for v in path[3:]]
-            pts = [(coords[i], -coords[i + 1]) for i in range(0, len(coords), 2)]
-            for a, b in zip(pts, pts[1:]):
-                t = pcbnew.PCB_TRACK(board)
-                t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(a[0]), pcbnew.FromMM(a[1])))
-                t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(b[0]), pcbnew.FromMM(b[1])))
-                t.SetWidth(pcbnew.FromMM(width))
-                t.SetLayer(layer)
-                t.SetNet(ni)
-                board.Add(t)
-                ntracks += 1
-        for v in find(netnode, "via"):
-            dia = vias.get(v[1], 0.8)
-            m = re.search(r"_(\d+):(\d+)_um", v[1])
-            drill = float(m.group(2)) / 1000 if m else dia / 2
-            via = pcbnew.PCB_VIA(board)
-            via.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(float(v[2]) * scale_mm),
-                                            pcbnew.FromMM(-float(v[3]) * scale_mm)))
-            via.SetWidth(pcbnew.FromMM(dia))
-            via.SetDrill(pcbnew.FromMM(drill))
-            via.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
-            via.SetNet(ni)
-            board.Add(via)
-            nvias += 1
-    return ntracks, nvias
-
-
-def route_board(passes=40):
-    import pcbnew
+    import router1l
     pcb_path = os.path.join(OUT, D.PROJECT + ".kicad_pcb")
-    work = os.path.join(OUT, "..", "build")
-    os.makedirs(work, exist_ok=True)
-    dsn = os.path.join(work, D.PROJECT + ".dsn")
-    ses = os.path.join(work, D.PROJECT + ".ses")
     board = pcbnew.LoadBoard(pcb_path)
-    if not pcbnew.ExportSpecctraDSN(board, dsn):
-        raise RuntimeError("fallo exportando DSN")
-    jar = os.environ.get("FREEROUTING_JAR", os.path.join(HERE, "freerouting.jar"))
-    if os.path.exists(ses):
-        os.remove(ses)
-    cmd = ["java", "-Djava.awt.headless=true", "-jar", jar, "-de", dsn, "-do", ses,
-           "-mp", str(passes), "-mt", "1"]
-    print(" ".join(cmd))
-    subprocess.run(cmd, check=False, timeout=3600)
-    if not os.path.exists(ses):
-        raise RuntimeError("Freerouting no genero .ses")
-    nt, nv = import_ses(board, ses)
-    print("Importado: %d segmentos, %d vias" % (nt, nv))
+    for t in list(board.GetTracks()):
+        board.Remove(t)
+    classes = {"Default": D.DEFAULT_CLASS[:2]}
+    assignments = {}
+    for (name, tw, clr, vd, vdr, pats) in D.NETCLASSES:
+        classes[name] = (tw, clr)
+    for n, ni in board.GetNetsByName().items():
+        if str(n):
+            assignments[str(n)] = ni.GetNetClassName()
+    r = router1l.route(board, classes, assignments, ["BATT", "MOTOR", "PWR", "GND", "Default"])
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)
+    write_project(D.nets())
+    # lista de puentes de alambre
+    with open(os.path.join(OUT, "puentes_alambre.csv"), "w") as fh:
+        fh.write("Puente;Red;X1(mm);Y1(mm);X2(mm);Y2(mm);Largo(mm)\n")
+        for k, (n, xa, ya, xb, yb) in enumerate(r.jumpers, 1):
+            fh.write("W%d;%s;%.2f;%.2f;%.2f;%.2f;%.1f\n" % (k, n, xa - 30, ya - 30, xb - 30, yb - 30,
+                                                          math.hypot(xb - xa, yb - ya)))
+    print("Puentes de alambre: %d   Fallidas: %d" % (len(r.jumpers), len(r.failed)))
+    for f_ in r.failed:
+        print("  FALLO", f_)
+    return r
 
 
 def write_bom(comps):
