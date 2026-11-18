@@ -1,4 +1,4 @@
-# Rover Controller v1.1: PCB de 2 capas (KiCad)
+# Rover Controller v1.2: PCB de 2 capas (KiCad)
 
 PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
 
@@ -15,42 +15,66 @@ PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se 
 
 ![PCB](docs/img/pcb_completa.png)
 
-**Estado:** ruteada al 100 %. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Lleva 78 vías y plano de GND en las dos caras.
+**Estado:** ruteada al 100 %. DRC de KiCad: **0 violaciones y 0 conexiones pendientes**. Además `tools/check_proto.py` confirma **0 conexiones abiertas sin barrenos metalizados**. Lleva 101 vías de 2.2/1.0 mm.
 
-| Vista | Archivo |
+**Un solo diseño sirve para dos formas de fabricar.** La PCB se diseñó para funcionar sin metalizado; con metalizado (PTH) funciona igual.
+
+| Fabricación | Paquete | Para quién |
+|---|---|---|
+| **Prototipado CNC** (sin PTH, sin máscara) | `fab/rover_controller_prototipado.zip` | Servicio de prototipado de AG Electrónica (1 h a 1 día) |
+| **Industrial + ensamble THT** | `fab/pcbway/` | PCBWay, llave en mano: todo soldado menos L298N y Pi |
+
+## Cambios en la v1.2
+
+| Cambio | Por qué |
 |---|---|
-| Ambas caras | `docs/img/pcb_completa.png` |
-| Cara superior (F.Cu) | `docs/img/pcb_top.png`, `docs/cobre_FCu_1a1.pdf` |
-| Cara inferior (B.Cu) | `docs/img/pcb_bottom.png`, `docs/cobre_BCu_espejo_1a1.pdf` (espejado) |
-| Gerbers + taladros | `fab/rover_controller_gerbers_2capas.zip` |
+| **Modo prototipado:** cada pad conecta solo por la cara donde se suelda (abajo; el header de la Pi, arriba). Las pistas de arriba van solo de vía a vía. Las vías son de 2.2/1.0 mm para meter un pin y soldarlo por ambas caras. | El servicio de prototipado no metaliza barrenos. |
+| **L298N de 43.9 × 43.9 mm** con barrenos de **Ø4.0 mm a ±18.75 mm**, solo los 2 del lado del disipador | Las fuentes dan separaciones de 36.6, 37, 37.2 y 38.0 mm; un barreno de 4 mm acepta un M3 en cualquier separación entre 36.5 y 38.5 mm. El lado de los pines queda fijo por los 13 pines soldados. |
+| GND de los pines 25 y 39 de la Pi con vía propia | Libera la salida del pin 29 (UART2 RX). |
+| Pista de 12 V entre U4 y U6 desplazada | Deja lugar a la vía de GND de U5. |
 
 ## Cambios en la v1.1 (revisión de diseño)
 
 | Cambio | Por qué |
 |---|---|
-| Retorno de **GND de potencia de 3 mm**, igual que VBAT | Con 6 motores el retorno puede pasar de 10 A. La versión anterior usaba 1.4 mm (~6.8 A con 2 oz). |
-| **Alimentación de servos duplicada en ambas caras**: V+ y GND, 2 × 1.4 mm en paralelo | 7 servos 1501MG pueden pedir más de 7 A con el brazo y la dirección cargados. |
-| **1 nF del nodo de cada encoder a GND** (C11–C16) | Junto con los 10k forma un filtro RC de ~7 µs (la señal del encoder es ≤ 2.7 kHz) contra el ruido del PWM de los motores. |
+| Retorno de **GND de potencia de 3 mm**, igual que VBAT | Con 6 motores el retorno puede pasar de 10 A. |
+| **1 nF del nodo de cada encoder a GND** (C11–C16) | Junto con los 10k forma un filtro RC de ~7 µs contra el ruido del PWM de los motores. |
 | **Schottky 1N5819 en el VIN de cada ESP32** (D5, D6) | Al conectar el USB a la PC, no se retroalimenta el +5 V de la Pi ni el puerto USB. |
-| R21 y J5 movidos | Dejan libre la entrada del cable USB de la ESP32-A. |
-| Serigrafía | Ya no se enciman los textos. |
 
 | Corriente máx. aprox. (IPC-2221, +20 °C, cobre externo) | 1 oz | 2 oz |
 |---|---|---|
 | 3.0 mm: VBAT y GND de potencia | 7.2 A | 11.9 A |
 | 2.0 mm: motores y +5V | 5.4 A | 8.9 A |
-| 2 × 1.4 mm: rail de servos | 8.2 A | 13.6 A |
 
-**Pide cobre de 2 oz.**
+**Tierra común:** existe una sola red `GND` que une batería, L298N, Pi, ESP32, servos y encoders, con plano de GND relleno en la cara inferior.
 
-**Tierra común:** existe una sola red `GND` que une batería, L298N, Pi, ESP32, servos y encoders. Además hay plano de GND relleno en las dos caras.
+## Fabricación A: prototipado CNC (sin metalizado)
 
-## Fabricación
+Sube `fab/rover_controller_prototipado.zip`: cobre superior, cobre inferior, contorno y **un solo archivo de taladros**. También incluye `vias_pines.csv` con la posición de cada vía-pin.
 
-- **2 capas**, 1.6 mm, cobre de **2 oz** (las pistas de motor y batería son anchas, de 2–3 mm), HASL.
-- Para JLCPCB, PCBWay o similares, sube `fab/rover_controller_gerbers_2capas.zip`.
-- **Vías:** 0.8/0.4 mm en señales, 1.0/0.5 en GND y 1.2/0.6 en +5V y servos. Las pistas de batería y de motores van solo en la cara inferior.
-- **Barrenos de montaje al chasis:** 8 M3 en las orillas (H1–H8), más los 4 M2.5 de la Raspberry Pi.
+1. Pide **2 caras, sin máscara ni serigrafía**. Si es posible, usa placa con cobre de 2 oz (o estaña las pistas de potencia).
+2. **Vías-pin (101):** mete un pin de header (o un alambre de 0.8–0.9 mm) en cada vía y **suéldalo arriba y abajo**. Hazlo **antes** de montar los L298N y las ESP32, porque algunas quedan debajo. Corta los pines a ras.
+3. **Componentes:** todos van arriba y se sueldan **por abajo**. La única excepción es el **header 2x20 de la Pi**: va abajo y se suelda **por arriba**.
+4. Revisa continuidad de 12 V, 5 V, 6 V y GND contra GND (no debe haber corto) antes de conectar módulos.
+5. Para guiarte al soldar: `docs/cobre_superior_FCu_1a1.pdf`, `docs/cobre_inferior_BCu_espejo_1a1.pdf` y `docs/plantilla_1a1.pdf`.
+
+## Fabricación B: PCBWay (PCB + ensamble llave en mano)
+
+Todo en `fab/pcbway/`. La hoja **`cotizacion_PCBWay_rover_v1.2.png`** trae los valores exactos de los formularios.
+
+| Archivo | Uso |
+|---|---|
+| `rover_controller_v1.2_gerbers_PCBWay.zip` | Gerbers con máscara y serigrafía + taladros PTH/NPTH |
+| `rover_controller_BOM_PCBWay.xlsx` / `.csv` | 24 números de parte, 70 piezas. U4–U6 marcados DNP. |
+| `rover_controller_centroides.csv` | Posición y rotación de cada componente |
+| `plano_montaje_superior.pdf`, `plano_montaje_inferior_espejo.pdf` | Planos de montaje |
+
+- **PCB:** 2 capas, FR-4 1.6 mm, **cobre de 2 oz**, HASL sin plomo, máscara verde.
+- **Ensamble:** turnkey THT por las dos caras: todo arriba, más el header 2x20 de la Pi abajo.
+- **No se sueldan:** los L298N (los instalas tú), la Raspberry Pi 5 y las ESP32. De las ESP32 solo se sueldan sus zócalos 1x15.
+- Si cambias componentes, vuelve a generar el BOM con `python3 tools/bom_pcbway.py`.
+
+**Barrenos de montaje al chasis:** 8 M3 en las orillas (H1–H8), más los 4 M2.5 de la Raspberry Pi.
 
 ## Estructura
 
@@ -63,12 +87,16 @@ hardware/
 │   ├── rover_design.py        FUENTE DE VERDAD: pines, redes, posiciones, cotas, guías de ruteo
 │   ├── generate.py            genera el esquemático y la PCB (--route: rutea)
 │   ├── router1l.py            ruteador (2 capas; LAYERS = 1 en rover_design.py para una capa con puentes)
-│   └── export_fab.sh          Gerbers, PDFs 1:1 e imágenes
+│   ├── fix_proto.py           cierre puntual de pendientes (quitar/agregar pistas y re-rutear redes)
+│   ├── cierre_v1.2.sh         registro de los cierres hechos en la v1.2
+│   ├── check_proto.py         verifica conectividad SIN barrenos metalizados
+│   ├── bom_pcbway.py          BOM para ensamble llave en mano
+│   └── export_fab.sh          paquetes de prototipado y PCBWay, PDFs 1:1 e imágenes
 └── docs/
 firmware/common/rover_pins.h   mapa de pines para el firmware
 ```
 
-Para regenerar, usa el Python de KiCad 7 o posterior con `numpy` y `scipy` instalados. En la v1.1, el ruteo automático deja pendiente la red `5V_U5`; se cierra con `tools/fix_net.py` (el comando exacto está en la cabecera del script). El ruteo es determinista y tarda unos 25 minutos. Sin `--route` el script no sobrescribe una PCB ya ruteada.
+Para regenerar, usa el Python de KiCad 7 o posterior con `numpy` y `scipy` instalados. El ruteo es determinista y tarda unos 25 minutos. En la v1.2 dejó 6 pads pendientes, que se cerraron con `tools/fix_proto.py` (los comandos están en `tools/cierre_v1.2.sh`). Sin `--route` el script no sobrescribe una PCB ya ruteada.
 
 ```bash
 python3 hardware/tools/generate.py --route
@@ -80,7 +108,7 @@ hardware/tools/export_fab.sh
 
 ## Antes de fabricar: verifica las cotas
 
-Las posiciones de los pines del **L298N** son las medidas típicas del HW-095 (43 × 43 mm, agujeros M3 a 36.6 mm). **Imprime `docs/plantilla_1a1.pdf` al 100 %** y pon encima los L298N (ya sin bornas), las ESP32 y la Pi. Si algo no coincide, corrige el diccionario `L298N`, `ESP32` o `RPI` en `rover_design.py` y vuelve a generar.
+**L298N:** el footprint usa el plano de tu módulo (43.9 × 43.9 mm, barrenos a 38.0 mm). Las fuentes no coinciden (36.6 / 37 / 37.2 / 38 mm) y ninguna da la posición de los pines. **Imprime `docs/plantilla_1a1.pdf` al 100 %** y pon encima un L298N sin bornas, las ESP32 y la Pi. Si un pin no coincide, corrige el diccionario `L298N`, `ESP32` o `RPI` en `rover_design.py` y vuelve a generar.
 
 La fila doble de pads de cada ESP32 acepta clones con 25.4 o 22.86 mm entre filas.
 
@@ -91,7 +119,8 @@ La fila doble de pads de cada ESP32 acepta clones con 25.4 o 22.86 mm entre fila
 1. Desuelda las 3 bornas azules y el header 1x6 (`ENA IN1 IN2 IN3 IN4 ENB`).
 2. **Quita los jumpers ENA/ENB.** En la PCB van a `MOTOR_EN`.
 3. **Deja puesto el jumper 5V-EN.** El regulador 78M05 del módulo alimenta su lógica, y su pin **+5V alimenta los dos encoders** de ese módulo.
-4. Suelda header macho por arriba del módulo, con los pines saliendo por abajo, en las 7 posiciones de potencia y las 6 lógicas. Monta el módulo con standoffs M3.
+4. Suelda header macho por arriba del módulo, con los pines saliendo por abajo, en las 7 posiciones de potencia y las 6 lógicas.
+5. Atornilla el lado del disipador con 2 standoffs M3 (barrenos de 4 mm en la PCB) y suelda los 13 pines por abajo.
 
 ### Raspberry Pi 5
 

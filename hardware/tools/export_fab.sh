@@ -1,16 +1,21 @@
 #!/bin/bash
 # Exporta fabricacion y documentacion. Requiere kicad-cli (KiCad 7+).
-# Modo segun FAB en rover_design.py:
-#   proto -> prototipado CNC: SOLO cobre (F.Cu/B.Cu) + contorno + taladros (un archivo, sin metalizar)
-#   pro   -> fabricacion industrial (mascara, serigrafia, PTH)
+# Con FAB = "proto" en rover_design.py la PCB funciona SIN metalizado, y por lo tanto
+# tambien CON metalizado. Por eso se generan dos paquetes desde la misma PCB:
+#   fab/prototipado/  -> fresado CNC: solo cobre (F.Cu/B.Cu) + contorno + taladros, vias = pines
+#   fab/pcbway/       -> fabricacion industrial (PTH, mascara, serigrafia) + ensamble THT
+# Con FAB = "pro" solo se genera fab/pcbway/.
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 PRJ="$ROOT/rover_controller"; FAB="$ROOT/fab"; DOC="$ROOT/docs"
 PCB="$PRJ/rover_controller.kicad_pcb"; SCH="$PRJ/rover_controller.kicad_sch"
 MODE=$(python3 -c "import sys; sys.path.insert(0,'$ROOT/tools'); import rover_design as D; print(D.FAB)")
+REV=$(python3 -c "import sys; sys.path.insert(0,'$ROOT/tools'); import rover_design as D; print(D.REVISION)")
 mkdir -p "$FAB" "$DOC/img"
 kicad-cli sch export pdf -o "$DOC/rover_controller_schematic.pdf" "$SCH" >/dev/null
 cp "$PRJ/bom.csv" "$FAB/bom.csv"
+# restos de versiones anteriores
+rm -rf "$FAB/gerbers" "$FAB"/rover_controller_gerbers_2capas.zip "$DOC/cobre_FCu_1a1.pdf" "$DOC/cobre_BCu_espejo_1a1.pdf"
 
 if [ "$MODE" = "proto" ]; then
   OUT="$FAB/prototipado"; rm -rf "$OUT"; mkdir -p "$OUT"
@@ -34,20 +39,23 @@ with open(sys.argv[2], "w") as f:
 print("vias:", k)
 PY
   (cd "$OUT" && rm -f ../rover_controller_prototipado.zip && zip -q ../rover_controller_prototipado.zip ./*)
-  rm -rf "$FAB/gerbers" "$FAB"/rover_controller_gerbers_2capas.zip
   kicad-cli pcb export pdf -o "$DOC/cobre_superior_FCu_1a1.pdf" --layers F.Cu,Edge.Cuts --black-and-white "$PCB" >/dev/null
   kicad-cli pcb export pdf -o "$DOC/cobre_inferior_BCu_espejo_1a1.pdf" --layers B.Cu,Edge.Cuts --black-and-white --mirror "$PCB" >/dev/null
-  rm -f "$DOC/cobre_FCu_1a1.pdf" "$DOC/cobre_BCu_espejo_1a1.pdf"
-else
-  rm -rf "$FAB/gerbers" "$FAB/prototipado"; mkdir -p "$FAB/gerbers"
-  kicad-cli pcb export gerbers -o "$FAB/gerbers/" --layers F.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts \
-    --subtract-soldermask --use-drill-file-origin "$PCB" >/dev/null
-  kicad-cli pcb export drill -o "$FAB/gerbers/" --format excellon --excellon-separate-th \
-    --drill-origin plot --generate-map --map-format gerberx2 "$PCB" >/dev/null
-  (cd "$FAB/gerbers" && rm -f ../rover_controller_gerbers_2capas.zip && zip -q ../rover_controller_gerbers_2capas.zip ./*)
-  kicad-cli pcb export pdf -o "$DOC/cobre_FCu_1a1.pdf" --layers F.Cu,Edge.Cuts --black-and-white "$PCB" >/dev/null
-  kicad-cli pcb export pdf -o "$DOC/cobre_BCu_espejo_1a1.pdf" --layers B.Cu,Edge.Cuts --black-and-white --mirror "$PCB" >/dev/null
 fi
+
+# ---- PCBWay: PCB con PTH + mascara + serigrafia, y ensamble THT ----
+PW="$FAB/pcbway"; G="$PW/gerbers"; rm -rf "$G"; mkdir -p "$G"
+kicad-cli pcb export gerbers -o "$G/" --layers F.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,Edge.Cuts \
+  --subtract-soldermask --use-drill-file-origin "$PCB" >/dev/null
+kicad-cli pcb export drill -o "$G/" --format excellon --excellon-separate-th \
+  --drill-origin plot --generate-map --map-format gerberx2 "$PCB" >/dev/null
+(cd "$G" && rm -f "../rover_controller_v${REV}_gerbers_PCBWay.zip" && zip -q "../rover_controller_v${REV}_gerbers_PCBWay.zip" ./*)
+rm -rf "$G"
+kicad-cli pcb export pos -o "$PW/rover_controller_centroides.csv" --format csv --units mm --side both "$PCB" >/dev/null
+python3 "$ROOT/tools/bom_pcbway.py" 2>&1 | grep -v swig
+kicad-cli pcb export pdf -o "$PW/plano_montaje_superior.pdf" --layers F.Fab,F.SilkS,Edge.Cuts --black-and-white "$PCB" >/dev/null
+kicad-cli pcb export pdf -o "$PW/plano_montaje_inferior_espejo.pdf" --layers B.SilkS,B.Fab,Edge.Cuts --black-and-white --mirror "$PCB" >/dev/null
+
 kicad-cli pcb export pdf -o "$DOC/plantilla_1a1.pdf" --layers F.Fab,F.SilkS,Edge.Cuts --black-and-white "$PCB" >/dev/null
 for spec in "pcb_completa:F.Cu,B.Cu,F.SilkS,Edge.Cuts" "pcb_top:F.Cu,F.SilkS,Edge.Cuts" "pcb_bottom:B.Cu,Edge.Cuts"; do
   n=${spec%%:*}; l=${spec#*:}

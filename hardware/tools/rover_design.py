@@ -13,7 +13,7 @@ izquierda de la tarjeta, X hacia la derecha, Y hacia abajo (vista superior).
 """
 
 PROJECT = "rover_controller"
-REVISION = "1.1"
+REVISION = "1.2"
 TITLE = "Rover Controller - RPi5 + 2x ESP32 + 3x L298N"
 
 BOARD_W = 200.0
@@ -29,8 +29,10 @@ L298N = {
     # Cotas segun el plano del modulo comprado: 43.90 x 43.90 mm, barrenos a 38.00 mm.
     # Otras fuentes dan 36.6 / 37 / 37.2 mm. Barreno de 4.0 mm centrado a +-18.75:
     # con tornillo M3 acepta cualquier separacion entre 36.5 y 38.5 mm.
+    # Solo los 2 barrenos del lado del disipador: el lado de los pines queda fijo por
+    # los 13 pines soldados (y ahi los barrenos de 4 mm cortarian la pista MOTOR_EN).
     "size": 43.9,
-    "mount_holes": [(-18.75, -18.75), (18.75, -18.75), (-18.75, 18.75), (18.75, 18.75)],
+    "mount_holes": [(-18.75, -18.75), (18.75, -18.75)],
     "mount_drill": 4.0,
     # bornas de motor (se sustituyen por pines), paso 5.0/5.08 mm
     "OUT1": (-17.5, 1.0), "OUT2": (-17.5, 6.0),

@@ -1,7 +1,7 @@
 (kicad_sch (version 20230121) (generator eeschema)
   (uuid 355c6ecd-3390-5d0c-9267-6b6959b41b17)
   (paper "A1")
-  (title_block (title "Rover Controller - RPi5 + 2x ESP32 + 3x L298N") (date "2026-11-17") (rev "1.1") (company "electronicarover")
+  (title_block (title "Rover Controller - RPi5 + 2x ESP32 + 3x L298N") (date "2026-11-17") (rev "1.2") (company "electronicarover")
     (comment 1 "Generado por hardware/tools/generate.py - no editar a mano, editar rover_design.py")
   )
   (lib_symbols

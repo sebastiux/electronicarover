@@ -1,0 +1,72 @@
+Ref,Val,Package,PosX,PosY,Rot,Side
+"C1","1000uF 25V","CP_Radial_D12.5mm_P5.00mm",73.000000,-111.000000,180.000000,top
+"C2","1000uF 10V","CP_Radial_D10.0mm_P5.00mm",166.000000,-112.000000,0.000000,top
+"C3","1000uF 10V","CP_Radial_D10.0mm_P5.00mm",82.080000,-141.000000,0.000000,top
+"C4","1000uF 10V","CP_Radial_D10.0mm_P5.00mm",82.080000,-153.000000,0.000000,top
+"C5","100nF","C_Disc_D5.0mm_W2.5mm_P5.00mm",54.000000,-122.000000,0.000000,top
+"C11","1nF","C_Disc_D3.0mm_W1.6mm_P2.50mm",100.000000,-144.500000,0.000000,top
+"C12","1nF","C_Disc_D3.0mm_W1.6mm_P2.50mm",110.000000,-144.500000,0.000000,top
+"C13","1nF","C_Disc_D3.0mm_W1.6mm_P2.50mm",120.000000,-144.500000,0.000000,top
+"C14","1nF","C_Disc_D3.0mm_W1.6mm_P2.50mm",130.000000,-144.500000,0.000000,top
+"C15","1nF","C_Disc_D3.0mm_W1.6mm_P2.50mm",140.000000,-144.500000,0.000000,top
+"C16","1nF","C_Disc_D3.0mm_W1.6mm_P2.50mm",150.000000,-144.500000,0.000000,top
+"D1","SA5.0A","D_DO-15_P10.16mm_Horizontal",177.000000,-114.000000,0.000000,top
+"D2","LED rojo 12V","LED_D5.0mm",93.000000,-118.000000,0.000000,top
+"D3","LED verde 5V","LED_D5.0mm",204.000000,-114.000000,0.000000,top
+"D4","LED azul SERVO","LED_D5.0mm",94.080000,-161.000000,0.000000,top
+"D5","1N5819","D_DO-41_SOD81_P10.16mm_Horizontal",155.000000,-161.000000,0.000000,top
+"D6","1N5819","D_DO-41_SOD81_P10.16mm_Horizontal",70.000000,-176.000000,0.000000,top
+"F1","ATO 15A","Fuseholder_Blade_ATO_Littelfuse_Pudenz_2_Pin",48.000000,-111.000000,0.000000,top
+"J1","XT60 BAT 12V","AMASS_XT60-M_1x02_P7.20mm_Vertical",37.000000,-108.000000,-90.000000,top
+"J3","12V OUT -> buck 5V","TerminalBlock_bornier-2_P5.08mm",81.000000,-110.000000,0.000000,top
+"J4","12V OUT -> BEC servos","TerminalBlock_bornier-2_P5.08mm",92.000000,-110.000000,0.000000,top
+"J5","5V IN (buck 5V 5A)","TerminalBlock_bornier-2_P5.08mm",159.000000,-116.080000,90.000000,top
+"J6","SERVO PWR IN (6V)","TerminalBlock_bornier-2_P5.08mm",79.620000,-129.000000,180.000000,top
+"J11","Motor M1","TerminalBlock_bornier-2_P5.08mm",49.000000,-36.000000,180.000000,top
+"J12","Motor M2","TerminalBlock_bornier-2_P5.08mm",88.080000,-36.000000,180.000000,top
+"J13","Motor M3","TerminalBlock_bornier-2_P5.08mm",113.000000,-36.000000,180.000000,top
+"J14","Motor M4","TerminalBlock_bornier-2_P5.08mm",152.079999,-36.000000,180.000000,top
+"J15","Motor M5","TerminalBlock_bornier-2_P5.08mm",177.000000,-36.000000,180.000000,top
+"J16","Motor M6","TerminalBlock_bornier-2_P5.08mm",216.079999,-36.000000,180.000000,top
+"J21","Pololu37D_M1","PinHeader_1x06_P2.54mm_Vertical",49.000000,-46.000000,-90.000000,top
+"J22","Pololu37D_M2","PinHeader_1x06_P2.54mm_Vertical",83.000000,-46.000000,90.000000,top
+"J23","Pololu37D_M3","PinHeader_1x06_P2.54mm_Vertical",113.000000,-46.000000,-90.000000,top
+"J24","Pololu37D_M4","PinHeader_1x06_P2.54mm_Vertical",147.000000,-46.000000,90.000000,top
+"J25","Pololu37D_M5","PinHeader_1x06_P2.54mm_Vertical",177.000000,-46.000000,-90.000000,top
+"J26","Pololu37D_M6","PinHeader_1x06_P2.54mm_Vertical",211.000000,-46.000000,90.000000,top
+"J31","SERVO1","Servo_Header_1x03",77.080000,-136.220000,-90.000000,top
+"J32","SERVO2","Servo_Header_1x03",77.080000,-138.760000,-90.000000,top
+"J33","SERVO3","Servo_Header_1x03",77.080000,-146.380000,-90.000000,top
+"J34","SERVO4","Servo_Header_1x03",77.080000,-148.920000,-90.000000,top
+"J35","SERVO5","Servo_Header_1x03",77.080000,-151.459999,-90.000000,top
+"J36","SERVO6","Servo_Header_1x03",77.080000,-156.540000,-90.000000,top
+"J37","SERVO7","Servo_Header_1x03",77.080000,-159.079999,-90.000000,top
+"J38","SERVO8","Servo_Header_1x03",77.080000,-161.620000,-90.000000,top
+"R1","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",100.000000,-155.620000,90.000000,top
+"R2","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",110.000000,-155.620000,90.000000,top
+"R3","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",120.000000,-155.620000,90.000000,top
+"R4","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",130.000000,-155.620000,90.000000,top
+"R5","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",140.000000,-155.620000,90.000000,top
+"R6","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",150.000000,-155.620000,90.000000,top
+"R7","20k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",104.000000,-148.000000,-90.000000,top
+"R8","20k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",114.000000,-148.000000,-90.000000,top
+"R9","20k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",124.000000,-148.000000,-90.000000,top
+"R10","20k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",134.000000,-148.000000,-90.000000,top
+"R11","20k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",144.000000,-148.000000,-90.000000,top
+"R12","20k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",154.000000,-148.000000,-90.000000,top
+"R13","1k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",174.620000,-138.000000,180.000000,top
+"R14","1k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",167.000000,-142.000000,0.000000,top
+"R15","1k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",92.000000,-167.000000,-90.000000,top
+"R16","1k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",96.000000,-167.000000,-90.000000,top
+"R21","10k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",156.000000,-132.500000,-90.000000,top
+"R22","100k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",43.000000,-120.000000,0.000000,top
+"R23","27k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",43.000000,-123.500000,0.000000,top
+"R24","2.2k","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",82.000000,-118.000000,0.000000,top
+"R25","330","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",193.000000,-114.000000,0.000000,top
+"R26","470","R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",82.080000,-161.000000,0.000000,top
+"U1","RaspberryPi5_GPIO","RPi5_HAT_Header_2x20",165.000000,-123.500000,0.000000,top
+"U2","ESP32-A_Traccion","ESP32_DevKitV1_30P_DualPitch",128.000000,-126.700000,90.000000,top
+"U3","ESP32-B_Servos","ESP32_DevKitV1_30P_DualPitch",52.000000,-154.000000,0.000000,top
+"U4","L298N_Module","L298N_Module_Pins",66.000000,-76.000000,0.000000,top
+"U5","L298N_Module","L298N_Module_Pins",130.000000,-76.000000,0.000000,top
+"U6","L298N_Module","L298N_Module_Pins",194.000000,-76.000000,0.000000,top
