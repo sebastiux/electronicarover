@@ -28,9 +28,8 @@ JUMPER_PAD = 2.0    # diametro del pad del barreno del puente
 JUMPER_DRILL = 1.0  # taladro (alambre hasta AWG18)
 JUMPER_WIRE = 0.8   # ancho del alambre en F.Cu (guia)
 JUMPER_CLR = 0.3
-JUMPER_COST_MM = 30.0  # penalizacion por puente (mm equivalentes)
-JUMPER_MAX_MM = 45.0
-JUMPER_MIN_MM = 3.0
+VIA_COST_MM = 14.0       # costo de cada barreno de puente (mm equivalentes)
+WIRE_COST_FACTOR = 2.5   # el alambre cuesta 2.5x por mm frente a la pista de cobre
 
 
 def mm(v):
@@ -278,35 +277,43 @@ class Router:
         src = (self.tree == 1) & freeB & ~((g.XX - tx) ** 2 + (g.YY - ty) ** 2 <= 4.0)
         if not tgt.any() or not src.any():
             return False
-        path = self._astar(freeB, src, tgt, (tx, ty), None)
+        relaxed = getattr(self, "relaxed", False)
+        path = self._astar(freeB, src, tgt, (tx, ty), None, 8.0)
+        freeF = None
         if path is None and allow_j:
             distF = self._dist(g.F, code)
             freeF = distF >= JUMPER_WIRE / 2 + JUMPER_CLR + RM
             viaok = (distB >= JUMPER_PAD / 2 + clr + RM) & (distF >= JUMPER_PAD / 2 + JUMPER_CLR + RM)
-            path = self._astar(freeB, src, tgt, (tx, ty), (freeF, viaok))
+            for (m, allowed) in self.reserved:
+                if cls not in allowed:
+                    viaok &= ~m
+            path = self._astar(freeB, src, tgt, (tx, ty), (freeF, viaok), 150.0 if relaxed else 60.0)
         if path is None:
             return False
-        self._commit(name, code, path, w, (tx, ty), freeB)
-        for (i, j, jmp) in path[::8]:
+        self._commit(name, code, path, w, (tx, ty), freeB, freeF)
+        for (i, j, lay) in path[::8]:
             tree_pts.append(g.xy(i, j))
         return True
 
-    def _astar(self, freeB, src, tgt, target_xy, jumper):
+    def _astar(self, freeB, src, tgt, target_xy, jumper, tlimit):
+        """A* en B.Cu; con `jumper`, tambien en la capa de alambres (F) con costo alto."""
         g = self.g
         nx, ny = g.nx, g.ny
+        N = nx * ny
         fb = freeB.ravel().tobytes()
         tg = tgt.ravel().tobytes()
+        layers = 1
         if jumper is not None:
             ff = jumper[0].ravel().tobytes()
             vo = jumper[1].ravel().tobytes()
+            layers = 2
+        free = (fb, ff) if layers == 2 else (fb,)
         ti, tj = g.ij(*target_xy)
         SQ2 = 1.41421356
         nbrs = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
                 (-1, -1, SQ2), (-1, 1, SQ2), (1, -1, SQ2), (1, 1, SQ2)]
-        jcost = JUMPER_COST_MM / G
-        jmax = int((JUMPER_MAX_MM * (1.8 if getattr(self, "relaxed", False) else 1.0)) / G)
-        maxpush = 5 if getattr(self, "relaxed", False) else 2
-        jmin = int(JUMPER_MIN_MM / G)
+        lcost = (1.0, WIRE_COST_FACTOR)
+        vcost = VIA_COST_MM / G
 
         def h(i, j):
             di, dj = abs(i - ti), abs(j - tj)
@@ -319,64 +326,58 @@ class Router:
         for i, j in zip(si.tolist(), sj.tolist()):
             k = i * nx + j
             gs[k] = 0.0
-            prev[k] = (-1, 0)
+            prev[k] = -1
             heap.append((h(i, j), 0.0, k))
         heapq.heapify(heap)
         closed = set()
         t0 = time.time()
+        it = 0
         while heap:
-            f, gc, k = heapq.heappop(heap)
-            if k in closed:
+            f, gc, node = heapq.heappop(heap)
+            if node in closed:
                 continue
-            closed.add(k)
-            if tg[k]:
-                # reconstruir
+            closed.add(node)
+            lay, k = divmod(node, N)
+            if lay == 0 and tg[k]:
                 out = []
-                while k != -1:
-                    pk, jmp = prev[k]
-                    out.append((k // nx, k % nx, jmp))
-                    k = pk
+                while node != -1:
+                    l2, k2 = divmod(node, N)
+                    out.append((k2 // nx, k2 % nx, l2))
+                    node = prev[node]
                 out.reverse()
                 return out
-            if time.time() - t0 > (120 if getattr(self, "relaxed", False) else 45):
+            it += 1
+            if (it & 1023) == 0 and time.time() - t0 > tlimit:
                 return None
             i, j = divmod(k, nx)
+            fr = free[lay]
+            base = lay * N
+            lc = lcost[lay]
             for di, dj, c in nbrs:
                 ii, jj = i + di, j + dj
                 if ii < 0 or jj < 0 or ii >= ny or jj >= nx:
                     continue
                 kk = ii * nx + jj
-                if not fb[kk] or kk in closed:
+                if not fr[kk]:
                     continue
-                if di and dj and not (fb[i * nx + jj] and fb[ii * nx + j]):
+                if di and dj and not (fr[i * nx + jj] and fr[ii * nx + j]):
                     continue
-                ng = gc + c
-                if ng < gs.get(kk, 1e18):
-                    gs[kk] = ng
-                    prev[kk] = (k, 0)
-                    heapq.heappush(heap, (ng + h(ii, jj), ng, kk))
-            if jumper is not None and vo[k]:
-                for di, dj in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                    crossed = False
-                    pushed = 0
-                    for L in range(1, jmax + 1):
-                        ii, jj = i + di * L, j + dj * L
-                        if ii < 0 or jj < 0 or ii >= ny or jj >= nx:
-                            break
-                        kk = ii * nx + jj
-                        if not ff[kk]:
-                            break
-                        if not fb[kk]:
-                            crossed = True
-                            pushed = 0
-                            continue
-                        if crossed and L >= jmin and vo[kk] and pushed < maxpush and kk not in closed:
-                            ng = gc + jcost + L * 1.2
-                            if ng < gs.get(kk, 1e18):
-                                gs[kk] = ng
-                                prev[kk] = (k, 1)
-                                heapq.heappush(heap, (ng + h(ii, jj), ng, kk))
-                            pushed += 1
+                nn = base + kk
+                if nn in closed:
+                    continue
+                ng = gc + c * lc
+                if ng < gs.get(nn, 1e18):
+                    gs[nn] = ng
+                    prev[nn] = node
+                    heapq.heappush(heap, (ng + h(ii, jj), ng, nn))
+            if layers == 2 and vo[k]:
+                nn = (1 - lay) * N + k
+                if nn not in closed and free[1 - lay][k]:
+                    ng = gc + vcost
+                    if ng < gs.get(nn, 1e18):
+                        gs[nn] = ng
+                        prev[nn] = node
+                        heapq.heappush(heap, (ng + h(i, j), ng, nn))
         return None
 
     # ------------------------------------------------------------------
@@ -407,58 +408,56 @@ class Router:
             k = best
         return out
 
-    def _commit(self, name, code, path, w, target_xy, freeB):
+    def _add_track(self, net, code, a, c, w, layer, arr):
+        b = self.board
+        t = pcbnew.PCB_TRACK(b)
+        t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(a[0]), pcbnew.FromMM(a[1])))
+        t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(c[0]), pcbnew.FromMM(c[1])))
+        t.SetWidth(pcbnew.FromMM(w))
+        t.SetLayer(layer)
+        t.SetNet(net)
+        b.Add(t)
+        self.g.mark_seg(arr, a[0], a[1], c[0], c[1], w, code)
+        self.g.mark_seg(self.tree, a[0], a[1], c[0], c[1], w, 1)
+
+    def _commit(self, name, code, path, w, target_xy, freeB, freeF):
         g = self.g
         b = self.board
         net = b.GetNetsByName()[name]
-        # separar en tramos B y saltos de puente
-        runs = [[(path[0][0], path[0][1])]]
-        jumps = []
-        for (i, j, jmp) in path[1:]:
-            if jmp:
-                jumps.append((runs[-1][-1], (i, j)))
-                runs.append([(i, j)])
+        runs = [[path[0][2], [(path[0][0], path[0][1])]]]
+        for (i, j, lay) in path[1:]:
+            if lay != runs[-1][0]:
+                runs.append([lay, [(i, j)]])
             else:
-                runs[-1].append((i, j))
-        for ri, run in enumerate(runs):
-            pts = self._smooth(run, freeB)
-            xy = [g.xy(i, j) for (i, j) in pts]
-            if ri == len(runs) - 1:
-                xy.append(target_xy)
-            for a, c in zip(xy, xy[1:]):
-                if abs(a[0] - c[0]) < 1e-6 and abs(a[1] - c[1]) < 1e-6:
-                    continue
-                t = pcbnew.PCB_TRACK(b)
-                t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(a[0]), pcbnew.FromMM(a[1])))
-                t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(c[0]), pcbnew.FromMM(c[1])))
-                t.SetWidth(pcbnew.FromMM(w))
-                t.SetLayer(pcbnew.B_Cu)
-                t.SetNet(net)
-                b.Add(t)
-                g.mark_seg(g.B, a[0], a[1], c[0], c[1], w, code)
-                g.mark_seg(self.tree, a[0], a[1], c[0], c[1], w, 1)
-        for (a, c) in jumps:
-            (xa, ya), (xc, yc) = g.xy(*a), g.xy(*c)
-            for (x, y) in ((xa, ya), (xc, yc)):
-                v = pcbnew.PCB_VIA(b)
-                v.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
-                v.SetWidth(pcbnew.FromMM(JUMPER_PAD))
-                v.SetDrill(pcbnew.FromMM(JUMPER_DRILL))
-                v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
-                v.SetNet(net)
-                b.Add(v)
-                g.mark_circle(g.B, x, y, JUMPER_PAD / 2, code)
-                g.mark_circle(g.F, x, y, JUMPER_PAD / 2, code)
-                g.mark_circle(self.tree, x, y, JUMPER_PAD / 2, 1)
-            t = pcbnew.PCB_TRACK(b)
-            t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(xa), pcbnew.FromMM(ya)))
-            t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(xc), pcbnew.FromMM(yc)))
-            t.SetWidth(pcbnew.FromMM(JUMPER_WIRE))
-            t.SetLayer(pcbnew.F_Cu)
-            t.SetNet(net)
-            b.Add(t)
-            g.mark_seg(g.F, xa, ya, xc, yc, JUMPER_WIRE, code)
-            self.jumpers.append((name, xa, ya, xc, yc))
+                runs[-1][1].append((i, j))
+        for ri, (lay, run) in enumerate(runs):
+            if lay == 0:
+                pts = self._smooth(run, freeB)
+                xy = [g.xy(i, j) for (i, j) in pts]
+                if ri == len(runs) - 1:
+                    xy.append(target_xy)
+                for a, c in zip(xy, xy[1:]):
+                    if abs(a[0] - c[0]) > 1e-6 or abs(a[1] - c[1]) > 1e-6:
+                        self._add_track(net, code, a, c, w, pcbnew.B_Cu, g.B)
+            else:
+                pts = self._smooth(run, freeF)
+                xy = [g.xy(i, j) for (i, j) in pts]
+                for (x, y) in (xy[0], xy[-1]):
+                    v = pcbnew.PCB_VIA(b)
+                    v.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
+                    v.SetWidth(pcbnew.FromMM(JUMPER_PAD))
+                    v.SetDrill(pcbnew.FromMM(JUMPER_DRILL))
+                    v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+                    v.SetNet(net)
+                    b.Add(v)
+                    g.mark_circle(g.B, x, y, JUMPER_PAD / 2, code)
+                    g.mark_circle(g.F, x, y, JUMPER_PAD / 2, code)
+                    g.mark_circle(self.tree, x, y, JUMPER_PAD / 2, 1)
+                L = 0.0
+                for a, c in zip(xy, xy[1:]):
+                    self._add_track(net, code, a, c, JUMPER_WIRE, pcbnew.F_Cu, g.F)
+                    L += math.hypot(c[0] - a[0], c[1] - a[1])
+                self.jumpers.append((name, xy[0][0], xy[0][1], xy[-1][0], xy[-1][1], L))
 
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,

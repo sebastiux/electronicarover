@@ -698,9 +698,8 @@ def route_board(relaxed_pass=True):
     # lista de puentes de alambre
     with open(os.path.join(OUT, "puentes_alambre.csv"), "w") as fh:
         fh.write("Puente;Red;X1(mm);Y1(mm);X2(mm);Y2(mm);Largo(mm)\n")
-        for k, (n, xa, ya, xb, yb) in enumerate(r.jumpers, 1):
-            fh.write("W%d;%s;%.2f;%.2f;%.2f;%.2f;%.1f\n" % (k, n, xa - 30, ya - 30, xb - 30, yb - 30,
-                                                          math.hypot(xb - xa, yb - ya)))
+        for k, (n, xa, ya, xb, yb, L) in enumerate(r.jumpers, 1):
+            fh.write("W%d;%s;%.2f;%.2f;%.2f;%.2f;%.1f\n" % (k, n, xa - 30, ya - 30, xb - 30, yb - 30, L))
     print("Puentes de alambre: %d   Fallidas: %d" % (len(r.jumpers), len(r.failed)))
     for f_ in r.failed:
         print("  FALLO", f_)
