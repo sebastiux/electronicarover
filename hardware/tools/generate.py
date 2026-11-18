@@ -426,12 +426,12 @@ def write_schematic(comps, syms):
 
     # textos de bloque
     notes = [
-        (20.32, 30.48, "ALIMENTACION: Bateria 12V (3S) -> fusible 15A -> L298N + salidas a step-down 5V/5A y BEC 6V servos"),
+        (20.32, 30.48, "ALIMENTACION: Bateria 3S por XT60 -> fusible 15A -> L298N + salidas a step-down 5V/5A y BEC 6V. GND COMUN"),
         (170.18, 40.64, "RASPBERRY PI 5 (debajo de la PCB, header hembra 2x20)"),
         (304.8, 50.8, "ESP32-A: TRACCION (6 motores, 6 encoders canal A, MOTOR_EN)"),
-        (431.8, 50.8, "ESP32-B: SERVOS (4 direccion + 3 brazo + 1 reserva), VBAT"),
-        (170.18, 165.1, "UART Pi<->ESP32 (1k serie) y reset de ESP32 desde la Pi (Q1/Q2)"),
-        (20.32, 220.98, "PUENTES H L298N (ENA/ENB = MOTOR_EN, quitar jumpers del modulo; pin +5V del modulo sin conectar)"),
+        (431.8, 50.8, "ESP32-B: SERVOS (4 direccion + 3 brazo + 1 reserva), VBAT, UART"),
+        (170.18, 165.1, "UART Pi<->ESP32 con 1k en serie (UART2->ESP32-A, UART0->ESP32-B)"),
+        (20.32, 220.98, "PUENTES H L298N (ENA/ENB = MOTOR_EN, quitar jumpers ENA/ENB; el +5V del modulo alimenta los encoders)"),
         (20.32, 292.1, "CONECTORES DE MOTOR: bornera 2P + header 1x6 compatible con cable Pololu 37D"),
         (20.32, 378.46, "DIVISORES DE ENCODER 5V -> 3.3V (10k / 20k)"),
         (320.04, 378.46, "SERVOS (Power HD 1501MG) - rail SERVO_V 6V independiente"),
@@ -697,6 +697,22 @@ def build_pcb(comps, netnames, assignments, route=False):
 # ============================================================================
 #  RUTEO DE UNA CAPA
 # ============================================================================
+def label_jumpers(board, jumpers):
+    """Etiqueta W1..Wn en la serigrafia junto a cada puente de alambre."""
+    import pcbnew
+    for k, (n, xa, ya, xb, yb, L) in enumerate(jumpers, 1):
+        t = pcbnew.PCB_TEXT(board)
+        t.SetText("W%d" % k)
+        mx, my = (xa + xb) / 2, (ya + yb) / 2
+        dx, dy = xb - xa, yb - ya
+        ln = math.hypot(dx, dy) or 1.0
+        t.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(mx - dy / ln * 1.4), pcbnew.FromMM(my + dx / ln * 1.4)))
+        t.SetLayer(pcbnew.F_SilkS)
+        t.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(0.8), pcbnew.FromMM(0.8)))
+        t.SetTextThickness(pcbnew.FromMM(0.12))
+        board.Add(t)
+
+
 def route_board(relaxed_pass=True):
     import pcbnew
     import router1l
@@ -734,6 +750,7 @@ def route_board(relaxed_pass=True):
             break
         for t in dangling:
             board.Remove(t)
+    label_jumpers(board, r.jumpers)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pcb_path, board)
@@ -763,6 +780,12 @@ def write_bom(comps):
 
 def main():
     route = "--route" in sys.argv
+    pcb_path = os.path.join(OUT, D.PROJECT + ".kicad_pcb")
+    if os.path.exists(pcb_path) and not route and "--force" not in sys.argv:
+        if "(segment" in open(pcb_path, encoding="utf-8").read():
+            print("La PCB ya esta ruteada: no se sobrescribe. Usa --route para rehacer todo "
+                  "o --force para regenerar sin rutear.")
+            return
     os.makedirs(os.path.join(OUT, "rover.pretty"), exist_ok=True)
     comps = D.build()
     syms = custom_symbols()
