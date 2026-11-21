@@ -11,3 +11,8 @@ __pycache__/
 
 # PlatformIO
 firmware/.pio/
+
+# paquetes de Python descargados (no son parte del proyecto)
+hardware/tools/*.whl
+hardware/tools/*.tar.gz
+__pycache__/
