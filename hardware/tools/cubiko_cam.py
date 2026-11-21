@@ -39,13 +39,13 @@ P = dict(
     blank=(142.0, 100.0),       # placa virgen doble cara FR1, 1.6 mm, cobre 35 um (recortar de 150x100)
     X0=3.0, Y0=2.0,             # esquina inferior izquierda de la tarjeta dentro del blank
     thickness=1.6,
-    safe_z=2.0, travel_z=5.0,
+    safe_z=1.0, travel_z=5.0,                 # 1 mm entre trayectorias (con mapa de alturas)
     rpm=10000,
     # T1: V-bit 30 grados, punta 0.1 mm
-    vbit_angle=30.0, vbit_tip=0.10, iso_depth=0.08, iso_feed=120.0, iso_plunge=40.0,
-    iso_passes=3, iso_overlap=0.30,
+    vbit_angle=30.0, vbit_tip=0.10, iso_depth=0.08, iso_feed=150.0, iso_plunge=60.0,
+    iso_passes=2, iso_overlap=0.30,
     # brocas
-    drill_feed=40.0, drill_depth=1.9,          # atraviesa 1.6 + 0.3 en la cinta / martir
+    drill_feed=60.0, drill_depth=1.9,          # atraviesa 1.6 + 0.3 en la cinta / martir
     drill_bits=[0.8, 1.0, 1.2],
     # T5: fresa plana de 2.0 mm (2 filos)
     mill_d=2.0, mill_feed=150.0, mill_plunge=30.0, mill_step=0.3,
@@ -58,7 +58,7 @@ OUTDIR = os.path.join(HERE, "..", "cubiko")
 GDIR, SDIR = os.path.join(OUTDIR, "gcode"), os.path.join(OUTDIR, "sim")
 PCB = os.path.join(HERE, "..", D.PROJECT, D.PROJECT + ".kicad_pcb")
 O = 30.0          # desfase de la PCB en KiCad (generate.py)
-ALIGN = [(3.5, 3.5), (W - 3.5, 3.5)]
+ALIGN = list(D.ALIGN_HOLES)   # H1 y el barreno sup. der. de la Pi (simetricos respecto a X = W/2)
 
 
 def vbit_width(depth):
@@ -107,16 +107,25 @@ def load():
                 if not p.IsOnLayer(L):
                     continue
                 ps = pcbnew.SHAPE_POLY_SET()
-                p.TransformShapeToPolygon(ps, L, 0, err, pcbnew.ERROR_INSIDE)
+                p.TransformShapeToPolygon(ps, L, 0, err)
                 net_polys[k].setdefault(p.GetNetname(), []).extend(polyset(ps))
             pads.append(dict(ref=ref, num=p.GetNumber(), net=p.GetNetname(), x=cx, y=cy, side=side,
                              drill=dx, size=min(mm(p.GetSize().x), mm(p.GetSize().y))))
     for t in b.GetTracks():
-        for k, L in layers.items():
-            if t.GetClass() == "PCB_VIA" or t.GetLayer() == L:
-                ps = pcbnew.SHAPE_POLY_SET()
-                t.TransformShapeToPolygon(ps, L, 0, err, pcbnew.ERROR_INSIDE)
-                net_polys[k].setdefault(t.GetNetname(), []).extend(polyset(ps))
+        # pistas rectas y vias: poligono exacto con shapely (en KiCad 7 el enum ERROR_LOC
+        # de PCB_TRACK.TransformShapeToPolygon no esta expuesto en Python)
+        if t.GetClass() == "PCB_VIA":
+            c = t.GetPosition()
+            g = Point(mm(c.x) - O, mm(c.y) - O).buffer(mm(t.GetWidth()) / 2, resolution=16)
+            for k in layers:
+                net_polys[k].setdefault(t.GetNetname(), []).append(g)
+        else:
+            a, e = t.GetStart(), t.GetEnd()
+            g = LineString([(mm(a.x) - O, mm(a.y) - O), (mm(e.x) - O, mm(e.y) - O)]).buffer(
+                mm(t.GetWidth()) / 2, resolution=12)
+            for k, L in layers.items():
+                if t.GetLayer() == L:
+                    net_polys[k].setdefault(t.GetNetname(), []).append(g)
         if t.GetClass() == "PCB_VIA":
             c = t.GetPosition()
             vias.append(dict(net=t.GetNetname(), x=mm(c.x) - O, y=mm(c.y) - O, d=mm(t.GetWidth()),
@@ -285,25 +294,33 @@ COL = dict(bg=(28, 32, 38), sub=(176, 138, 80), cu=(222, 140, 70), cu_net=(240, 
            hole=(15, 15, 15), path=(60, 200, 255), tab=(255, 80, 80), outline=(255, 255, 255))
 
 
-def draw_geom(dr, geom, fill, side, flip):
+def geom_mask(geom, size, flip):
+    """Mascara (L) de una geometria con huecos: cada poligono se rasteriza aparte."""
+    from PIL import ImageChops
     geoms = geom.geoms if hasattr(geom, "geoms") else [geom]
+    mask = Image.new("L", size, 0)
 
     def T(pts):
         return [(((W - x) if flip else x) * SC + 40, y * SC + 40) for (x, y) in pts]
     for g in geoms:
         if g.is_empty or g.geom_type != "Polygon":
             continue
-        dr.polygon(T(g.exterior.coords), fill=fill)
+        tmp = Image.new("L", size, 0)
+        d = ImageDraw.Draw(tmp)
+        d.polygon(T(g.exterior.coords), fill=255)
         for i in g.interiors:
-            dr.polygon(T(i.coords), fill=COL["sub"])
+            d.polygon(T(i.coords), fill=0)
+        mask = ImageChops.lighter(mask, tmp)
+    return mask
 
 
 def render(side, remaining, hole_geom, paths, flip, title, extra=None):
-    img = Image.new("RGB", (int(W * SC) + 80, int(H * SC) + 130), COL["bg"])
+    size = (int(W * SC) + 80, int(H * SC) + 130)
+    img = Image.new("RGB", size, COL["bg"])
+    img.paste(Image.new("RGB", size, COL["sub"]), mask=geom_mask(box(0, 0, W, H), size, flip))
+    img.paste(Image.new("RGB", size, COL["cu"]), mask=geom_mask(remaining, size, flip))
+    img.paste(Image.new("RGB", size, COL["hole"]), mask=geom_mask(hole_geom, size, flip))
     dr = ImageDraw.Draw(img)
-    draw_geom(dr, box(0, 0, W, H), COL["sub"], side, flip)
-    draw_geom(dr, remaining, COL["cu"], side, flip)
-    draw_geom(dr, hole_geom, COL["hole"], side, flip)
 
     def T(x, y):
         return (((W - x) if flip else x) * SC + 40, y * SC + 40)
@@ -336,10 +353,12 @@ def main():
         copper = unary_union(list(net_polys[side].values()))
         paths, swept, _ = isolation(copper)
         clad = box(0, 0, W, H)
-        # bajo las antenas de las ESP32 se quita todo el cobre (no actua como plano)
+        # bajo la antena de la ESP32-B se quita el cobre que no pertenece a ninguna red
+        # (las pistas que cruzan la zona se respetan)
         ant = unary_union(keepouts) if keepouts else Polygon()
-        remaining = clad.difference(swept).difference(hole_geom).difference(ant)
-        iso[side] = (paths, swept, remaining)
+        ant_clear = ant.difference(copper.buffer(P["mill_d"] / 2 + 0.25)) if not ant.is_empty else ant
+        remaining = clad.difference(swept).difference(hole_geom).difference(ant_clear)
+        iso[side] = (paths, swept, remaining, ant_clear)
     # ---------------- verificacion electrica ----------------
     comps = {}
     for side in ("B", "F"):
@@ -421,8 +440,8 @@ def main():
     big = [(x, y, d) for (x, y, d, npth, ref) in holes if d > 1.45 and (round(x, 2), round(y, 2)) not in [(round(a, 2), round(b, 2)) for a, b in ALIGN]]
     for (x, y, d) in big:
         helix_hole(g, x, y, max(d, P["mill_d"]), P["drill_depth"], "B")
-    for k in keepouts:
-        for pth in pocket(k, P["mill_d"]):
+    for k in (iso["B"][3].geoms if hasattr(iso["B"][3], "geoms") else [iso["B"][3]]):
+        for pth in pocket(k.buffer(P["mill_d"] / 2), P["mill_d"]):
             g.path(pth, -P["antenna_depth"], P["mill_feed"], P["mill_plunge"], "B")
     jobs.append(g.save("L1_1_fresa2mm_alineacion_barrenos_antena_B.nc"))
     g = G("LADO 1 - aislamiento cara inferior (B.Cu), espejado", "V-bit 30 grados punta 0.1 mm")
@@ -450,8 +469,8 @@ def main():
         g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "F")
     jobs.append(g.save("L2_1_vbit_aislamiento_F.nc"))
     g = G("LADO 2 - fresa plana 2.0 mm: despeje de antenas y contorno con %d pestanas" % P["n_tabs"], "fresa plana 2 filos 2.0 mm")
-    for k in keepouts:
-        for pth in pocket(k, P["mill_d"]):
+    for k in (iso["F"][3].geoms if hasattr(iso["F"][3], "geoms") else [iso["F"][3]]):
+        for pth in pocket(k.buffer(P["mill_d"] / 2), P["mill_d"]):
             g.path(pth, -P["antenna_depth"], P["mill_feed"], P["mill_plunge"], "F")
     ring, L, tab_d = outline_paths()
     z = 0.0
@@ -495,6 +514,37 @@ def main():
         img = Image.open(os.path.join(SDIR, "lado1_B_trayectorias.png"))
         x0 = ((W - 50) if flip else 0) * SC + 40
         img.crop((int(x0), int(10 * SC), int(x0 + 50 * SC), int(80 * SC))).save(os.path.join(SDIR, nm))
+
+    # ---------------- archivos para FlatCAM / revision ----------------
+    import subprocess, shutil
+    gb = os.path.join(OUTDIR, "gerbers")
+    shutil.rmtree(gb, ignore_errors=True)
+    os.makedirs(gb)
+    run = lambda *a: subprocess.run(["kicad-cli", *a], check=True, capture_output=True)
+    run("pcb", "export", "gerbers", "-o", gb + "/", "--layers", "F.Cu,B.Cu,Edge.Cuts", "--use-drill-file-origin", PCB)
+    run("pcb", "export", "drill", "-o", gb + "/", "--format", "excellon", "--drill-origin", "plot",
+        "--generate-map", "--map-format", "pdf", PCB)
+    run("pcb", "export", "pdf", "-o", os.path.join(OUTDIR, "cobre_inferior_espejo_1a1.pdf"), "--layers", "B.Cu,Edge.Cuts",
+        "--black-and-white", "--mirror", PCB)
+    run("pcb", "export", "pdf", "-o", os.path.join(OUTDIR, "cobre_superior_1a1.pdf"), "--layers", "F.Cu,Edge.Cuts",
+        "--black-and-white", PCB)
+    run("pcb", "export", "pdf", "-o", os.path.join(OUTDIR, "plantilla_montaje_1a1.pdf"), "--layers", "F.Fab,F.SilkS,Edge.Cuts",
+        "--black-and-white", PCB)
+    shutil.copy(os.path.join(HERE, "..", D.PROJECT, "bom.csv"), os.path.join(OUTDIR, "bom.csv"))
+    # hoja resumen: las dos caras lado a lado
+    a = Image.open(os.path.join(SDIR, "lado1_B_resultado.png"))
+    b2 = Image.open(os.path.join(SDIR, "lado2_F_resultado.png"))
+    sheet = Image.new("RGB", (a.width + b2.width + 40, a.height + 120), COL["bg"])
+    sheet.paste(a, (0, 120))
+    sheet.paste(b2, (a.width + 40, 120))
+    try:
+        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 54)
+    except Exception:
+        fb = ImageFont.load_default()
+    ImageDraw.Draw(sheet).text((40, 30), "Rover Controller Cubiko - simulacion del fresado: %s" %
+                               ("0 cortos, 0 redes abiertas" if ok else "REVISAR"), fill=(240, 240, 240), font=fb)
+    sheet.thumbnail((3000, 3000))
+    sheet.save(os.path.join(SDIR, "resumen_simulacion.png"))
 
     rep.append("")
     rep.append("TRABAJOS (en este orden):")

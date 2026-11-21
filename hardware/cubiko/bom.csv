@@ -1,0 +1,37 @@
+Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
+6;C11,C12,C13,C14,C15,C16;1nF;Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm;1nF;Filtro de ruido encoder M6
+3;C2,C3,C4;1000uF 10V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 10V;Bulk 5V
+1;C5;100nF;Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm;100nF;Filtro ADC VBAT
+1;D1;SA5.0A;Diode_THT:D_DO-15_P10.16mm_Horizontal;SA5.0A DO-15;TVS 5V (proteccion Pi)
+1;D2;LED rojo 12V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (rojo);Indicador bateria
+1;D3;LED verde 5V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (verde);Indicador 5V
+1;D4;LED azul SERVO;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (azul);Indicador rail servos
+2;D5,D6;1N5819;Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal;1N5819 DO-41;Schottky +5V -> VIN ESP32-A
+4;H1,H2,H3,H4;M3;MountingHole:MountingHole_3.2mm_M3;M3;Agujero de montaje M3
+1;J2;BAT SENSE (12V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Derivacion de bateria despues del fusible (solo medicion y LED, < 10 mA)
+1;J31;SERVO1;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 1 - Direccion DI (SIG arriba, GND abajo)
+1;J32;SERVO2;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 2 - Direccion DD (SIG arriba, GND abajo)
+1;J33;SERVO3;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 3 - Direccion TI (SIG arriba, GND abajo)
+1;J34;SERVO4;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 4 - Direccion TD (SIG arriba, GND abajo)
+1;J35;SERVO5;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 5 - Brazo base (SIG arriba, GND abajo)
+1;J36;SERVO6;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 6 - Brazo hombro (SIG arriba, GND abajo)
+1;J37;SERVO7;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 7 - Brazo pinza (SIG arriba, GND abajo)
+1;J38;SERVO8;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 8 - Reserva (SIG arriba, GND abajo)
+1;J41;L298N #1 (M1/M2);TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-7-3.5-H_1x07_P3.50mm_Horizontal;Phoenix PT 1,5/7-3,5-H (1984662) o KF350-7P 3.5mm;Borna 7 vias paso 3.5 mm hacia el L298N #1 (Delantero Izq / Delantero Der): ENB IN4 IN3 IN2 IN1 ENA GND
+1;J42;L298N #2 (M3/M4);TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-7-3.5-H_1x07_P3.50mm_Horizontal;Phoenix PT 1,5/7-3,5-H (1984662) o KF350-7P 3.5mm;Borna 7 vias paso 3.5 mm hacia el L298N #2 (Medio Izq / Medio Der): ENB IN4 IN3 IN2 IN1 ENA GND
+1;J43;L298N #3 (M5/M6);TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-7-3.5-H_1x07_P3.50mm_Horizontal;Phoenix PT 1,5/7-3,5-H (1984662) o KF350-7P 3.5mm;Borna 7 vias paso 3.5 mm hacia el L298N #3 (Trasero Izq / Trasero Der): ENB IN4 IN3 IN2 IN1 ENA GND
+1;J5;5V IN (buck 5V 5A);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Entrada 5V/5A desde step-down (alimenta Pi 5, ESP32 y encoders)
+1;J6;SERVO PWR IN (6V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Entrada BEC servos 6V
+1;J7;ENC M1 M2 M3;TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-5-3.5-H_1x05_P3.50mm_Horizontal;Phoenix PT 1,5/5-3,5-H (1984646) o KF350-5P 3.5mm;Borna 5 vias paso 3.5 mm: GND, +5V y canal A de los motores M1, M2, M3 (cable Pololu: verde GND, azul VCC, amarillo A)
+1;J8;ENC M6 M5 M4;TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-5-3.5-H_1x05_P3.50mm_Horizontal;Phoenix PT 1,5/5-3,5-H (1984646) o KF350-5P 3.5mm;Borna 5 vias paso 3.5 mm: GND, +5V y canal A de los motores M6, M5, M4 (cable Pololu: verde GND, azul VCC, amarillo A)
+6;R7,R8,R9,R10,R11,R12;20k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 20k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M6 (a GND)
+4;R13,R14,R15,R16;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD2 -> ESP32-A RX
+1;R22;100k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 100k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (alto)
+1;R23;27k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 27k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (bajo)
+1;R24;2.2k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 2.2k 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 12V
+1;R25;330;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 330 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 5V
+1;R26;470;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 470 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED servos
+7;R1,R2,R3,R4,R5,R6,R21;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M6 (serie)
+1;U1;RaspberryPi5_GPIO;rover:RPi5_HAT_Header_2x20;Header hembra 2x20 2.54mm;Header hembra 2x20 en la cara inferior (Pi 5 debajo)
+1;U2;ESP32-A_Traccion;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15
+1;U3;ESP32-B_Servos;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15

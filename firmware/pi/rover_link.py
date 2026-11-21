@@ -3,12 +3,15 @@
 
   ESP32-A (traccion): /dev/ttyAMA2  (dtoverlay=uart2-pi5, GPIO4 TX / GPIO5 RX)
   ESP32-B (servos):   /dev/ttyAMA0  (dtoverlay=uart0-pi5, GPIO14 TX / GPIO15 RX)
+  Tarjeta Cubiko: ESP32-B en /dev/ttyAMA4 (dtoverlay=uart4-pi5, GPIO12 TX / GPIO13 RX)
+                  -> export ROVER_ESPB_PORT=/dev/ttyAMA4
 
 Uso rapido (prueba en el banco, con ruedas al aire):
   python3 rover_link.py test-motores
   python3 rover_link.py test-servos
 Requiere: pip install pyserial
 """
+import os
 import sys
 import threading
 import time
@@ -75,7 +78,7 @@ class Traction(Esp32Link):
     """6 motores: valores -1000..1000. Hay que llamar drive() al menos cada 300 ms
     (watchdog del firmware); si no, los motores se detienen solos."""
 
-    def __init__(self, port="/dev/ttyAMA2"):
+    def __init__(self, port=os.environ.get("ROVER_ESPA_PORT", "/dev/ttyAMA2")):
         super().__init__(port)
 
     def enable(self, on=True):
@@ -95,7 +98,7 @@ class Traction(Esp32Link):
 
 
 class Servos(Esp32Link):
-    def __init__(self, port="/dev/ttyAMA0"):
+    def __init__(self, port=os.environ.get("ROVER_ESPB_PORT", "/dev/ttyAMA0")):
         super().__init__(port)
 
     def angle(self, n, deg):
