@@ -496,6 +496,59 @@ def build():
     return COMPONENTS
 
 
+
+SCH_NOTES = [
+    (20.32, 30.48, "ALIMENTACION: Bateria 3S por XT60 -> fusible 15A -> L298N + salidas a step-down 5V/5A y BEC 6V. GND COMUN"),
+    (170.18, 40.64, "RASPBERRY PI 5 (debajo de la PCB, header hembra 2x20)"),
+    (304.8, 50.8, "ESP32-A: TRACCION (6 motores, 6 encoders canal A, MOTOR_EN)"),
+    (431.8, 50.8, "ESP32-B: SERVOS (4 direccion + 3 brazo + 1 reserva), VBAT, UART"),
+    (170.18, 165.1, "UART Pi<->ESP32 con 1k en serie (UART2->ESP32-A, UART0->ESP32-B)"),
+    (20.32, 220.98, "PUENTES H L298N (ENA/ENB = MOTOR_EN, quitar jumpers ENA/ENB; el +5V del modulo alimenta los encoders)"),
+    (20.32, 292.1, "CONECTORES DE MOTOR: bornera 2P + header 1x6 compatible con cable Pololu 37D"),
+    (20.32, 378.46, "DIVISORES DE ENCODER 5V -> 3.3V (10k / 20k)"),
+    (320.04, 378.46, "SERVOS (Power HD 1501MG) - rail SERVO_V 6V independiente"),
+]
+
+
+def pcb_labels(silk, at, comps):
+    """Textos de serigrafia (posiciones en funcion de los componentes)."""
+    silk("ROVER CONTROLLER v%s  -  RPi5 + 2xESP32 + 3xL298N  -  %d CAPAS" % (REVISION, LAYERS), 100, 21.0, 1.4, bold=True)
+    for m in range(1, 7):
+        c = next(cc for cc in comps if cc["ref"] == "J%d" % (10 + m))
+        x = c["pcb"][0] - 2.54
+        silk("M%d %s" % (m, MOTORS[m]), x, 11.6, 0.9)
+        side = c.get("side", "A")
+        silk("M-  M+" if side == "A" else "M+  M-", x, 1.4, 0.8)
+        h = next(cc for cc in comps if cc["ref"] == "J%d" % (20 + m))
+        if side == "A":
+            silk("B A V G - +", h["pcb"][0] - 6.35, 18.7, 0.7)
+        else:
+            silk("+ - G V A B", h["pcb"][0] + 6.35, 18.7, 0.7)
+    # polaridad / etiquetas (posiciones en funcion de rover_design)
+    silk("BAT", 13.0, 74.6, 1.0, bold=True)
+    silk("-", 12.6, 78.0, 1.6, bold=True)
+    silk("+", 12.6, 85.2, 1.6, bold=True)
+    silk("XT60", 7.0, 91.8, 0.9)
+    x, y, _ = at("J3")
+    silk("- 12V>5V +", x + 2.54, y + 5.4, 0.8)
+    x, y, _ = at("J4")
+    silk("+ 12V>BEC -", x + 2.54, y + 5.4, 0.8)
+    x, y, _ = at("J6")
+    silk("V+  SERVO 6V  -", x - 2.54, y - 5.4, 0.8)
+    x, y, _ = at("J5")
+    silk("+ 5V/5A IN -", x - 5.2, y - 2.54, 0.8, rot=90)
+    x, y, _ = at("J31")
+    silk("SIG V+ GND", x - 2.54, y - 2.4, 0.7)
+    for n in range(1, 9):
+        x, y, _ = at("J%d" % (30 + n))
+        silk("S%d" % n, x + 2.4, y, 0.8)
+    x, y, _ = at("U2")
+    silk("ESP32-A TRACCION (antena izq, USB der)", x, y - 15.6, 1.0, bold=True)
+    x, y, _ = at("U3")
+    silk("ESP32-B SERVOS", x, y - 23.3, 1.0, bold=True)
+    silk("ENCODERS 5V->3V3", 98.0, 125.6, 0.8)
+
+
 def nets():
     s = set()
     for c in COMPONENTS:
@@ -503,3 +556,13 @@ def nets():
             if n:
                 s.add(n)
     return sorted(s)
+
+
+# ---------------------------------------------------------------------------
+# VARIANTES: ROVER_VARIANT=cubiko -> tarjeta chica para fresar en la Genmitsu
+# Cubiko (L298N fuera de la tarjeta, bornas en las orillas). Ver rover_cubiko.py
+# ---------------------------------------------------------------------------
+import os as _os
+VARIANT = _os.environ.get("ROVER_VARIANT", "v1.2")
+if VARIANT == "cubiko":
+    from rover_cubiko import *  # noqa: E402,F401,F403

@@ -1,0 +1,514 @@
+#!/usr/bin/env python3
+"""CAM + simulacion para fresar la tarjeta Cubiko en la Genmitsu Cubiko (GRBL 1.1).
+
+Lee la PCB ruteada (KiCad) y genera:
+  hardware/cubiko/gcode/   un archivo .nc por herramienta y por cara
+  hardware/cubiko/sim/     imagenes de como queda cada cara despues del corte
+  hardware/cubiko/sim/reporte.txt   verificacion electrica del resultado fresado
+
+Flujo de doble cara (volteo con 2 pines de alineacion):
+  LADO 1 = cara INFERIOR (B.Cu) hacia arriba, espejada en X. Ahi se taladra todo.
+  LADO 2 = cara SUPERIOR (F.Cu) hacia arriba, sin espejo. Ahi se corta el contorno.
+  El volteo es sobre el eje vertical X = X0 + W/2; los pines entran en los barrenos
+  H1 (3.5, 3.5) y el de la Pi (W-3.5, 3.5), que son simetricos respecto a ese eje.
+
+La simulacion resta del cobre el area barrida por la herramienta (ancho real del
+V-bit a la profundidad de corte) y los taladros, y despues comprueba que:
+  - cada red quede en una sola pieza de cobre (contando las vias como pines
+    soldados por ambas caras y cada pad solo por la cara donde se suelda);
+  - ninguna pieza de cobre toque dos redes distintas (cortos);
+  - los anillos de los pads queden aislados del cobre sobrante.
+
+Uso: ROVER_VARIANT=cubiko python3 cubiko_cam.py
+"""
+import math, os, sys
+os.environ.setdefault("ROVER_VARIANT", "cubiko")
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import pcbnew
+import rover_design as D
+from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box
+from shapely.ops import unary_union
+from shapely import affinity
+from PIL import Image, ImageDraw, ImageFont
+
+# ---------------------------------------------------------------------------
+# PARAMETROS (Genmitsu Cubiko: husillo 775 de 75 W, max 10 000 RPM, GRBL 1.1h)
+# ---------------------------------------------------------------------------
+P = dict(
+    blank=(142.0, 100.0),       # placa virgen doble cara FR1, 1.6 mm, cobre 35 um (recortar de 150x100)
+    X0=3.0, Y0=2.0,             # esquina inferior izquierda de la tarjeta dentro del blank
+    thickness=1.6,
+    safe_z=2.0, travel_z=5.0,
+    rpm=10000,
+    # T1: V-bit 30 grados, punta 0.1 mm
+    vbit_angle=30.0, vbit_tip=0.10, iso_depth=0.08, iso_feed=120.0, iso_plunge=40.0,
+    iso_passes=3, iso_overlap=0.30,
+    # brocas
+    drill_feed=40.0, drill_depth=1.9,          # atraviesa 1.6 + 0.3 en la cinta / martir
+    drill_bits=[0.8, 1.0, 1.2],
+    # T5: fresa plana de 2.0 mm (2 filos)
+    mill_d=2.0, mill_feed=150.0, mill_plunge=30.0, mill_step=0.3,
+    outline_depth=1.8, tab_w=3.0, tab_h=0.6, n_tabs=4,
+    align_d=3.0, align_depth=4.6,               # pines de alineacion de 3 mm: 1.6 + 3 mm en el martir
+    antenna_depth=0.12,
+)
+W, H = D.BOARD_W, D.BOARD_H
+OUTDIR = os.path.join(HERE, "..", "cubiko")
+GDIR, SDIR = os.path.join(OUTDIR, "gcode"), os.path.join(OUTDIR, "sim")
+PCB = os.path.join(HERE, "..", D.PROJECT, D.PROJECT + ".kicad_pcb")
+O = 30.0          # desfase de la PCB en KiCad (generate.py)
+ALIGN = [(3.5, 3.5), (W - 3.5, 3.5)]
+
+
+def vbit_width(depth):
+    return P["vbit_tip"] + 2 * depth * math.tan(math.radians(P["vbit_angle"] / 2))
+
+
+# ---------------------------------------------------------------------------
+# GEOMETRIA DESDE KICAD
+# ---------------------------------------------------------------------------
+def mm(v):
+    return pcbnew.ToMM(v)
+
+
+def polyset(ps):
+    out = []
+    for i in range(ps.OutlineCount()):
+        o = ps.Outline(i)
+        ext = [(mm(o.CPoint(j).x) - O, mm(o.CPoint(j).y) - O) for j in range(o.PointCount())]
+        holes = []
+        for h in range(ps.HoleCount(i)):
+            hh = ps.Hole(i, h)
+            holes.append([(mm(hh.CPoint(j).x) - O, mm(hh.CPoint(j).y) - O) for j in range(hh.PointCount())])
+        if len(ext) >= 3:
+            out.append(Polygon(ext, holes).buffer(0))
+    return out
+
+
+def load():
+    b = pcbnew.LoadBoard(PCB)
+    err = pcbnew.FromMM(0.005)
+    layers = {"F": pcbnew.F_Cu, "B": pcbnew.B_Cu}
+    net_polys = {k: {} for k in layers}
+    pads, vias, holes = [], [], []
+    for fp in b.GetFootprints():
+        ref = fp.GetReference()
+        side = D.pad_side(ref)
+        for p in fp.Pads():
+            c = p.GetPosition()
+            cx, cy = mm(c.x) - O, mm(c.y) - O
+            dx, dy = mm(p.GetDrillSize().x), mm(p.GetDrillSize().y)
+            if dx > 0:
+                holes.append((cx, cy, max(dx, dy), p.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH, ref))
+            if p.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH:
+                continue
+            for k, L in layers.items():
+                if not p.IsOnLayer(L):
+                    continue
+                ps = pcbnew.SHAPE_POLY_SET()
+                p.TransformShapeToPolygon(ps, L, 0, err, pcbnew.ERROR_INSIDE)
+                net_polys[k].setdefault(p.GetNetname(), []).extend(polyset(ps))
+            pads.append(dict(ref=ref, num=p.GetNumber(), net=p.GetNetname(), x=cx, y=cy, side=side,
+                             drill=dx, size=min(mm(p.GetSize().x), mm(p.GetSize().y))))
+    for t in b.GetTracks():
+        for k, L in layers.items():
+            if t.GetClass() == "PCB_VIA" or t.GetLayer() == L:
+                ps = pcbnew.SHAPE_POLY_SET()
+                t.TransformShapeToPolygon(ps, L, 0, err, pcbnew.ERROR_INSIDE)
+                net_polys[k].setdefault(t.GetNetname(), []).extend(polyset(ps))
+        if t.GetClass() == "PCB_VIA":
+            c = t.GetPosition()
+            vias.append(dict(net=t.GetNetname(), x=mm(c.x) - O, y=mm(c.y) - O, d=mm(t.GetWidth()),
+                             drill=mm(t.GetDrillValue())))
+            holes.append((mm(c.x) - O, mm(c.y) - O, mm(t.GetDrillValue()), False, "VIA"))
+    for z in b.Zones():
+        if z.GetIsRuleArea():
+            continue
+        for k, L in layers.items():
+            if z.IsOnLayer(L):
+                net_polys[k].setdefault(z.GetNetname(), []).extend(polyset(z.GetFilledPolysList(L)))
+    keepouts = []
+    for z in b.Zones():
+        if z.GetIsRuleArea() and z.GetZoneName().startswith("ANTENA"):
+            ol = z.Outline().Outline(0)
+            keepouts.append(Polygon([(mm(ol.CPoint(j).x) - O, mm(ol.CPoint(j).y) - O) for j in range(ol.PointCount())]))
+    for k in net_polys:
+        net_polys[k] = {n: unary_union(v) for n, v in net_polys[k].items() if v}
+    return net_polys, pads, vias, holes, keepouts
+
+
+# ---------------------------------------------------------------------------
+# TRAYECTORIAS
+# ---------------------------------------------------------------------------
+def rings(geom):
+    out = []
+    geoms = geom.geoms if hasattr(geom, "geoms") else [geom]
+    for g in geoms:
+        if g.is_empty:
+            continue
+        out.append(list(g.exterior.coords))
+        out += [list(i.coords) for i in g.interiors]
+    return out
+
+
+def order_paths(paths):
+    """Vecino mas cercano para reducir viajes en vacio."""
+    left = list(paths)
+    out, cur = [], (0.0, 0.0)
+    while left:
+        i = min(range(len(left)), key=lambda k: (left[k][0][0] - cur[0]) ** 2 + (left[k][0][1] - cur[1]) ** 2)
+        pth = left.pop(i)
+        # en un anillo cerrado, empezar en el punto mas cercano
+        if pth[0] == pth[-1] and len(pth) > 3:
+            j = min(range(len(pth) - 1), key=lambda k: (pth[k][0] - cur[0]) ** 2 + (pth[k][1] - cur[1]) ** 2)
+            pth = pth[j:-1] + pth[:j + 1]
+        out.append(pth)
+        cur = pth[-1]
+    return out
+
+
+def isolation(copper):
+    w = vbit_width(P["iso_depth"])
+    step = w * (1 - P["iso_overlap"])
+    paths, swept = [], []
+    board = box(0, 0, W, H)
+    for k in range(P["iso_passes"]):
+        r = w / 2 + k * step
+        g = copper.buffer(r, resolution=16)
+        for ring in rings(g):
+            ls = LineString(ring).intersection(board.buffer(-0.05))
+            for part in (ls.geoms if hasattr(ls, "geoms") else [ls]):
+                if part.length > 0.05 and part.geom_type == "LineString":
+                    paths.append(list(part.coords))
+                    swept.append(part.buffer(w / 2, resolution=8))
+    return order_paths(paths), unary_union(swept), w
+
+
+def pocket(poly, d, step_frac=0.6):
+    """Vaciado por contornos concentricos (fresa plana de diametro d)."""
+    paths, r = [], d / 2
+    g = poly.buffer(-r)
+    while not g.is_empty:
+        paths += rings(g)
+        g = g.buffer(-d * step_frac)
+    return paths
+
+
+def outline_paths():
+    r = P["mill_d"] / 2
+    g = box(0, 0, W, H).buffer(r, join_style=1, resolution=16)
+    ring = list(g.exterior.coords)
+    L = LineString(ring)
+    # pestanas en el centro de cada lado
+    tabs = [(W / 2, -r), (W / 2, H + r), (-r, H / 2), (W + r, H / 2)][:P["n_tabs"]]
+    tab_d = [L.project(Point(t)) for t in tabs]
+    return ring, L, tab_d
+
+
+# ---------------------------------------------------------------------------
+# G-CODE
+# ---------------------------------------------------------------------------
+def to_machine(x, y, side):
+    """Diseno (vista superior, Y hacia abajo) -> maquina (X der., Y hacia el fondo)."""
+    xm = P["X0"] + (W - x if side == "B" else x)
+    ym = P["Y0"] + (H - y)
+    return xm, ym
+
+
+class G:
+    def __init__(self, title, tool):
+        self.l = ["( %s )" % title, "( herramienta: %s )" % tool,
+                  "( Rover Controller Cubiko - generado por hardware/tools/cubiko_cam.py )",
+                  "( origen X0 Y0 = esquina frontal izquierda del blank; Z0 = superficie del cobre )",
+                  "G21 G90 G17 G94", "G0 Z%.3f" % P["travel_z"], "M3 S%d" % P["rpm"], "G4 P4"]
+        self.cut_len = self.travel_len = 0.0
+        self.plunges = 0
+        self.pos = (0.0, 0.0)
+        self.t = 0.0
+
+    def rapid(self, x, y):
+        self.travel_len += math.hypot(x - self.pos[0], y - self.pos[1])
+        self.l.append("G0 X%.3f Y%.3f" % (x, y))
+        self.pos = (x, y)
+
+    def path(self, pts, z, feed, plunge, side):
+        mpts = [to_machine(x, y, side) for (x, y) in pts]
+        self.l.append("G0 Z%.3f" % P["safe_z"])
+        self.rapid(*mpts[0])
+        self.l.append("G1 Z%.3f F%.0f" % (z, plunge))
+        self.t += (P["safe_z"] - z) / plunge
+        self.plunges += 1
+        first = True
+        for (x, y) in mpts[1:]:
+            d = math.hypot(x - self.pos[0], y - self.pos[1])
+            self.cut_len += d
+            self.t += d / feed
+            self.l.append(("G1 X%.3f Y%.3f F%.0f" % (x, y, feed)) if first else ("X%.3f Y%.3f" % (x, y)))
+            first = False
+            self.pos = (x, y)
+        self.l.append("G0 Z%.3f" % P["safe_z"])
+
+    def drill(self, x, y, side, depth, feed):
+        xm, ym = to_machine(x, y, side)
+        self.rapid(xm, ym)
+        self.l.append("G1 Z%.3f F%.0f" % (-depth, feed))
+        self.l.append("G0 Z%.3f" % P["safe_z"])
+        self.t += (depth + P["safe_z"]) / feed + 0.02
+        self.plunges += 1
+
+    def save(self, name):
+        self.l += ["G0 Z%.3f" % P["travel_z"], "M5", "G0 X%.3f Y%.3f" % (P["X0"], P["Y0"] + H + 3), "M2"]
+        self.t += self.travel_len / 1500.0
+        open(os.path.join(GDIR, name), "w").write("\n".join(self.l) + "\n")
+        return dict(file=name, min=self.t, cut=self.cut_len, plunges=self.plunges)
+
+
+def helix_hole(g, x, y, d, depth, side):
+    """Barreno con fresa plana: circulos concentricos bajando por pasos."""
+    r = (d - P["mill_d"]) / 2
+    z = 0.0
+    while z > -depth + 1e-6:
+        z = max(z - P["mill_step"], -depth)
+        if r < 0.05:
+            g.drill(x, y, side, -z, P["mill_plunge"])
+            continue
+        pts = [(x + r * math.cos(a * math.pi / 18), y + r * math.sin(a * math.pi / 18)) for a in range(37)]
+        g.path(pts, z, P["mill_feed"] * 0.6, P["mill_plunge"], side)
+
+
+# ---------------------------------------------------------------------------
+# SIMULACION / RENDER
+# ---------------------------------------------------------------------------
+SC = 20.0   # px/mm
+COL = dict(bg=(28, 32, 38), sub=(176, 138, 80), cu=(222, 140, 70), cu_net=(240, 168, 90),
+           hole=(15, 15, 15), path=(60, 200, 255), tab=(255, 80, 80), outline=(255, 255, 255))
+
+
+def draw_geom(dr, geom, fill, side, flip):
+    geoms = geom.geoms if hasattr(geom, "geoms") else [geom]
+
+    def T(pts):
+        return [(((W - x) if flip else x) * SC + 40, y * SC + 40) for (x, y) in pts]
+    for g in geoms:
+        if g.is_empty or g.geom_type != "Polygon":
+            continue
+        dr.polygon(T(g.exterior.coords), fill=fill)
+        for i in g.interiors:
+            dr.polygon(T(i.coords), fill=COL["sub"])
+
+
+def render(side, remaining, hole_geom, paths, flip, title, extra=None):
+    img = Image.new("RGB", (int(W * SC) + 80, int(H * SC) + 130), COL["bg"])
+    dr = ImageDraw.Draw(img)
+    draw_geom(dr, box(0, 0, W, H), COL["sub"], side, flip)
+    draw_geom(dr, remaining, COL["cu"], side, flip)
+    draw_geom(dr, hole_geom, COL["hole"], side, flip)
+
+    def T(x, y):
+        return (((W - x) if flip else x) * SC + 40, y * SC + 40)
+    if paths:
+        for pth in paths:
+            dr.line([T(*p) for p in pth], fill=COL["path"], width=1)
+    if extra:
+        extra(dr, T)
+    try:
+        f = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 34)
+    except Exception:
+        f = ImageFont.load_default()
+    dr.text((40, int(H * SC) + 60), title, fill=(240, 240, 240), font=f)
+    return img
+
+
+def main():
+    os.makedirs(GDIR, exist_ok=True)
+    os.makedirs(SDIR, exist_ok=True)
+    net_polys, pads, vias, holes, keepouts = load()
+    rep = []
+    w = vbit_width(P["iso_depth"])
+    rep.append("Genmitsu Cubiko - CAM y simulacion de la tarjeta %s (%.0f x %.0f mm)" % (D.PROJECT, W, H))
+    rep.append("V-bit %.0f grados punta %.2f mm a %.2f mm de profundidad -> ancho de corte %.3f mm"
+               % (P["vbit_angle"], P["vbit_tip"], P["iso_depth"], w))
+    hole_geom = unary_union([Point(x, y).buffer(d / 2, resolution=12) for (x, y, d, _, _) in holes])
+    results, jobs = {}, []
+    iso = {}
+    for side in ("B", "F"):
+        copper = unary_union(list(net_polys[side].values()))
+        paths, swept, _ = isolation(copper)
+        clad = box(0, 0, W, H)
+        # bajo las antenas de las ESP32 se quita todo el cobre (no actua como plano)
+        ant = unary_union(keepouts) if keepouts else Polygon()
+        remaining = clad.difference(swept).difference(hole_geom).difference(ant)
+        iso[side] = (paths, swept, remaining)
+    # ---------------- verificacion electrica ----------------
+    comps = {}
+    for side in ("B", "F"):
+        rem = iso[side][2]
+        comps[side] = list(rem.geoms) if hasattr(rem, "geoms") else [rem]
+    from shapely.strtree import STRtree
+    trees = {s: STRtree(comps[s]) for s in comps}
+    parent = {}
+
+    def find(a):
+        parent.setdefault(a, a)
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    def union(a, b):
+        parent[find(a)] = find(b)
+
+    def comp_at(side, geom):
+        idx = trees[side].query(geom)
+        best, area = None, 0.0
+        for i in idx:
+            a = comps[side][i].intersection(geom).area
+            if a > area:
+                best, area = i, a
+        return best
+
+    # nets que toca cada pieza de cobre
+    shorts = []
+    for side in ("B", "F"):
+        for i, c in enumerate(comps[side]):
+            touched = [n for n, g in net_polys[side].items() if n and c.intersects(g) and c.intersection(g).area > 0.002]
+            if len(touched) > 1:
+                shorts.append((side, touched, c.representative_point().coords[0]))
+    for v in vias:
+        ring = Point(v["x"], v["y"]).buffer(v["d"] / 2).difference(Point(v["x"], v["y"]).buffer(v["drill"] / 2 + 0.01))
+        a, b = comp_at("F", ring), comp_at("B", ring)
+        if a is None or b is None:
+            shorts.append(("via", [v["net"]], (v["x"], v["y"])))
+            continue
+        union(("F", a), ("B", b))
+    opens, bad_ring = [], []
+    by_net = {}
+    for p in pads:
+        if not p["net"]:
+            continue
+        ring = Point(p["x"], p["y"]).buffer(p["size"] / 2 * 0.95).difference(Point(p["x"], p["y"]).buffer(p["drill"] / 2 + 0.01))
+        c = comp_at(p["side"], ring)
+        if c is None:
+            opens.append((p["ref"], p["num"], p["net"], "anillo destruido"))
+            continue
+        by_net.setdefault(p["net"], set()).add(find((p["side"], c)))
+        if (p["size"] - p["drill"]) / 2 < 0.3:
+            bad_ring.append((p["ref"], p["num"], (p["size"] - p["drill"]) / 2))
+    for n, roots in by_net.items():
+        roots = {find(r) for r in roots}
+        if len(roots) > 1:
+            opens.append(("-", "-", n, "%d piezas separadas" % len(roots)))
+    rep.append("")
+    rep.append("Pads: %d   vias (pines): %d   taladros: %d" % (len(pads), len(vias), len(holes)))
+    rep.append("Piezas de cobre tras el fresado: B=%d  F=%d" % (len(comps["B"]), len(comps["F"])))
+    rep.append("CORTOS: %d" % len(shorts))
+    for s in shorts[:20]:
+        rep.append("   %s redes %s cerca de (%.1f, %.1f)" % (s[0], ",".join(s[1]), s[2][0], s[2][1]))
+    rep.append("REDES ABIERTAS: %d" % len(opens))
+    for o in opens[:20]:
+        rep.append("   %s.%s %s: %s" % o)
+    rep.append("Anillos < 0.3 mm: %d" % len(bad_ring))
+    ok = not shorts and not opens
+
+    # ---------------- G-code ----------------
+    def tag(prefix):
+        return prefix
+    # LADO 1 (B arriba): fresa 2 mm -> alineacion, barrenos grandes, antena
+    g = G("LADO 1 (cara inferior arriba) - fresa plana 2.0 mm: pines de alineacion, barrenos grandes y despeje de antenas", "fresa plana 2 filos 2.0 mm")
+    for (x, y) in ALIGN:
+        helix_hole(g, x, y, P["align_d"], P["align_depth"], "B")
+    big = [(x, y, d) for (x, y, d, npth, ref) in holes if d > 1.45 and (round(x, 2), round(y, 2)) not in [(round(a, 2), round(b, 2)) for a, b in ALIGN]]
+    for (x, y, d) in big:
+        helix_hole(g, x, y, max(d, P["mill_d"]), P["drill_depth"], "B")
+    for k in keepouts:
+        for pth in pocket(k, P["mill_d"]):
+            g.path(pth, -P["antenna_depth"], P["mill_feed"], P["mill_plunge"], "B")
+    jobs.append(g.save("L1_1_fresa2mm_alineacion_barrenos_antena_B.nc"))
+    g = G("LADO 1 - aislamiento cara inferior (B.Cu), espejado", "V-bit 30 grados punta 0.1 mm")
+    for pth in iso["B"][0]:
+        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
+    jobs.append(g.save("L1_2_vbit_aislamiento_B.nc"))
+    groups = {d: [] for d in P["drill_bits"]}
+    for (x, y, d, npth, ref) in holes:
+        if d > 1.45:
+            continue
+        bit = min(P["drill_bits"], key=lambda b: abs(b - d) if b <= d + 0.05 else 9 + b)
+        groups[bit].append((x, y))
+    for i, (bit, pts) in enumerate(sorted(groups.items()), 3):
+        g = G("LADO 1 - taladros de %.1f mm (%d agujeros)" % (bit, len(pts)), "broca de PCB %.1f mm" % bit)
+        cur = (0, 0)
+        left = list(pts)
+        while left:
+            j = min(range(len(left)), key=lambda k: (left[k][0] - cur[0]) ** 2 + (left[k][1] - cur[1]) ** 2)
+            cur = left.pop(j)
+            g.drill(cur[0], cur[1], "B", P["drill_depth"], P["drill_feed"])
+        jobs.append(g.save("L1_%d_broca%.1f.nc" % (i, bit)))
+    # LADO 2 (F arriba)
+    g = G("LADO 2 (cara superior arriba) - aislamiento F.Cu", "V-bit 30 grados punta 0.1 mm")
+    for pth in iso["F"][0]:
+        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "F")
+    jobs.append(g.save("L2_1_vbit_aislamiento_F.nc"))
+    g = G("LADO 2 - fresa plana 2.0 mm: despeje de antenas y contorno con %d pestanas" % P["n_tabs"], "fresa plana 2 filos 2.0 mm")
+    for k in keepouts:
+        for pth in pocket(k, P["mill_d"]):
+            g.path(pth, -P["antenna_depth"], P["mill_feed"], P["mill_plunge"], "F")
+    ring, L, tab_d = outline_paths()
+    z = 0.0
+    while z > -P["outline_depth"] + 1e-6:
+        z = max(z - P["mill_step"], -P["outline_depth"])
+        if z < -(P["thickness"] - P["tab_h"]):
+            # en las pasadas profundas se sube sobre cada pestana
+            segs, last = [], 0.0
+            for d0 in sorted(tab_d):
+                a, b = d0 - (P["tab_w"] + P["mill_d"]) / 2, d0 + (P["tab_w"] + P["mill_d"]) / 2
+                segs.append((last, a))
+                last = b
+            segs.append((last, L.length))
+            for (a, b) in segs:
+                if b - a < 0.1:
+                    continue
+                n = max(2, int((b - a) / 1.0))
+                pts = [L.interpolate(a + (b - a) * t / n).coords[0] for t in range(n + 1)]
+                g.path(pts, z, P["mill_feed"], P["mill_plunge"], "F")
+        else:
+            g.path(ring, z, P["mill_feed"], P["mill_plunge"], "F")
+    jobs.append(g.save("L2_2_fresa2mm_antena_contorno_F.nc"))
+
+    # ---------------- render ----------------
+    title_b = "LADO 1 - cara INFERIOR vista desde arriba en la maquina (espejada)"
+    title_f = "LADO 2 - cara SUPERIOR vista desde arriba"
+    render("B", iso["B"][2], hole_geom, None, True, title_b + "  -  cobre tras el fresado").save(os.path.join(SDIR, "lado1_B_resultado.png"))
+    render("F", iso["F"][2], hole_geom, None, False, title_f + "  -  cobre tras el fresado").save(os.path.join(SDIR, "lado2_F_resultado.png"))
+    render("B", iso["B"][2], hole_geom, iso["B"][0], True, title_b + "  -  trayectorias del V-bit").save(os.path.join(SDIR, "lado1_B_trayectorias.png"))
+
+    def outline_extra(dr, T):
+        dr.line([T(*p) for p in ring], fill=COL["outline"], width=3)
+        for d0 in tab_d:
+            x, y = L.interpolate(d0).coords[0]
+            cx, cy = T(x, y)
+            dr.rectangle([cx - 30, cy - 30, cx + 30, cy + 30], outline=COL["tab"], width=5)
+    render("F", iso["F"][2], hole_geom, iso["F"][0], False, title_f + "  -  V-bit (azul), contorno y pestanas (rojo)",
+           outline_extra).save(os.path.join(SDIR, "lado2_F_trayectorias.png"))
+    # acercamiento a la zona mas densa (pines de la ESP32-A y bornas)
+    for side, flip, nm in (("B", True, "lado1_B_zoom.png"),):
+        img = Image.open(os.path.join(SDIR, "lado1_B_trayectorias.png"))
+        x0 = ((W - 50) if flip else 0) * SC + 40
+        img.crop((int(x0), int(10 * SC), int(x0 + 50 * SC), int(80 * SC))).save(os.path.join(SDIR, nm))
+
+    rep.append("")
+    rep.append("TRABAJOS (en este orden):")
+    tot = 0.0
+    for j in jobs:
+        rep.append("  %-50s %6.1f min   corte %7.0f mm   bajadas %d" % (j["file"], j["min"], j["cut"], j["plunges"]))
+        tot += j["min"]
+    rep.append("  Tiempo total de maquina estimado: %.0f min (sin cambios de herramienta ni mapa de alturas)" % tot)
+    rep.append("")
+    rep.append("RESULTADO: %s" % ("OK - el fresado deja todas las redes completas y sin cortos" if ok else "REVISAR"))
+    open(os.path.join(SDIR, "reporte.txt"), "w").write("\n".join(rep) + "\n")
+    print("\n".join(rep))
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

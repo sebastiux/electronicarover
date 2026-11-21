@@ -96,7 +96,7 @@ asg = G.write_project(D.nets())
 res = [(x0 + O, y0 + O, x1 + O, y1 + O, a) for (x0, y0, x1, y1, a) in D.routing_reserved()]
 proto = D.FAB == "proto"
 r = router1l.Router(board, classes, reserved=res, two_layer=(D.LAYERS == 2), via_sizes=via, log=print,
-                    pad_side=D.pad_side, via_cost_mm=(12.0 if proto else 3.0),
+                    pad_side=D.pad_side, via_cost_mm=float(os.environ.get("FIX_VIA_COST", 12.0 if proto else 3.0)),
                     no_via_under_parts=proto)
 for n, pads in routes:
     filt = None

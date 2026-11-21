@@ -254,7 +254,13 @@ def footprint_esp32():
     L.append(fp_text("value", "ESP32_DevKitV1_30P", 0, 0, "F.Fab", 1.0))
     L.append(fp_rect(x0, y0, x1, y1, "F.SilkS", 0.15))
     L.append(fp_rect(x0, y0, x1, y1, "F.Fab", 0.1))
-    L.append(fp_rect(x0 - 0.5, y0 - 0.5, x1 + 0.5, y1 + 0.5, "F.CrtYd", 0.05))
+    if g.get("courtyard") == "rows":
+        # patio solo en las filas de pines: bajo el modulo caben piezas de perfil bajo
+        n2 = g["pitch"] * (g["pins_per_side"] - 1) / 2
+        for (xa, xb) in ((g["row_left_x"], g["row_left_x"]), (g["row_right_alt_x"], g["row_right_x"])):
+            L.append(fp_rect(xa - 1.5, -n2 - 1.5, xb + 1.5, n2 + 1.5, "F.CrtYd", 0.05))
+    else:
+        L.append(fp_rect(x0 - 0.5, y0 - 0.5, x1 + 0.5, y1 + 0.5, "F.CrtYd", 0.05))
     ax0, ay0, ax1, ay1 = g["antenna_keepout"]
     L.append(fp_rect(ax0, ay0, ax1, ay1, "F.SilkS", 0.12))
     L.append(fp_text("user", "ANTENA", 0, (ay0 + ay1) / 2, "F.SilkS", 1.0))
@@ -425,17 +431,7 @@ def write_schematic(comps, syms):
                      % (q(net), f(wx), f(wy), lang, just, uid("lbl", c["ref"], num)))
 
     # textos de bloque
-    notes = [
-        (20.32, 30.48, "ALIMENTACION: Bateria 3S por XT60 -> fusible 15A -> L298N + salidas a step-down 5V/5A y BEC 6V. GND COMUN"),
-        (170.18, 40.64, "RASPBERRY PI 5 (debajo de la PCB, header hembra 2x20)"),
-        (304.8, 50.8, "ESP32-A: TRACCION (6 motores, 6 encoders canal A, MOTOR_EN)"),
-        (431.8, 50.8, "ESP32-B: SERVOS (4 direccion + 3 brazo + 1 reserva), VBAT, UART"),
-        (170.18, 165.1, "UART Pi<->ESP32 con 1k en serie (UART2->ESP32-A, UART0->ESP32-B)"),
-        (20.32, 220.98, "PUENTES H L298N (ENA/ENB = MOTOR_EN, quitar jumpers ENA/ENB; el +5V del modulo alimenta los encoders)"),
-        (20.32, 292.1, "CONECTORES DE MOTOR: bornera 2P + header 1x6 compatible con cable Pololu 37D"),
-        (20.32, 378.46, "DIVISORES DE ENCODER 5V -> 3.3V (10k / 20k)"),
-        (320.04, 378.46, "SERVOS (Power HD 1501MG) - rail SERVO_V 6V independiente"),
-    ]
+    notes = D.SCH_NOTES
     for (x, y, t) in notes:
         L.append('  (text %s (at %s %s 0) (effects (font (size 2 2) (thickness 0.4) bold) (justify left bottom)) (uuid %s))'
                  % (q(t), f(x), f(y), uid("txt", t)))
@@ -495,7 +491,8 @@ def write_project(netnames):
                 "rule_severities": {"silk_over_copper": "ignore", "silk_overlap": "ignore",
                                     "silk_edge_clearance": "ignore", "text_height": "ignore",
                                     "text_thickness": "ignore", "lib_footprint_issues": "ignore",
-                                    "lib_footprint_mismatch": "ignore"},
+                                    "lib_footprint_mismatch": "ignore",
+                                    **getattr(D, "EXTRA_SEVERITIES", {})},
                 "track_widths": [0.0, 0.3, 0.5, 1.0, 2.0, 3.0],
                 "via_dimensions": [{"diameter": 0.0, "drill": 0.0}, {"diameter": 0.8, "drill": 0.4},
                                    {"diameter": 1.2, "drill": 0.6}, {"diameter": 1.6, "drill": 0.8}],
@@ -629,43 +626,9 @@ def build_pcb(comps, netnames, assignments, route=False):
         t.SetTextAngleDegrees(rot)
         board.Add(t)
 
-    silk("ROVER CONTROLLER v%s  -  RPi5 + 2xESP32 + 3xL298N  -  %d CAPAS" % (D.REVISION, D.LAYERS), 100, 21.0, 1.4, bold=True)
-    for m in range(1, 7):
-        c = next(cc for cc in comps if cc["ref"] == "J%d" % (10 + m))
-        x = c["pcb"][0] - 2.54
-        silk("M%d %s" % (m, D.MOTORS[m]), x, 11.6, 0.9)
-        side = c.get("side", "A")
-        silk("M-  M+" if side == "A" else "M+  M-", x, 1.4, 0.8)
-        h = next(cc for cc in comps if cc["ref"] == "J%d" % (20 + m))
-        if side == "A":
-            silk("B A V G - +", h["pcb"][0] - 6.35, 18.7, 0.7)
-        else:
-            silk("+ - G V A B", h["pcb"][0] + 6.35, 18.7, 0.7)
-    # polaridad / etiquetas (posiciones en funcion de rover_design)
     def at(ref):
         return next(cc for cc in comps if cc["ref"] == ref)["pcb"]
-    silk("BAT", 13.0, 74.6, 1.0, bold=True)
-    silk("-", 12.6, 78.0, 1.6, bold=True)
-    silk("+", 12.6, 85.2, 1.6, bold=True)
-    silk("XT60", 7.0, 91.8, 0.9)
-    x, y, _ = at("J3")
-    silk("- 12V>5V +", x + 2.54, y + 5.4, 0.8)
-    x, y, _ = at("J4")
-    silk("+ 12V>BEC -", x + 2.54, y + 5.4, 0.8)
-    x, y, _ = at("J6")
-    silk("V+  SERVO 6V  -", x - 2.54, y - 5.4, 0.8)
-    x, y, _ = at("J5")
-    silk("+ 5V/5A IN -", x - 5.2, y - 2.54, 0.8, rot=90)
-    x, y, _ = at("J31")
-    silk("SIG V+ GND", x - 2.54, y - 2.4, 0.7)
-    for n in range(1, 9):
-        x, y, _ = at("J%d" % (30 + n))
-        silk("S%d" % n, x + 2.4, y, 0.8)
-    x, y, _ = at("U2")
-    silk("ESP32-A TRACCION (antena izq, USB der)", x, y - 15.6, 1.0, bold=True)
-    x, y, _ = at("U3")
-    silk("ESP32-B SERVOS", x, y - 23.3, 1.0, bold=True)
-    silk("ENCODERS 5V->3V3", 98.0, 125.6, 0.8)
+    D.pcb_labels(silk, at, comps)
 
     # zonas de GND en ambas caras
     def zone(layer, netname, pts, prio=0, clearance=0.4):
@@ -688,13 +651,19 @@ def build_pcb(comps, netnames, assignments, route=False):
     rect = [(0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)]
     # plano de GND (en las dos caras si la PCB es de 2 capas)
     zone(pcbnew.B_Cu, "GND", rect, clearance=0.5)
-    if D.LAYERS == 2 and D.FAB != "proto":
+    if D.LAYERS == 2 and (D.FAB != "proto" or getattr(D, "TOP_GND_POUR", False)):
         zone(pcbnew.F_Cu, "GND", rect, clearance=0.5)
 
     # keepout de cobre bajo las antenas de los ESP32
-    for ref in ("U2", "U3"):
-        x, y, _ = next(cc for cc in comps if cc["ref"] == ref)["pcb"]
+    for ref in getattr(D, "ANTENNA_KEEPOUT_REFS", ("U2", "U3")):
+        x, y, rot = next(cc for cc in comps if cc["ref"] == ref)["pcb"]
         ax0, ay0, ax1, ay1 = D.ESP32["antenna_keepout"]
+        # girar el rectangulo de la antena con el modulo
+        a = math.radians(-rot)
+        cs = [(px * math.cos(a) - py * math.sin(a), px * math.sin(a) + py * math.cos(a))
+              for (px, py) in [(ax0, ay0), (ax1, ay0), (ax1, ay1), (ax0, ay1)]]
+        ax0, ax1 = min(c[0] for c in cs), max(c[0] for c in cs)
+        ay0, ay1 = min(c[1] for c in cs), max(c[1] for c in cs)
         z = pcbnew.ZONE(board)
         z.SetIsRuleArea(True)
         z.SetDoNotAllowCopperPour(True)

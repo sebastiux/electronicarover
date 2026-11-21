@@ -6,7 +6,11 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
+#ifdef BOARD_MODEL_FILE
+#include BOARD_MODEL_FILE
+#else
 #include "board_model.h"
+#endif
 
 namespace sb {
 using std::string;

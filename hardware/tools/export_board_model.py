@@ -7,8 +7,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import rover_design as D
 
-pcb = os.path.join(HERE, "..", "rover_controller", "rover_controller.kicad_pcb")
-out = os.path.join(HERE, "..", "..", "firmware", "test", "board_model.h")
+pcb = os.path.join(HERE, "..", D.PROJECT, D.PROJECT + ".kicad_pcb")
+suffix = "" if D.VARIANT == "v1.2" else "_" + D.VARIANT
+out = os.path.join(HERE, "..", "..", "firmware", "test", "board_model%s.h" % suffix)
 b = pcbnew.LoadBoard(pcb)
 
 def gpio_of(name):
@@ -23,9 +24,14 @@ for fp in b.GetFootprints():
     for p in fp.Pads():
         if p.GetNumber() and p.GetNetname():
             nodes.add((ref, p.GetNumber(), p.GetNetname()))
+if hasattr(D, "external_nodes"):
+    D.build()
+    for (r, p_, n) in D.external_nodes():
+        nodes.add((r, p_, n))
+        values.setdefault(r, "L298N (externo)" if r.startswith("U") else "Pololu 37D (externo)")
 esp_names = {str(i + 1): n for i, n in enumerate(D.ESP32_LEFT)}
 esp_names.update({str(i + 16): n for i, n in enumerate(D.ESP32_RIGHT)})
-L = ["// Generado por hardware/tools/export_board_model.py desde rover_controller.kicad_pcb",
+L = ["// Generado por hardware/tools/export_board_model.py desde %s.kicad_pcb" % D.PROJECT,
      "// NO editar a mano.", "#pragma once", "namespace board {",
      "struct Node { const char* ref; const char* pin; const char* net; };",
      "static const Node NODES[] = {"]
