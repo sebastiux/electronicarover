@@ -1,7 +1,7 @@
 ( LADO 2 - fresa de 1.0 mm: despeje de antena y contorno con 4 puentes )
 ( herramienta: fresa tipo maiz 1.0 mm )
-( Rover Controller Cubiko - generado por hardware/tools/cubiko_cam.py )
-( origen X0 Y0 = esquina frontal izquierda del blank; Z0 = superficie del cobre )
+( Rover Controller Cubiko - hardware/tools/cubiko_cam.py )
+( X0 Y0 = esquina frontal izquierda del blank; Z0 = cobre )
 G21 G90 G17 G94
 G0 Z5.000
 M3 S10000

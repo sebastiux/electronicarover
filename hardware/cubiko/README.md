@@ -14,7 +14,7 @@ Variante de la v1.2 adaptada al área de trabajo de la **Genmitsu Cubiko** (≈1
 | Conectividad **sin metalizado**: cada pad conecta solo por su cara de soldadura | 0 conexiones abiertas (41 vías-pin) |
 | **Simulación del fresado** (`tools/cubiko_cam.py`): resta del cobre el ancho real del V-bit y los taladros | **0 cortos, 0 redes abiertas** |
 | Firmware simulado sobre el netlist, con el cableado externo a los L298N y a los encoders | 87/87 OK (48 tracción + 39 servos) |
-| G-code dentro del recorrido de la máquina | X 2–140 mm, Y 1–101 mm, Z −4.6 a 5 mm |
+| G-code dentro del recorrido de la máquina | X 2–140 mm, Y 1–101 mm, Z −3.4 a 5 mm; comentarios y líneas válidos para GRBL (≤ 79 caracteres, sin paréntesis anidados) |
 | Parámetros | Los del Fab Lab: V-bit 20° × 0.1 a 0.10 mm, 3 pasadas al 50 %, broca de 1.0 y fresa de 1.0 |
 
 ![Simulación](sim/resumen_simulacion.png)
@@ -91,7 +91,7 @@ Ya están dentro de los archivos `gcode/*.nc`. Si quieres regenerarlos con otros
 |---|---|---|---|---|---|---|
 | Aislamiento B y F | V-bit 20° × 0.1 | 10 000 | **120 mm/min** | 60 mm/min | **−0.10 mm** | **3 pasadas, traslape 50 %**. Ancho de corte 0.135 mm. Sube a 2 mm entre trayectorias y baja rápido a 0.3 mm antes de entrar. |
 | Taladros | broca 1.0 | 10 000 | — | 60 mm/min | −1.9 mm | Atraviesa 1.6 mm y entra 0.3 mm en la cinta / martir |
-| Pines de alineación | fresa 1.0 | 10 000 | 72 mm/min (helicoidal) | 60 mm/min | −4.6 mm | 1.6 de placa + 3 mm en el martir. Ø3.0 mm. |
+| Pines de alineación | fresa 1.0 | 10 000 | 72 mm/min (helicoidal) | 60 mm/min | −3.4 mm | 1.6 de placa + 1.8 en el MDF: el recorrido Z de la Cubiko termina en la cara del MDF de 2 mm. Ø3.0 mm. |
 | Barrenos de 1.2 mm o más (bornas, M3, M2.5) | fresa 1.0 | 10 000 | 72 mm/min | 60 mm/min | −1.9 mm | Helicoidal, pasos de 0.3 mm |
 | Despeje bajo la antena de la ESP32-B | fresa 1.0 | 10 000 | 120 mm/min | 60 mm/min | −0.12 mm | Solo el cobre que no es de ninguna red |
 | Contorno | fresa 1.0 | 10 000 | 120 mm/min | 60 mm/min | −1.85 mm | 4 pasadas por fuera de la línea. 4 puentes de 3.1 mm con tope en Z −0.9 (quedan 0.7 mm). |

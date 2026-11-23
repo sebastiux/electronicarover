@@ -8,11 +8,11 @@ REDES ABIERTAS: 0
 Anillos < 0.3 mm: 0
 
 TRABAJOS (en este orden):
-  L1_1_fresa1mm_alineacion_barrenos_antena_B.nc        20.8 min   corte     832 mm   bajadas 352
+  L1_1_fresa1mm_alineacion_barrenos_antena_B.nc        19.4 min   corte     782 mm   bajadas 344
   L1_2_vbit_aislamiento_B.nc                          182.3 min   corte   21189 mm   bajadas 712
   L1_3_broca1.0.nc                                     23.8 min   corte       0 mm   bajadas 269
   L2_1_vbit_aislamiento_F.nc                          136.6 min   corte   15293 mm   bajadas 1219
   L2_2_fresa1mm_antena_contorno_F.nc                   18.5 min   corte    2146 mm   bajadas 22
-  Tiempo total de maquina estimado: 382 min (sin cambios de herramienta ni mapa de alturas)
+  Tiempo total de maquina estimado: 381 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

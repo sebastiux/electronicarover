@@ -51,7 +51,7 @@ P = dict(
     # T3: fresa tipo maiz (corn) de 1.0 mm: barrenos de 1.2 mm o mas, pines de alineacion, antena y contorno
     mill_d=1.0, mill_feed=120.0, mill_plunge=60.0, mill_step=0.3,
     outline_depth=1.85, outline_passes=4, tab_w=3.1, tab_h=0.7, n_tabs=4,   # puentes con tope en Z -0.9
-    align_d=3.0, align_depth=4.6,               # pines de alineacion de 3 mm: 1.6 + 3 mm en el martir
+    align_d=3.0, align_depth=3.4,               # pines de 3 mm: 1.6 de placa + 1.8 en el MDF (el recorrido Z acaba en el MDF de 2 mm)
     antenna_depth=0.12,
 )
 W, H = D.BOARD_W, D.BOARD_H
@@ -228,9 +228,12 @@ def to_machine(x, y, side):
 
 class G:
     def __init__(self, title, tool):
-        self.l = ["( %s )" % title, "( herramienta: %s )" % tool,
-                  "( Rover Controller Cubiko - generado por hardware/tools/cubiko_cam.py )",
-                  "( origen X0 Y0 = esquina frontal izquierda del blank; Z0 = superficie del cobre )",
+        # GRBL no admite parentesis anidados en un comentario: se cierran en el primer ")"
+        title, tool = (t.replace("(", "[").replace(")", "]") for t in (title, tool))
+        import textwrap
+        self.l = ["( %s )" % t for t in textwrap.wrap(title, 72)] + ["( herramienta: %s )" % tool,
+                  "( Rover Controller Cubiko - hardware/tools/cubiko_cam.py )",
+                  "( X0 Y0 = esquina frontal izquierda del blank; Z0 = cobre )",
                   "G21 G90 G17 G94", "G0 Z%.3f" % P["travel_z"], "M3 S%d" % P["rpm"], "G4 P4"]
         self.cut_len = self.travel_len = 0.0
         self.plunges = 0
@@ -272,8 +275,34 @@ class G:
     def save(self, name):
         self.l += ["G0 Z%.3f" % P["travel_z"], "M5", "G0 X%.3f Y%.3f" % (P["X0"], P["Y0"] + H + 3), "M2"]
         self.t += self.travel_len / 1500.0
+        grbl_valido(self.l, name)
         open(os.path.join(GDIR, name), "w").write("\n".join(self.l) + "\n")
         return dict(file=name, min=self.t, cut=self.cut_len, plunges=self.plunges)
+
+
+def grbl_valido(lineas, nombre):
+    """Revision de sintaxis GRBL 1.1: comentarios sin anidar, solo palabras validas, < 80 caracteres."""
+    import re
+    for i, l in enumerate(lineas, 1):
+        if len(l) > 79:
+            raise SystemExit("%s:%d linea de mas de 79 caracteres" % (nombre, i))
+        prof, resto = 0, ""
+        for ch in l:
+            if ch == "(":
+                if prof:
+                    raise SystemExit("%s:%d parentesis anidado en comentario: %s" % (nombre, i, l))
+                prof = 1
+            elif ch == ")":
+                if not prof:
+                    raise SystemExit("%s:%d ')' sin abrir: %s" % (nombre, i, l))
+                prof = 0
+            elif not prof:
+                resto += ch
+        if prof:
+            raise SystemExit("%s:%d comentario sin cerrar: %s" % (nombre, i, l))
+        resto = resto.split(";")[0].replace(" ", "").upper()
+        if resto and not re.fullmatch(r"([GMXYZFSP]-?\d+(\.\d+)?)+", resto):
+            raise SystemExit("%s:%d palabra no valida para GRBL: %s" % (nombre, i, l))
 
 
 def helix_hole(g, x, y, d, depth, side):
