@@ -240,8 +240,9 @@ class Router:
                 if cyd.OutlineCount():
                     bb = cyd.BBox()
                     m = np.zeros(g.B.shape, np.int8)
+                    # el anillo de la via (radio 1.1) + 0.3 mm libres para el cautin al soldar el pin arriba
                     g.mark_rect(m, mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetX() + bb.GetWidth()),
-                                mm(bb.GetY() + bb.GetHeight()), 1, rm=0.6)
+                                mm(bb.GetY() + bb.GetHeight()), 1, rm=1.4)
                     self.noVia |= m.astype(bool)
         # pistas y vias ya existentes (permite rutear de forma incremental)
         for t in b.GetTracks():

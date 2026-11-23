@@ -63,7 +63,7 @@ ESPA_POS = (34.7, 49.5, 180)          # vertical, USB arriba: fila IO23.. mira a
 ESPB_POS = (101.0, 67.0, 270)         # horizontal, USB a la izquierda: fila IO23.. mira a los servos
 
 TB_X = 5.5                            # columna de pads de las bornas de los L298N (orilla izquierda)
-EN_VIA_X = 9.6                        # vias de MOTOR_EN junto a los pads ENA/ENB
+EN_VIA_X = 10.9                       # vias de MOTOR_EN: fuera del cuerpo de las bornas (acaba en X 9.1)
 TB_Y = {"U6": 15.75, "U5": 43.25, "U4": 70.75}   # pad 1 (arriba) de cada borna
 TB_ORDER = ["ENB", "IN4", "IN3", "IN2", "IN1", "ENA", "GND"]   # de arriba a abajo
 ENC_TB_Y = BOARD_H - 5.0

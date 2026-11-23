@@ -44,7 +44,7 @@ P = dict(
     rpm=10000,
     # T1: V-bit 20 grados, punta 0.1 mm (la del Fab Lab)
     vbit_angle=20.0, vbit_tip=0.10, iso_depth=0.10, iso_feed=120.0, iso_plunge=60.0,
-    iso_passes=3, iso_overlap=0.50,            # 3 x 50 %: con menos quedan hilos de cobre (nota del Fab Lab)
+    iso_passes=1, iso_overlap=0.50,            # modo prototipo: 1 sola pasada (el Fab Lab usa 3 x 50 % para que no queden hilos)
     # T2: una sola broca de 1.0 mm para todos los agujeros de 0.6 a 1.15 mm
     drill_feed=60.0, drill_depth=1.9,          # atraviesa 1.6 + 0.3 en la cinta / martir
     drill_bits=[1.0], drill_max=1.15,

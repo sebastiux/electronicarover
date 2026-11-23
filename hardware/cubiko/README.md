@@ -11,11 +11,11 @@ Variante de la v1.2 adaptada al área de trabajo de la **Genmitsu Cubiko** (≈1
 | Verificación | Resultado |
 |---|---|
 | DRC de KiCad | 0 violaciones, 0 conexiones pendientes |
-| Conectividad **sin metalizado**: cada pad conecta solo por su cara de soldadura | 0 conexiones abiertas (41 vías-pin) |
+| Conectividad **sin metalizado**: cada pad conecta solo por su cara de soldadura | 0 conexiones abiertas (38 vías-pin, todas con espacio libre para soldar el alambre por las 2 caras) |
 | **Simulación del fresado** (`tools/cubiko_cam.py`): resta del cobre el ancho real del V-bit y los taladros | **0 cortos, 0 redes abiertas** |
 | Firmware simulado sobre el netlist, con el cableado externo a los L298N y a los encoders | 87/87 OK (48 tracción + 39 servos) |
 | G-code dentro del recorrido de la máquina | X 2–140 mm, Y 1–101 mm, Z −3.4 a 5 mm; comentarios y líneas válidos para GRBL (≤ 79 caracteres, sin paréntesis anidados) |
-| Parámetros | Los del Fab Lab: V-bit 20° × 0.1 a 0.10 mm, 3 pasadas al 50 %, broca de 1.0 y fresa de 1.0 |
+| Parámetros | **Modo prototipo:** 1 sola pasada de aislamiento con la V-bit del Fab Lab (20° × 0.1 a 0.10 mm), broca de 1.0 y fresa de 1.0 · **~2.8 h** de máquina |
 
 ![Simulación](sim/resumen_simulacion.png)
 
@@ -89,7 +89,7 @@ Ya están dentro de los archivos `gcode/*.nc`. Si quieres regenerarlos con otros
 
 | Operación | Herramienta | RPM | Avance | Bajada | Profundidad | Notas |
 |---|---|---|---|---|---|---|
-| Aislamiento B y F | V-bit 20° × 0.1 | 10 000 | **120 mm/min** | 60 mm/min | **−0.10 mm** | **3 pasadas, traslape 50 %**. Ancho de corte 0.135 mm. Sube a 2 mm entre trayectorias y baja rápido a 0.3 mm antes de entrar. |
+| Aislamiento B y F | V-bit 20° × 0.1 | 10 000 | **120 mm/min** | 60 mm/min | **−0.10 mm** | **1 pasada** (modo prototipo). Ancho de corte 0.135 mm. Sube a 2 mm entre trayectorias y baja rápido a 0.3 mm antes de entrar. |
 | Taladros | broca 1.0 | 10 000 | — | 60 mm/min | −1.9 mm | Atraviesa 1.6 mm y entra 0.3 mm en la cinta / martir |
 | Pines de alineación | fresa 1.0 | 10 000 | 72 mm/min (helicoidal) | 60 mm/min | −3.4 mm | 1.6 de placa + 1.8 en el MDF: el recorrido Z de la Cubiko termina en la cara del MDF de 2 mm. Ø3.0 mm. |
 | Barrenos de 1.2 mm o más (bornas, M3, M2.5) | fresa 1.0 | 10 000 | 72 mm/min | 60 mm/min | −1.9 mm | Helicoidal, pasos de 0.3 mm |
@@ -103,7 +103,7 @@ Ya están dentro de los archivos `gcode/*.nc`. Si quieres regenerarlos con otros
 
 **Por qué estos valores:** son los que trae por defecto la app CNC del Fab Lab (<https://fablab.sebs.mx/cnc/>), calibrados en esta misma máquina.
 - **Ancho del corte.** El V-bit corta más ancho entre más baja: 0.1 + 2·d·tan 10° → a 0.10 mm da 0.135 mm. La separación mínima del diseño es 0.5 mm.
-- **Pasadas.** La nota del Fab Lab dice que con menos de 3 pasadas al 50 % quedan hilos de cobre entre pistas.
+- **Pasadas.** En **modo prototipo** se da **1 sola pasada**: el tiempo baja de ~6.4 h a ~2.8 h. Cada red queda rodeada por un corte cerrado de 0.135 mm, y la simulación confirma 0 cortos. El costo, como advierte el Fab Lab, es que entre dos pistas puede quedar un **hilo de cobre suelto** (aislado, no conecta nada). Antes de soldar, revisa la placa con lupa y raspa con cúter cualquier hilo que se haya levantado. Si prefieres la limpieza del Fab Lab, pon `iso_passes=3` en `tools/cubiko_cam.py` y regenera.
 - **Profundidad.** El cobre mide 35 µm. 0.10 mm lo atraviesa siempre que se use el **mapa de alturas**: la cama de la Cubiko no es plana.
 - **Brocas.** Una sola broca de 1.0 mm para todo lo que mide entre 0.6 y 1.15 mm, como en el flujo del Fab Lab. Lo más grande lo abre la fresa de 1.0 mm en círculo.
 
@@ -120,15 +120,15 @@ Usa los Gerbers de `gerbers/`. Los equivalentes son:
 
 ## Paso a paso
 
-Hay 5 archivos, en este orden. El tiempo estimado es **~6.4 h** de máquina, más cambios de herramienta y mapas de alturas.
+Hay 5 archivos, en este orden. El tiempo estimado es **~2.8 h** de máquina, más cambios de herramienta y mapas de alturas.
 
 | # | Archivo | Herramienta | Tiempo |
 |---|---|---|---|
-| 1 | `L1_1_fresa1mm_alineacion_barrenos_antena_B.nc` | fresa 1.0 | 21 min |
-| 2 | `L1_2_vbit_aislamiento_B.nc` | V-bit 20° | 182 min |
-| 3 | `L1_3_broca1.0.nc` | broca 1.0 (269 agujeros) | 24 min |
+| 1 | `L1_1_fresa1mm_alineacion_barrenos_antena_B.nc` | fresa 1.0 | 20 min |
+| 2 | `L1_2_vbit_aislamiento_B.nc` | V-bit 20° | 59 min |
+| 3 | `L1_3_broca1.0.nc` | broca 1.0 (266 agujeros) | 24 min |
 | — | **voltear la placa** | | |
-| 4 | `L2_1_vbit_aislamiento_F.nc` | V-bit 20° | 137 min |
+| 4 | `L2_1_vbit_aislamiento_F.nc` | V-bit 20° | 48 min |
 | 5 | `L2_2_fresa1mm_antena_contorno_F.nc` | fresa 1.0 | 19 min |
 
 ### Lado 1: cara inferior hacia arriba
@@ -196,7 +196,16 @@ Capturas en `sim/fablab/`, registros en `sim/fablab/registro_lado*.txt`. El scri
 
 ## Montaje
 
-1. **Vías-pin (41):** mete un pin de header o un alambre de 0.8–0.9 mm en cada vía y **suéldalo por las dos caras**. Córtalo a ras. Varias quedan bajo la ESP32-A: suéldalas antes que los zócalos.
+1. **Vías-pin (38): así se vuelve de 2 caras.** Las caras se unen con un alambre soldado en cada vía.
+   - **El hueco:** cada vía es un barreno de 1.0 mm con anillo de cobre de 0.6 mm en las dos caras.
+   - **El alambre:** usa alambre de cobre estañado de 0.5–0.6 mm. Sirven los recortes de las patas de resistencias, o un pin de header de 0.64 mm.
+   - **Cómo soldarlo:**
+     1. Mete el alambre y dóblalo un poco en la cara de abajo para que no se caiga.
+     2. Suelda arriba, voltea y suelda abajo.
+     3. Corta a ras las dos caras y revisa continuidad entre los dos anillos.
+   - **Espacio:** ninguna vía queda bajo el cuerpo de una pieza; cada anillo tiene al menos 0.3 mm libres respecto al patio de cualquier componente. Así el cautín entra por arriba aunque ya estén puestas las piezas.
+   - **Bajo la ESP32-A** hay vías: suéldalas antes que los zócalos 1x15.
+   - **Orden:** primero todas las vías y después los componentes.
 2. **Bajo la ESP32-A** van los divisores de los encoders 4–6. Suéldalos (resistencias acostadas y capacitores de disco) **antes** que los headers hembra de la ESP32-A.
 3. El resto de los componentes, de menor a mayor altura. Todos se sueldan **por abajo**, menos el **header 2x20 de la Pi**: va abajo y se suelda **por arriba**.
 4. Las ESP32 van en headers hembra **1x15 en la fila exterior** (25.4 mm entre filas). La fila doble de pads también acepta clones de 22.86 mm.
