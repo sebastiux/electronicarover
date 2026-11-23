@@ -36,20 +36,21 @@ from PIL import Image, ImageDraw, ImageFont
 # PARAMETROS (Genmitsu Cubiko: husillo 775 de 75 W, max 10 000 RPM, GRBL 1.1h)
 # ---------------------------------------------------------------------------
 P = dict(
+    # Valores por defecto del Fab Lab (https://fablab.sebs.mx/cnc/, cam.js DEF), calibrados en la Cubiko
     blank=(142.0, 100.0),       # placa virgen doble cara FR1, 1.6 mm, cobre 35 um (recortar de 150x100)
     X0=3.0, Y0=2.0,             # esquina inferior izquierda de la tarjeta dentro del blank
     thickness=1.6,
-    safe_z=1.0, travel_z=5.0,                 # 1 mm entre trayectorias (con mapa de alturas)
+    safe_z=2.0, approach_z=0.3, travel_z=5.0,  # entre trayectorias: sube a 2 mm; baja rapido a 0.3 y entra con avance
     rpm=10000,
-    # T1: V-bit 30 grados, punta 0.1 mm
-    vbit_angle=30.0, vbit_tip=0.10, iso_depth=0.08, iso_feed=150.0, iso_plunge=60.0,
-    iso_passes=2, iso_overlap=0.30,
-    # brocas
+    # T1: V-bit 20 grados, punta 0.1 mm (la del Fab Lab)
+    vbit_angle=20.0, vbit_tip=0.10, iso_depth=0.10, iso_feed=120.0, iso_plunge=60.0,
+    iso_passes=3, iso_overlap=0.50,            # 3 x 50 %: con menos quedan hilos de cobre (nota del Fab Lab)
+    # T2: una sola broca de 1.0 mm para todos los agujeros de 0.6 a 1.15 mm
     drill_feed=60.0, drill_depth=1.9,          # atraviesa 1.6 + 0.3 en la cinta / martir
-    drill_bits=[0.8, 1.0, 1.2],
-    # T5: fresa plana de 2.0 mm (2 filos)
-    mill_d=2.0, mill_feed=150.0, mill_plunge=30.0, mill_step=0.3,
-    outline_depth=1.8, tab_w=3.0, tab_h=0.6, n_tabs=4,
+    drill_bits=[1.0], drill_max=1.15,
+    # T3: fresa tipo maiz (corn) de 1.0 mm: barrenos de 1.2 mm o mas, pines de alineacion, antena y contorno
+    mill_d=1.0, mill_feed=120.0, mill_plunge=60.0, mill_step=0.3,
+    outline_depth=1.85, outline_passes=4, tab_w=3.1, tab_h=0.7, n_tabs=4,   # puentes con tope en Z -0.9
     align_d=3.0, align_depth=4.6,               # pines de alineacion de 3 mm: 1.6 + 3 mm en el martir
     antenna_depth=0.12,
 )
@@ -245,8 +246,10 @@ class G:
         mpts = [to_machine(x, y, side) for (x, y) in pts]
         self.l.append("G0 Z%.3f" % P["safe_z"])
         self.rapid(*mpts[0])
+        za = max(P["approach_z"], z + P["approach_z"]) if z < 0 else P["safe_z"]
+        self.l.append("G0 Z%.3f" % za)
         self.l.append("G1 Z%.3f F%.0f" % (z, plunge))
-        self.t += (P["safe_z"] - z) / plunge
+        self.t += (za - z) / plunge
         self.plunges += 1
         first = True
         for (x, y) in mpts[1:]:
@@ -344,7 +347,7 @@ def main():
     rep = []
     w = vbit_width(P["iso_depth"])
     rep.append("Genmitsu Cubiko - CAM y simulacion de la tarjeta %s (%.0f x %.0f mm)" % (D.PROJECT, W, H))
-    rep.append("V-bit %.0f grados punta %.2f mm a %.2f mm de profundidad -> ancho de corte %.3f mm"
+    rep.append("V-bit %.0f grados punta %.2f mm a %.2f mm de profundidad -> ancho de corte %.3f mm (3 pasadas al 50 %%)"
                % (P["vbit_angle"], P["vbit_tip"], P["iso_depth"], w))
     hole_geom = unary_union([Point(x, y).buffer(d / 2, resolution=12) for (x, y, d, _, _) in holes])
     results, jobs = {}, []
@@ -433,24 +436,26 @@ def main():
     # ---------------- G-code ----------------
     def tag(prefix):
         return prefix
-    # LADO 1 (B arriba): fresa 2 mm -> alineacion, barrenos grandes, antena
-    g = G("LADO 1 (cara inferior arriba) - fresa plana 2.0 mm: pines de alineacion, barrenos grandes y despeje de antenas", "fresa plana 2 filos 2.0 mm")
+    # LADO 1 (B arriba): fresa de 1 mm -> alineacion, barrenos grandes, antena
+    TM = "fresa tipo maiz 1.0 mm"
+    g = G("LADO 1 (cara inferior arriba) - fresa de 1.0 mm: pines de alineacion, barrenos de 1.2 mm o mas y despeje de antena", TM)
     for (x, y) in ALIGN:
         helix_hole(g, x, y, P["align_d"], P["align_depth"], "B")
-    big = [(x, y, d) for (x, y, d, npth, ref) in holes if d > 1.45 and (round(x, 2), round(y, 2)) not in [(round(a, 2), round(b, 2)) for a, b in ALIGN]]
+    big = [(x, y, d) for (x, y, d, npth, ref) in holes if d > P["drill_max"] and (round(x, 2), round(y, 2)) not in [(round(a, 2), round(b, 2)) for a, b in ALIGN]]
     for (x, y, d) in big:
         helix_hole(g, x, y, max(d, P["mill_d"]), P["drill_depth"], "B")
     for k in (iso["B"][3].geoms if hasattr(iso["B"][3], "geoms") else [iso["B"][3]]):
         for pth in pocket(k.buffer(P["mill_d"] / 2), P["mill_d"]):
             g.path(pth, -P["antenna_depth"], P["mill_feed"], P["mill_plunge"], "B")
-    jobs.append(g.save("L1_1_fresa2mm_alineacion_barrenos_antena_B.nc"))
-    g = G("LADO 1 - aislamiento cara inferior (B.Cu), espejado", "V-bit 30 grados punta 0.1 mm")
+    jobs.append(g.save("L1_1_fresa1mm_alineacion_barrenos_antena_B.nc"))
+    TV = "V-bit 20 grados punta 0.1 mm"
+    g = G("LADO 1 - aislamiento cara inferior (B.Cu), espejado", TV)
     for pth in iso["B"][0]:
         g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
     jobs.append(g.save("L1_2_vbit_aislamiento_B.nc"))
     groups = {d: [] for d in P["drill_bits"]}
     for (x, y, d, npth, ref) in holes:
-        if d > 1.45:
+        if d > P["drill_max"]:
             continue
         bit = min(P["drill_bits"], key=lambda b: abs(b - d) if b <= d + 0.05 else 9 + b)
         groups[bit].append((x, y))
@@ -464,19 +469,19 @@ def main():
             g.drill(cur[0], cur[1], "B", P["drill_depth"], P["drill_feed"])
         jobs.append(g.save("L1_%d_broca%.1f.nc" % (i, bit)))
     # LADO 2 (F arriba)
-    g = G("LADO 2 (cara superior arriba) - aislamiento F.Cu", "V-bit 30 grados punta 0.1 mm")
+    g = G("LADO 2 (cara superior arriba) - aislamiento F.Cu", TV)
     for pth in iso["F"][0]:
         g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "F")
     jobs.append(g.save("L2_1_vbit_aislamiento_F.nc"))
-    g = G("LADO 2 - fresa plana 2.0 mm: despeje de antenas y contorno con %d pestanas" % P["n_tabs"], "fresa plana 2 filos 2.0 mm")
+    g = G("LADO 2 - fresa de 1.0 mm: despeje de antena y contorno con %d puentes" % P["n_tabs"], TM)
     for k in (iso["F"][3].geoms if hasattr(iso["F"][3], "geoms") else [iso["F"][3]]):
         for pth in pocket(k.buffer(P["mill_d"] / 2), P["mill_d"]):
             g.path(pth, -P["antenna_depth"], P["mill_feed"], P["mill_plunge"], "F")
     ring, L, tab_d = outline_paths()
     z = 0.0
     while z > -P["outline_depth"] + 1e-6:
-        z = max(z - P["mill_step"], -P["outline_depth"])
-        if z < -(P["thickness"] - P["tab_h"]):
+        z = max(z - P["outline_depth"] / P["outline_passes"], -P["outline_depth"])
+        if z < -(P["thickness"] - P["tab_h"]) - 1e-6:
             # en las pasadas profundas se sube sobre cada pestana
             segs, last = [], 0.0
             for d0 in sorted(tab_d):
@@ -492,7 +497,7 @@ def main():
                 g.path(pts, z, P["mill_feed"], P["mill_plunge"], "F")
         else:
             g.path(ring, z, P["mill_feed"], P["mill_plunge"], "F")
-    jobs.append(g.save("L2_2_fresa2mm_antena_contorno_F.nc"))
+    jobs.append(g.save("L2_2_fresa1mm_antena_contorno_F.nc"))
 
     # ---------------- render ----------------
     title_b = "LADO 1 - cara INFERIOR vista desde arriba en la maquina (espejada)"

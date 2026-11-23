@@ -1,20 +1,18 @@
 Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_controller_cubiko (136 x 96 mm)
-V-bit 30 grados punta 0.10 mm a 0.08 mm de profundidad -> ancho de corte 0.143 mm
+V-bit 20 grados punta 0.10 mm a 0.10 mm de profundidad -> ancho de corte 0.135 mm (3 pasadas al 50 %)
 
 Pads: 267   vias (pines): 41   taladros: 316
-Piezas de cobre tras el fresado: B=236  F=408
+Piezas de cobre tras el fresado: B=607  F=588
 CORTOS: 0
 REDES ABIERTAS: 0
 Anillos < 0.3 mm: 0
 
 TRABAJOS (en este orden):
-  L1_1_fresa2mm_alineacion_barrenos_antena_B.nc        10.5 min   corte     307 mm   bajadas 77
-  L1_2_vbit_aislamiento_B.nc                          103.9 min   corte   14134 mm   bajadas 485
-  L1_3_broca0.8.nc                                      4.7 min   corte       0 mm   bajadas 64
-  L1_4_broca1.0.nc                                     14.9 min   corte       0 mm   bajadas 205
-  L1_5_broca1.2.nc                                      3.0 min   corte       0 mm   bajadas 39
-  L2_1_vbit_aislamiento_F.nc                           83.6 min   corte   10196 mm   bajadas 813
-  L2_2_fresa2mm_antena_contorno_F.nc                   21.2 min   corte    2920 mm   bajadas 21
-  Tiempo total de maquina estimado: 242 min (sin cambios de herramienta ni mapa de alturas)
+  L1_1_fresa1mm_alineacion_barrenos_antena_B.nc        20.8 min   corte     832 mm   bajadas 352
+  L1_2_vbit_aislamiento_B.nc                          182.3 min   corte   21189 mm   bajadas 712
+  L1_3_broca1.0.nc                                     23.8 min   corte       0 mm   bajadas 269
+  L2_1_vbit_aislamiento_F.nc                          136.6 min   corte   15293 mm   bajadas 1219
+  L2_2_fresa1mm_antena_contorno_F.nc                   18.5 min   corte    2146 mm   bajadas 22
+  Tiempo total de maquina estimado: 382 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos
