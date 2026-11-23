@@ -1,0 +1,24 @@
+[34s] simulacion + homing: {"estado":"Idle","mpos":{"x":-143,"y":-108,"z":-2}}
+[35s] material FR1 142x100x1.6 (diseno a X3 Y2): {"tipo":"cobre","ancho":142,"alto":100,"grosor":1.6,"x":3,"y":2}
+[40s] cero XY en la esquina del blank (el MISMO en las 2 caras): {"mpos":{"x":-142,"y":-107,"z":-2}}
+[45s] archivos: {"trabajos":["L2_1_vbit_aislamiento_F [V-bit 0.1 mm] 129873 lineas","L2_2_fresa1mm_antena_contorno_F [Fresa 1.0 mm] 2590 lineas"],"gerber":{"nombre":"rover_controller_cubiko","hoyos":316}}
+[69s] alineacion con 2 barrenos (H1 y barreno sup. der. de la Pi): {"A":{"x":6.5,"y":89.5},"B":{"x":135.5,"y":89.5},"medidoA":{"x":6.5,"y":89.5,"z":-2},"medidoB":{"x":135.5,"y":89.5,"z":-2},"rotacion_grados":0,"dx":0,"dy":0}
+[125s] Z0 con la sonda: {"z_maquina":-36.433,"wco_z":-36.433}
+[595s] mapa de alturas 11x8 sobre la tarjeta: {"puntos":88,"min":-0.17,"max":0.19}
+[601s]   app: Mill L2_1_vbit_aislamiento_F Mounted: V-bit 0.1 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 2 h 18 min · Goes 0.10 mm below the copper Cancel Mill
+[621s]     L2_1_vbit_aislamiento_F: 12432/134698 lineas · Run · W 138.6,71.0,0.01
+[641s]     L2_1_vbit_aislamiento_F: 23812/134698 lineas · Run · W 71.9,78.0,-0.08
+[661s]     L2_1_vbit_aislamiento_F: 35733/134698 lineas · Run · W 56.9,5.7,-0.05
+[681s]     L2_1_vbit_aislamiento_F: 48051/134698 lineas · Run · W 107.6,42.9,0.04
+[701s]     L2_1_vbit_aislamiento_F: 60845/134698 lineas · Run · W 122.7,12.1,0.07
+[721s]     L2_1_vbit_aislamiento_F: 73822/134698 lineas · Run · W 85.5,43.0,-0.05
+[741s]     L2_1_vbit_aislamiento_F: 86623/134698 lineas · Run · W 116.5,87.8,-0.07
+[761s]     L2_1_vbit_aislamiento_F: 99291/134698 lineas · Run · W 50.2,59.8,-0.13
+[781s]     L2_1_vbit_aislamiento_F: 112336/134698 lineas · Run · W 23.6,35.5,-0.09
+[801s]     L2_1_vbit_aislamiento_F: 125146/134698 lineas · Run · W 75.0,63.7,-0.09
+[816s] TRABAJO L2_1_vbit_aislamiento_F: {"estado":"hecho","grbl":"Idle"} en 218 s reales
+[848s]   app: Mill L2_2_fresa1mm_antena_contorno_F Mounted: Fresa 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 18 min · Goes through the 1.6 mm and goes 0.25 mm into the MDF Cancel Mill
+[854s] TRABAJO L2_2_fresa1mm_antena_contorno_F: {"estado":"hecho","grbl":"Idle"} en 8 s reales
+--- consola de la app:
+FIN
+EXIT lado2

@@ -1,0 +1,25 @@
+[35s] simulacion + homing: {"estado":"Idle","mpos":{"x":-143,"y":-108,"z":-2}}
+[36s] material FR1 142x100x1.6 (diseno a X3 Y2): {"tipo":"cobre","ancho":142,"alto":100,"grosor":1.6,"x":3,"y":2}
+[41s] cero XY en la esquina del blank (el MISMO en las 2 caras): {"mpos":{"x":-142,"y":-107,"z":-2}}
+[44s] archivos: {"trabajos":["L1_1_fresa1mm_alineacion_barrenos_antena_B [Fresa 1.0 mm] 14003 lineas","L1_2_vbit_aislamiento_B [V-bit 0.1 mm] 126764 lineas","L1_3_broca1.0 [Broca 1.0 mm] 820 lineas"],"gerber":null}
+[88s] Z0 con la sonda: {"z_maquina":-36.433,"wco_z":-36.433}
+[555s] mapa de alturas 11x8 sobre la tarjeta: {"puntos":88,"min":-0.17,"max":0.19}
+[560s]   app: Mill L1_1_fresa1mm_alineacion_barrenos_antena_B Mounted: Fresa 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 20 min · Goes through the 1.6 mm and goes 1.80 mm into the MDF Cancel Mill
+[575s] TRABAJO L1_1_fresa1mm_alineacion_barrenos_antena_B: {"estado":"hecho","grbl":"Idle"} en 18 s reales
+[608s]   app: Mill L1_2_vbit_aislamiento_B Mounted: V-bit 0.1 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 3 h 3 min · Goes 0.10 mm below the copper Cancel Mill
+[628s]     L1_2_vbit_aislamiento_B: 12831/138525 lineas · Run · W 124.3,40.1,0.06
+[648s]     L1_2_vbit_aislamiento_B: 24436/138525 lineas · Run · W 138.7,32.0,0.07
+[668s]     L1_2_vbit_aislamiento_B: 36979/138525 lineas · Run · W 93.2,52.0,-0.03
+[688s]     L1_2_vbit_aislamiento_B: 49691/138525 lineas · Run · W 32.1,87.2,-0.17
+[708s]     L1_2_vbit_aislamiento_B: 62826/138525 lineas · Run · W 44.4,44.4,-0.12
+[728s]     L1_2_vbit_aislamiento_B: 75741/138525 lineas · Run · W 32.4,87.1,-0.17
+[748s]     L1_2_vbit_aislamiento_B: 88604/138525 lineas · Run · W 43.0,65.2,-0.13
+[768s]     L1_2_vbit_aislamiento_B: 101766/138525 lineas · Run · W 34.6,20.3,-0.09
+[788s]     L1_2_vbit_aislamiento_B: 114727/138525 lineas · Run · W 114.0,65.2,-0.01
+[808s]     L1_2_vbit_aislamiento_B: 127560/138525 lineas · Run · W 98.4,37.4,0.01
+[825s] TRABAJO L1_2_vbit_aislamiento_B: {"estado":"hecho","grbl":"Idle"} en 220 s reales
+[869s]   app: Mill L1_3_broca1.0 Mounted: Broca 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 18 min · Goes through the 1.6 mm and goes 0.30 mm into the MDF Cancel Mill
+[874s] TRABAJO L1_3_broca1.0: {"estado":"hecho","grbl":"Idle"} en 7 s reales
+--- consola de la app:
+FIN
+EXIT lado1

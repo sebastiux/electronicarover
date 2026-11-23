@@ -140,10 +140,23 @@ Hay 5 archivos, en este orden. El tiempo estimado es **~6.4 h** de máquina, má
 5. Monta la broca de 1.0, haz el cero Z y corre el **archivo 3**. El taladrado no necesita mapa de alturas.
 6. Aspira el polvo.
 
-### Voltear
+### Voltear: cómo se alinean las 2 caras
 
-7. Despega la placa **sin mover la cama**. En el martir quedaron dos barrenos de Ø3 hechos en el paso 3. **Mete los 2 pines de Ø3 en el martir.**
-8. Voltea la placa **de izquierda a derecha**, sobre el eje vertical, y ensártala en los pines. El barreno de H1 queda en el pin que antes ocupaba el barreno de la Pi, y al revés. Pégala con cinta nueva y **saca los pines** antes de cortar.
+La cara inferior (lado 1) se fresa **espejada** y en ella se taladra **todo**. La cara superior (lado 2) va sin espejo. La placa se voltea **de izquierda a derecha**, sobre el eje vertical que pasa por el centro de la tarjeta (X = 3 + 68 = 71 mm desde el cero).
+
+Dos barrenos son simétricos respecto a ese eje: **H1**, en (3.5, 8.5) mm de la tarjeta, y el barreno superior derecho de la Pi, en (132.5, 8.5). Al voltear, cada uno cae donde estaba el otro. Los dos se hacen en el archivo 1.
+
+7. Despega la placa **sin mover la cama ni el cero XY**.
+8. Voltéala de izquierda a derecha y pégala con cinta nueva. Para que quede en su lugar, usa una de estas opciones:
+   - **A. Pines (mecánica):** el archivo 1 también barrenó el MDF en esas dos posiciones. Mete 2 pines de Ø3 en el MDF, ensarta la placa volteada, pégala y **saca los pines** antes de cortar.
+   - **B. Asistente de la app del Fab Lab** (*Origin → Align with 2 holes*):
+     1. Carga en la app los Gerbers de la tarjeta (`gerbers/…F_Cu.gtl`, `…Edge_Cuts.gm1`, `….drl`) junto con los archivos `L2_*.nc`. Pon el material en 142 × 100 y la posición del diseño en **X 3, Y 2**.
+     2. Elige como hoyos A y B: **Ø3.00 en (6.50, 89.50)** (H1) y **Ø3.00 en (135.50, 89.50)** (Pi).
+     3. Con *Go to where it should be* y el jog, **centra la fresa sobre cada barreno**.
+     4. La app calcula el **giro y el desplazamiento reales** y los aplica a todos los trabajos del lado 2.
+     5. Si la distancia medida entre barrenos difiere más de 0.3 mm del diseño, la app avisa: revisa que sean los barrenos correctos.
+
+     Con esta opción no necesitas pines. Si usas pines, la alineación sirve de doble revisión: debe dar ~0° y ~0 mm.
 
 ### Lado 2: cara superior hacia arriba
 
@@ -156,6 +169,30 @@ Hay 5 archivos, en este orden. El tiempo estimado es **~6.4 h** de máquina, má
 - **El canal debe medir ~0.14 mm de ancho** y verse sin cobre al fondo.
 - **Si quedan puentes de cobre:** baja 0.02 mm la profundidad (`iso_depth`).
 - **Si el canal sale de más de 0.25 mm:** súbela.
+
+## Simulación en el simulador del Fab Lab
+
+Los 5 archivos se corrieron en el gemelo de la Cubiko de <https://fablab.sebs.mx/cnc/> (modo *Simulation*). Se siguió el mismo procedimiento de este README:
+
+| Paso | Lado 1 (cara inferior) | Lado 2 (cara superior) |
+|---|---|---|
+| Homing, material 142 × 100 × 1.6, cero XY en la esquina | ✓ | ✓, el **mismo** cero |
+| Alineación con H1 y el barreno de la Pi | — | ✓: 0.000°, 0 mm (en simulación la placa no se mueve) |
+| Z0 con la sonda | cobre en Z máquina −36.43 | ídem |
+| Mapa de alturas de 11 × 8 | **0.36 mm de diferencia** (−0.17 a +0.19): sin mapa, el corte de 0.10 mm no sale parejo | ídem |
+| Trabajos | `L1_1` "20 min, atraviesa y entra 1.80 mm en el MDF" ✓ · `L1_2` "3 h 3 min, 0.10 mm bajo el cobre" ✓ · `L1_3` "18 min" ✓ | `L2_1` "2 h 18 min" ✓ · `L2_2` "18 min, entra 0.25 mm en el MDF" ✓ |
+| Resultado | **Board done**, 3 de 3 | **Board done**, 2 de 2 |
+
+**Qué encontró el simulador y ya está corregido:**
+- **Comentarios con paréntesis anidados.** GRBL los rechaza ("Unrecognized G-code letter") y el trabajo no arranca.
+- **Líneas de más de 80 caracteres.** Exceden el buffer de GRBL.
+- **Pines de alineación a −4.6 mm.** Se salían del recorrido Z, que acaba en la cara del MDF. Ahora van a −3.4 mm.
+
+Capturas en `sim/fablab/`, registros en `sim/fablab/registro_lado*.txt`. El script que maneja la app es `tools/fablab_sim/sim_fablab.js` (Playwright).
+
+| Lado 1 terminado (vista desde arriba, espejado) | Lado 2 terminado, con contorno y puentes |
+|---|---|
+| ![](sim/fablab/3_lado1_taladros_terminado.png) | ![](sim/fablab/5_lado2_contorno_terminado.png) |
 
 ## Montaje
 
