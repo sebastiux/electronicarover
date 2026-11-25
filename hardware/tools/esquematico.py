@@ -543,6 +543,8 @@ def bloque_pi(h, x0, y0, j9, r_tx, r_rx, uart, pin_tx, pin_rx, pin_gnd):
     c = h.comps
     p2, p3 = j["2"], j["3"]
     red2, red3 = c[j9]["pins"][2], c[j9]["pins"][3]
+    # la resistencia de cada pin es la que tiene su red (el orden de J9 cambia entre tarjetas)
+    r_tx, r_rx = [next(r for r in (r_tx, r_rx) if red in c[r]["pins"].values()) for red in (red2, red3)]
     # pin 2: TX de la Pi -> R -> RX de la ESP32
     xa, ya = p2[0] + 17.78, p2[1] + 12.7
     ra = h.comp(r_tx, xa + 3.81, ya, rot=90 if c[r_tx]["pins"][1] == red2 else 270)
@@ -559,14 +561,17 @@ def bloque_pi(h, x0, y0, j9, r_tx, r_rx, uart, pin_tx, pin_rx, pin_gnd):
     h.cable(p3[:2], (xb, p3[1]), (xb, yb - 7.62), (xb, yb), lado_pi[:2])
     h.etiqueta(red3, xb, yb - 7.62, (1, 0))
     h.punta(lado_esp, 7.62, "input")
+    filas = []
+    for k, red in ((2, red2), (3, red3)):
+        pin = pin_tx if "TXD" in red else pin_rx
+        filas.append("  J9-%d %s  %s  %s (pin %d)" % (k, "TX" if "TXD" in red else "RX",
+                                                     "<-" if "TXD" in red else "->", D.RPI_PINS[pin], pin))
     h.texto(x0 + 2.54, y0 + 50.8,
             "%s viene del HAT de bornas montado en la Raspberry Pi 5\n"
             "(header hembra 2x20 sobre el GPIO):\n"
-            "  J9-1 GND  <-  GND (pin %d)\n"
-            "  J9-2 TX   <-  %s (pin %d)\n"
-            "  J9-3 RX   ->  %s (pin %d)\n"
+            "  J9-1 GND  <-  GND (pin %d)\n%s\n"
             "Cable de 3 hilos trenzado, < 50 cm.  1k en serie: protegen los 2 lados." %
-            (uart, pin_gnd, D.RPI_PINS[pin_tx], pin_tx, D.RPI_PINS[pin_rx], pin_rx))
+            (uart, pin_gnd, "\n".join(filas)))
 
 
 def nota_fuera(h, x0, y0, x1, y1, extra):

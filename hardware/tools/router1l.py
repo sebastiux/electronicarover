@@ -101,7 +101,7 @@ class Grid:
 class Router:
     def __init__(self, board, classes, no_jumper_classes=("BATT", "MOTOR"), log=print, reserved=(),
                  two_layer=False, via_sizes=None, pad_side=None, via_cost_mm=3.0,
-                 no_via_under_parts=False):
+                 no_via_under_parts=False, via_pad_gap=0.0, min_w=0.5):
         self.board = board
         # pad_side(ref) -> "B", "F" o "BF": cara(s) por la que se puede soldar/conectar
         # cada pad. En PCB SIN metalizado (prototipado) un pad solo conecta por la
@@ -109,6 +109,8 @@ class Router:
         self.pad_side = pad_side or (lambda ref: "BF")
         self.via_cost_mm = via_cost_mm
         self.no_via_under_parts = no_via_under_parts
+        self.via_pad_gap = via_pad_gap      # cobre libre minimo entre el anillo de un puente y CUALQUIER pad
+        self.min_w = min_w                  # ancho minimo de pista (nunca se adelgaza por debajo)
         # two_layer=True: F.Cu es una capa de cobre real (PCB de 2 capas, vias normales)
         self.two_layer = two_layer
         self.via_sizes = via_sizes or {}
@@ -233,6 +235,13 @@ class Router:
             for pad in fp.Pads():
                 if pad.GetDrillSize().x > 0:
                     self._mark_hole(mm(pad.GetPosition().x), mm(pad.GetPosition().y), mm(pad.GetDrillSize().x) / 2)
+                if self.via_pad_gap > 0:
+                    # tambien los pads de la MISMA red: el barreno del cable no se encima en un pad
+                    rp = max(mm(pad.GetSize().x), mm(pad.GetSize().y)) / 2
+                    m = np.zeros(g.B.shape, np.int8)
+                    g.mark_circle(m, mm(pad.GetPosition().x), mm(pad.GetPosition().y),
+                                  rp + JUMPER_PAD / 2 + 0.2 + self.via_pad_gap, 1)
+                    self.noVia |= m.astype(bool)
             # el pin soldado de una via estorba bajo componentes de perfil bajo
             ref = fp.GetReference()
             if self.no_via_under_parts and not (ref.startswith("U") or ref.startswith("H")):
@@ -282,12 +291,13 @@ class Router:
             t = pcbnew.PCB_TRACK(b)
             t.SetStart(a)
             t.SetEnd(c)
-            t.SetWidth(pcbnew.FromMM(0.8))
+            wt = max(0.8, self.min_w)
+            t.SetWidth(pcbnew.FromMM(wt))
             t.SetLayer(pcbnew.B_Cu)
             t.SetNet(p1.GetNet())
             b.Add(t)
-            g.mark_seg(g.B, mm(a.x), mm(a.y), mm(c.x), mm(c.y), 0.8, p1.GetNetCode())
-            g.mark_seg(g.E, mm(a.x), mm(a.y), mm(c.x), mm(c.y), 0.8, p1.GetNetCode(), rm=-0.06)
+            g.mark_seg(g.B, mm(a.x), mm(a.y), mm(c.x), mm(c.y), wt, p1.GetNetCode())
+            g.mark_seg(g.E, mm(a.x), mm(a.y), mm(c.x), mm(c.y), wt, p1.GetNetCode(), rm=-0.06)
 
     # ------------------------------------------------------------------
     def _dist(self, arr, code):
@@ -370,7 +380,7 @@ class Router:
                 w = min(w, 1.4)
             if size(shp) < 2.0 and cls == "BATT":
                 w = min(w, 0.8)   # ramas de senal (LED, divisor) de VBAT
-            w = max(0.5, round(w * 10 - 0.5) / 10)
+            w = max(self.min_w, round(w * 10 - 0.5) / 10)
             ok = self._connect(name, code, shp, w, clr, distB, allow_j, tree_pts, cls)
             if not ok and not relaxed:
                 self.failed.append((name, cls, pad.GetParent().GetReference(), pad.GetNumber()))
@@ -641,6 +651,10 @@ class Router:
                     g.mark_circle(self.treeF, x, y, vd / 2, 1, rm=-0.06)
                     g.mark_circle(g.E, x, y, vd / 2, code, rm=-0.06)
                     self._mark_hole(x, y, vdr / 2)
+                    if self.via_pad_gap > 0:      # el siguiente barreno de cable no se le encima
+                        m = np.zeros(g.B.shape, np.int8)
+                        g.mark_circle(m, x, y, vd + self.via_pad_gap, 1)
+                        self.noVia |= m.astype(bool)
                 L = 0.0
                 for a, c in zip(xy, xy[1:]):
                     self._add_track(net, code, a, c, w if self.two_layer else JUMPER_WIRE, pcbnew.F_Cu, g.F)
@@ -650,7 +664,7 @@ class Router:
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
           reserved=(), early_refs=None, late=(), first=(), two_layer=False, via_sizes=None,
-          pad_side=None, via_cost_mm=3.0, no_via_under_parts=False):
+          pad_side=None, via_cost_mm=3.0, no_via_under_parts=False, via_pad_gap=0.0, min_w=0.5):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
     Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
@@ -658,7 +672,8 @@ def route(board, classes, assignments, order_classes=None, log=print, relaxed_pa
     early_refs: {red: set(referencias)} pads que van en la etapa de potencia.
     """
     r = Router(board, classes, log=log, reserved=reserved, two_layer=two_layer, via_sizes=via_sizes,
-               pad_side=pad_side, via_cost_mm=via_cost_mm, no_via_under_parts=no_via_under_parts)
+               pad_side=pad_side, via_cost_mm=via_cost_mm, no_via_under_parts=no_via_under_parts,
+               via_pad_gap=via_pad_gap, min_w=min_w)
     nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1]
     early_refs = early_refs or {}
 

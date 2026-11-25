@@ -81,8 +81,8 @@
         "name": "Default",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.7,
-        "via_diameter": 2.2,
+        "track_width": 1.0,
+        "via_diameter": 2.4,
         "via_drill": 1.0,
         "wire_width": 6,
         "priority": 2147483647
@@ -100,7 +100,7 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 2.5,
-        "via_diameter": 2.2,
+        "via_diameter": 2.4,
         "via_drill": 1.0,
         "wire_width": 6
       },
@@ -117,7 +117,7 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 1.5,
-        "via_diameter": 2.2,
+        "via_diameter": 2.4,
         "via_drill": 1.0,
         "wire_width": 6
       },
@@ -133,8 +133,8 @@
         "name": "GND",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 1.2,
-        "via_diameter": 2.2,
+        "track_width": 1.5,
+        "via_diameter": 2.4,
         "via_drill": 1.0,
         "wire_width": 6
       }

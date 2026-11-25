@@ -1,22 +1,25 @@
 Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_traccion (92 x 96 mm, UNA cara)
 V-bit 20 grados punta 0.10 mm a 0.10 mm -> ancho de corte 0.135 mm
 
-Pads: 128   cables por arriba: 5   taladros: 142
-Piezas de cobre tras el fresado: 127
+Pads: 128   cables por arriba: 8   taladros: 148
+Piezas de cobre tras el fresado: 60
 CORTOS: 0
 REDES ABIERTAS: 0
 
 CABLES POR ARRIBA:
-  W1   GND        (21.4, 28.9) -> (13.4, 31.9)  8 mm
-  W2   GND        (10.7, 87.0) -> (10.7, 72.2)  15 mm
-  W3   +5V        (68.0, 16.4) -> (63.0, 22.9)  8 mm
-  W4   +5V        (51.0, 38.2) -> (47.2, 70.2)  33 mm
-  W5   +5V        (49.5, 84.5) -> (26.9, 84.5)  22 mm
+  W1   GND        (48.5, 23.4) -> (44.0, 23.4)  4 mm
+  W2   GND        (21.2, 28.7) -> (11.7, 31.9)  10 mm
+  W3   VIN_A      (53.0, 37.2) -> (45.5, 29.4)  12 mm
+  W4   +5V        (68.7, 26.7) -> (73.2, 40.0)  14 mm
+  W5   GND        (10.7, 87.0) -> (10.7, 72.0)  15 mm
+  W6   GND        (45.7, 84.5) -> (40.5, 82.0)  6 mm
+  W7   +5V        (55.2, 86.0) -> (24.2, 86.0)  31 mm
+  W8   +5V        (75.2, 85.7) -> (59.7, 85.7)  16 mm
 
 TRABAJOS (en este orden, sin voltear la placa):
-  1_vbit_aislamiento.nc                      40.2 min   corte    4573 mm   bajadas 198
-  2_broca1.0.nc                               9.3 min   corte       0 mm   bajadas 105
+  1_vbit_aislamiento.nc                      39.2 min   corte    4598 mm   bajadas 59
+  2_broca1.0.nc                               9.9 min   corte       0 mm   bajadas 111
   3_fresa1mm_barrenos_contorno.nc            24.4 min   corte    1809 mm   bajadas 275
-  Tiempo total de maquina estimado: 74 min (sin cambios de herramienta ni mapa de alturas)
+  Tiempo total de maquina estimado: 73 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

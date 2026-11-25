@@ -4,11 +4,12 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 | Tarjeta | Lleva | Tamaño | Cables por arriba | Fresado |
 |---|---|---|---|---|
-| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 92 × 96 mm | 5 | ~74 min |
-| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 70 × 88 mm | 0 | ~43 min |
+| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 92 × 96 mm | 8 | ~73 min |
+| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~44 min |
 
 - **Raspberry Pi 5:** coordina a las 2 ESP32. Va aparte, con un **HAT de bornas** (header hembra 2x20 sobre el GPIO). De ahí sale un cable de 3 hilos a la borna `PI` (J9) de cada tarjeta.
 - **ESP32:** van en headers hembra 1x15, como antes. El firmware no cambia de pines.
+- **Reglas en las 2 tarjetas:** pistas de 1.0 mm o más, pads de 2.2 mm donde el paso lo permite, al menos 1 mm de cobre libre entre pads de piezas distintas y GND unido en sólido (sin rayos). Lo revisa `tools/verifica_espacios.py`.
 
 ## Diagrama de conexiones
 
@@ -32,8 +33,8 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 |---|---|
 | 5V (pines 2 y 4) | + del step-down 5 V (cable de 18 AWG o más) |
 | GND (pin 6) | − del step-down y J9-1 de la tarjeta de tracción |
-| GPIO4 = TXD2 (pin 7) | J9-2 de tracción |
-| GPIO5 = RXD2 (pin 29) | J9-3 de tracción |
+| GPIO5 = RXD2 (pin 29) | J9-2 de tracción |
+| GPIO4 = TXD2 (pin 7) | J9-3 de tracción |
 | GND (pin 34) | J9-1 de la tarjeta de servos |
 | GPIO12 = TXD4 (pin 32) | J9-2 de servos |
 | GPIO13 = RXD4 (pin 33) | J9-3 de servos |
@@ -67,7 +68,7 @@ MOTOR_EN tiene un pull-down de 10k en la tarjeta: ningún motor se mueve hasta q
 | Borna KF350 paso 3.5 mm, 3 vías (encastrable) | 10 | [KF350 3 pines](https://listado.mercadolibre.com.mx/bornera-kf350-3.5mm) |
 | Borna KF350 paso 3.5 mm, 2 vías (encastrable) | 2 | (la misma búsqueda) |
 | Borna KF301 paso 5.08 mm, 2 vías | 4 | [KF301 2 pines](https://listado.mercadolibre.com.mx/bornera-kf301-2-pines-5.08) |
-| Cable aislado 22 AWG (para los 5 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
+| Cable aislado 22 AWG (para los 8 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
 
 Cómo se arman las bornas encastrables:
 - **L298N (6 vías):** 3 + 3, ×3 bornas → 6 bornas de 3 vías.
@@ -84,8 +85,9 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 | Conectividad con pads solo abajo y los cables por arriba | 0 conexiones abiertas | 0 conexiones abiertas |
 | Esquemático contra PCB, pin por pin | 113 pines, 0 diferencias | 87 pines, 0 diferencias |
 | Simulación del fresado (`tools/cubiko_cam.py`) | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
+| Pads de piezas distintas a menos de 1 mm · pistas de menos de 1 mm | 0 · 0 | 0 · 0 |
 | Firmware simulado sobre el netlist (UART por el HAT, EN en Y) | 48/48 | 38/38 |
-| Simulador del Fab Lab (3 archivos, sin volteo) | Board done, 3 de 3 (~72 min) | Board done, 3 de 3 (~40 min) |
+| Simulador del Fab Lab (3 archivos, sin volteo) | Board done, 3 de 3 (~71 min) | Board done, 3 de 3 (~42 min) |
 
 ## Regenerar
 

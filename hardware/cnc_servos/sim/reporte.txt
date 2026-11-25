@@ -1,17 +1,17 @@
-Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_servos (70 x 88 mm, UNA cara)
+Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_servos (76 x 96 mm, UNA cara)
 V-bit 20 grados punta 0.10 mm a 0.10 mm -> ancho de corte 0.135 mm
 
 Pads: 102   cables por arriba: 0   taladros: 106
-Piezas de cobre tras el fresado: 87
+Piezas de cobre tras el fresado: 52
 CORTOS: 0
 REDES ABIERTAS: 0
 
 CABLES POR ARRIBA:
 
 TRABAJOS (en este orden, sin voltear la placa):
-  1_vbit_aislamiento.nc                      17.6 min   corte    1987 mm   bajadas 98
+  1_vbit_aislamiento.nc                      18.4 min   corte    2129 mm   bajadas 51
   2_broca1.0.nc                               8.3 min   corte       0 mm   bajadas 93
-  3_fresa1mm_barrenos_contorno.nc            16.8 min   corte    1472 mm   bajadas 107
-  Tiempo total de maquina estimado: 43 min (sin cambios de herramienta ni mapa de alturas)
+  3_fresa1mm_barrenos_contorno.nc            17.6 min   corte    1584 mm   bajadas 107
+  Tiempo total de maquina estimado: 44 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

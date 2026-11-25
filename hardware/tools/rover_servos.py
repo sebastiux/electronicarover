@@ -23,16 +23,16 @@ PROJECT = "rover_servos"
 REVISION = "2.0-S"
 TITLE = "Rover - tarjeta de SERVOS (ESP32-B, 8 servos, bateria)"
 
-BOARD_W = 70.0
-BOARD_H = 88.0
+BOARD_W = 76.0
+BOARD_H = 96.0
 
 ESPB_POS = (31.0, 59.0, 270)          # horizontal, USB a la izquierda: fila IO23.. mira a los servos
 ESPB_RIGHT_Y = ESPB_POS[1] + 12.7
-SERVO_Y = ESPB_RIGHT_Y + 9.4          # pad GND de cada header (SIG queda 5.08 arriba)
-J6_X = 55.5
-J6_Y = BOARD_H - 5.0
+SERVO_Y = ESPB_RIGHT_Y + 16.3         # pad GND de cada header (SIG queda 5.08 arriba)
+SERVO_X0, SERVO_PASO = 23.0, 5.08     # headers a 5.08 mm: cada conector de servo con su espacio
+J6_POS = (BOARD_W - 5.6, 80.0, 90)    # entrada 6 V en la orilla derecha (pad 1 GND abajo)
 PI_TB = (5.0, BOARD_H - 5.0, 0)       # J9 en la orilla inferior izquierda, bajo IO15/IO2
-CHASSIS_HOLES = [(3.5, 4.0), (BOARD_W - 3.5, 4.0), (3.5, 72.0), (BOARD_W - 3.5, 55.0)]
+CHASSIS_HOLES = [(3.5, 4.0), (BOARD_W - 3.5, 4.0), (3.5, 72.0), (BOARD_W - 3.5, 52.0)]
 ALIGN_HOLES = []
 
 
@@ -40,14 +40,25 @@ def espb_right_x(name):
     return ESPB_POS[0] + 17.78 - 2.54 * ESP32_RIGHT.index(name)
 
 
+def servo_x(n):
+    """x del header del servo n: en el mismo orden que sus pines, a SERVO_PASO."""
+    orden = sorted(range(1, 9), key=lambda k: espb_right_x(SERVOS[k][0]))
+    return SERVO_X0 + SERVO_PASO * orden.index(n)
+
+
 def preroutes():
     out = []
-    xs = sorted(espb_right_x(SERVOS[n][0]) for n in range(1, 9))
+    xs = sorted(servo_x(n) for n in range(1, 9))
     for n in range(1, 9):
-        x = espb_right_x(SERVOS[n][0])
-        out.append(("SERVO%d" % n, [(x, ESPB_RIGHT_Y), (x, SERVO_Y - 5.08)], 0.7))
-    out.append(("SERVO_V", [(x, SERVO_Y - 2.54) for x in xs] + [(J6_X + 3.0, SERVO_Y - 2.54), (J6_X + 5.08, SERVO_Y - 0.5), (J6_X + 5.08, J6_Y)], 1.6))
-    out.append(("GND", [(x, SERVO_Y) for x in xs] + [(J6_X - 1.5, SERVO_Y), (J6_X, J6_Y)], 1.6))
+        x0, x1 = espb_right_x(SERVOS[n][0]), servo_x(n)
+        # baja recto 2.5 mm, se abre en diagonal y llega recto al pad SIG
+        out.append(("SERVO%d" % n, [(x0, ESPB_RIGHT_Y), (x0, ESPB_RIGHT_Y + 2.5), (x1, SERVO_Y - 8.5),
+                                     (x1, SERVO_Y - 5.08)], 1.0))
+    jx, jy, _ = J6_POS
+    # 6 V: sube y luego a J6; GND: sigue y luego sube (sin acercarse entre si)
+    out.append(("SERVO_V", [(x, SERVO_Y - 2.54) for x in xs] + [(xs[-1] + 3.0, SERVO_Y - 2.54),
+                                                            (xs[-1] + 3.0, jy - 5.08), (jx, jy - 5.08)], 1.6))
+    out.append(("GND", [(x, SERVO_Y) for x in xs] + [(jx - 4.4, SERVO_Y), (jx, jy)], 1.6))
     return out
 
 
@@ -117,14 +128,14 @@ def build():
     for n in range(1, 9):
         g, d = SERVOS[n]
         add("J%d" % (30 + n), "SERVO%d" % n, "rover:Servo_Header", FP_SERVO,
-            {1: "GND", 2: "SERVO_V", 3: "SERVO%d" % n}, (espb_right_x(g), SERVO_Y, 180), _sch_pos(),
+            {1: "GND", 2: "SERVO_V", 3: "SERVO%d" % n}, (servo_x(n), SERVO_Y, 180), _sch_pos(),
             desc="Servo %d - %s (SIG arriba, GND abajo)" % (n, d), mpn="Header macho 1x3 2.54mm")
     add("J6", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "GND", 2: "SERVO_V"}, (J6_X, J6_Y, 0), _sch_pos(), desc="Entrada BEC servos 6V", mpn=MPN_TB2)
+        {1: "GND", 2: "SERVO_V"}, J6_POS, _sch_pos(), desc="Entrada BEC servos 6V", mpn=MPN_TB2)
     add("C3", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
         (62.0, 40.0, 0), _sch_pos(), desc="Bulk servos")
     add("C4", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (62.0, 72.0, 0), _sch_pos(), desc="Bulk servos")
+        (66.0, 62.0, 0), _sch_pos(), desc="Bulk servos")
     add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_A"}, (57.0, 33.0, 90),
         _sch_pos(), desc="Resistencia LED servos")
     add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "GND", 2: "LEDS_A"},
@@ -141,7 +152,7 @@ def pcb_labels(silk, at, comps):
     x, y, _ = at("J5")
     silk("5V IN: + -", x - 2.54, y + 6.4, 0.8)
     x, y, _ = at("J6")
-    silk("SERVO 6V: - +", x + 2.54, y - 6.4, 0.8)
+    silk("SERVO 6V: - +", x - 7.4, y - 2.5, 0.8, rot=90)
     x, y, _ = at("J2")
     silk("BAT 12V", x - 7.4, y - 2.5, 0.8, rot=90)
     x, y, _ = at("J9")

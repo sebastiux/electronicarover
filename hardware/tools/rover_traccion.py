@@ -17,6 +17,7 @@ from rover_design import (ESP32_LEFT, ESP32_RIGHT, MOTORS,  # noqa: F401
                           add, esp_pin_number, pad_side)
 from rover_split_comun import *  # noqa: F401,F403
 from rover_split_comun import FP_TB6, FP_TB5, FP_TB3, FP_TB2, MPN_TB2
+FP_RV = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"
 
 PROJECT = "rover_traccion"
 REVISION = "2.0-T"
@@ -31,19 +32,35 @@ TB_Y = {"U6": 15.75, "U5": 43.25, "U4": 70.75}   # pad 1 (EN) de cada borna
 TB_ORDER = ["EN", "IN4", "IN3", "IN2", "IN1", "GND"]   # de arriba a abajo
 EN_X = 2.3                            # bus de EN por la orilla izquierda (planar)
 ENC_TB_Y = BOARD_H - 5.0
-ENC_TB = [("J7", 50.0, (1, 2, 3)), ("J8", 22.0, (6, 5, 4))]
-DIV_C = 6.4
+ENC_TB = [("J7", 55.0, (1, 2, 3)), ("J8", 22.0, (6, 5, 4))]
+# Divisores 10k/20k + 1 nF: bloques R10k / R20k / C apilados (filas a DIV_DY mm), 13 mm entre
+# bloques. M3..M1 a la derecha de la ESP32-A (DIVIDERS). M6..M4 en fila DEBAJO del modulo,
+# junto a J8, con resistencias de pie (DIV_ABAJO): el plano de GND de cada bloque sale entre
+# los pines de J8 a la franja de la orilla (bajo el modulo quedaba encerrado).
+DIV_ABAJO = {6: 26.5, 5: 35.0, 4: 43.5}     # x del nodo de cada bloque
+DIV_ABAJO_Y = 79.0                          # y del nodo (debajo del modulo)
+#   (y de la fila R10k, x de la columna de nodos, lado, carril al pin, y de aterrizaje,
+#    x del canal de la senal de 5 V, y de su carril inferior)
+DIV_DY = 4.8
+DIV_C = 2 * DIV_DY
 DIVIDERS = {
-    6: (40.0, 41.3, "L", 45.55, 46.4, 26.45, 80.4),
-    5: (49.0, 41.3, "L", 44.35, 55.4, 27.65, 79.2),
-    4: (58.0, 41.3, "L", 43.15, 58.0, 28.85, 78.0),
-    3: (58.0, 56.0, "R", 51.65, 61.6, 68.4, 87.0),
-    2: (67.0, 56.0, "R", 50.45, 67.0, 67.2, 85.8),
-    1: (76.0, 56.0, "R", 49.25, 76.0, 66.0, 84.6),
+    3: (46.6, 57.0, "R", 50.0, 46.6 + DIV_DY, 70.6, 88.4),
+    2: (59.6, 57.0, "R", 51.6, 59.6, 69.0, 86.8),
+    1: (72.6, 57.0, "R", 53.2, 72.6 + DIV_DY, 67.4, 85.2),
 }
 PI_TB = (BOARD_W - 5.5, 34.0, 90)    # J9 en la orilla derecha (pad 1 abajo)
-CHASSIS_HOLES = [(3.5, 8.5), (BOARD_W - 3.5, 4.0), (13.5, 92.0), (BOARD_W - 3.5, 92.0)]
+CHASSIS_HOLES = [(3.5, 8.5), (BOARD_W - 3.5, 15.0), (13.5, 92.0), (BOARD_W - 3.5, 92.0)]
 ALIGN_HOLES = []
+
+
+def routing_reserved():
+    """La orilla derecha queda para senales y GND: si el +5V baja por ahi a los encoders,
+    encierra la borna PI (J9). Ese tramo se resuelve con un cable por arriba."""
+    return [(BOARD_W - 13.0, 22.0, BOARD_W, BOARD_H, {"Default", "GND"}),
+            # franja sobre la ESP32: solo GND y +5V (una senal ahi separaria el GND de abajo del modulo)
+            (8.0, 8.0, 46.0, 27.0, {"GND", "PWR"}),
+            # franja bajo las bornas de encoders: solo GND (es la salida del plano de los divisores)
+            (14.0, ENC_TB_Y + 1.3, BOARD_W - 13.0, BOARD_H, {"GND"})]
 
 
 def espa_left_y(name):
@@ -53,30 +70,54 @@ def espa_left_y(name):
 def preroutes():
     out = []
     ex = ESPA_POS[0] - 12.7
-    lanes = {"U6": {4: 19.2, 3: 18.0, 2: 16.8, 1: 15.6},
-             "U5": {1: 14.4, 2: 13.2, 3: 12.0, 4: None},
-             "U4": {4: 15.6, 3: 16.8, 2: 18.0, 1: 19.2}}
+    lanes = {"U6": {4: 18.8, 3: 17.2, 2: 15.6, 1: 14.0},      # carriles a 1.6 mm (pista de 1.0)
+             "U5": {1: 12.4, 2: 10.8, 3: 9.2, 4: None},
+             "U4": {4: 14.0, 3: 15.6, 2: 17.2, 1: 18.8}}
     for k, ref in enumerate(("U4", "U5", "U6")):
         for j in range(1, 5):
             yt = TB_Y[ref] + 3.5 * TB_ORDER.index("IN%d" % j)
             yi = ESPA_POS[1] + 17.78 - 2.54 * ESP32_RIGHT.index(ESPA_IN[k][j - 1])
             xl = lanes[ref][j]
             pts = [(TB_X, yt), (xl, yt), (xl, yi), (ex, yi)] if xl else [(TB_X, yt), (ex - 1.6, yt), (ex, yi)]
-            out.append(("%s_IN%d" % (ref, j), pts, 0.7))
+            out.append(("%s_IN%d" % (ref, j), pts, 1.0))
     # EN de las 3 bornas: bus por la orilla, a la izquierda de los pads
     ys = sorted(TB_Y.values())
-    out.append(("MOTOR_EN", [(TB_X, ys[0]), (EN_X, ys[0]), (EN_X, ys[-1]), (TB_X, ys[-1])], 0.7))
-    out.append(("MOTOR_EN", [(EN_X, ys[1]), (TB_X, ys[1])], 0.7))
+    out.append(("MOTOR_EN", [(TB_X, ys[0]), (EN_X, ys[0]), (EN_X, ys[-1]), (TB_X, ys[-1])], 1.0))
+    out.append(("MOTOR_EN", [(EN_X, ys[1]), (TB_X, ys[1])], 1.0))
+    # +5V junto a J5: J5 -> C2, J5 -> R25 -> anodo de D5 (caminos fijos, sin encerrar GND)
+    out.append(("+5V", [(57.0, 5.6), (66.0, 5.6), (66.0, 8.0)], 1.5))
+    out.append(("+5V", [(57.0, 5.6), (57.0, 10.0), (54.0, 13.0), (54.0, 15.0)], 1.5))
+    out.append(("+5V", [(54.0, 15.0), (54.0, 21.0), (62.16, 21.0), (62.16, 27.2)], 1.5))
+    # +5V a J7 pin 2: cable por arriba desde la pista de +5V que baja a J8 (x 24)
+    # (el alambre va por arriba de los divisores, sin pasar sobre ningun pad)
+    out.append(("VIA", "+5V", 24.0, 75.0))
+    out.append(("VIA", "+5V", 58.5, 86.8))
+    out.append(("+5V", [(24.0, 75.0), (30.0, 72.5), (52.0, 72.5), (52.0, 86.8), (58.5, 86.8)], 0.8, "F.Cu"))
+    out.append(("+5V", [(58.5, 86.8), (58.5, ENC_TB_Y)], 1.5))
+    out.append(("+5V", [(24.0, 75.0), (24.0, 87.0), (25.5, 89.0), (25.5, ENC_TB_Y)], 1.5))
+    # UART y MOTOR_EN hacia sus resistencias, en el mismo orden que los pines (sin cruces)
+    xl = ESPA_POS[0] + 12.7
+    out.append(("ESPA_RX", [(xl, espa_left_y("IO14")), (62.5, espa_left_y("IO14")), (62.5, 30.0), (66.0, 30.0)], 1.0))
+    out.append(("ESPA_TX", [(xl, espa_left_y("IO27")), (64.6, espa_left_y("IO27")), (64.6, 34.0), (66.0, 34.0)], 1.0))
+    out.append(("MOTOR_EN", [(xl, espa_left_y("IO13")), (50.0, espa_left_y("IO13")), (52.0, 34.8), (52.0, 33.0)], 1.0))
     # divisores de encoder (igual que la Cubiko)
     ex_l = ESPA_POS[0] + 12.7
     for m, (y, xn, side, lane, yl, xch, yb) in DIVIDERS.items():
         yp = espa_left_y(ESPA_ENC[m])
         d = -1 if side == "L" else 1
-        out.append(("ENC%d_A" % m, [(ex_l, yp), (lane, yp), (lane, yl), (xn, yl)], 0.7))
-        out.append(("ENC%d_A" % m, [(xn, y), (xn, y + 3.6), (xn, y + DIV_C)], 0.7))
-        xg, xv, xa = xn + d * 2.5, xn + d * 5.0, xn + d * 7.62
+        out.append(("ENC%d_A" % m, [(ex_l, yp), (lane, yp), (lane, yl), (xn, yl)], 1.0))
+        out.append(("ENC%d_A" % m, [(xn, y), (xn, y + DIV_DY), (xn, y + DIV_C)], 1.0))
+        xa = xn - 2.54 if side == "L" else xn + 7.62
         xt = enc_pin_x(m)
-        out.append(("ENC%d_A5V" % m, [(xa, y), (xch, y), (xch, yb), (xt, yb), (xt, ENC_TB_Y)], 0.7))
+        out.append(("ENC%d_A5V" % m, [(xa, y), (xch, y), (xch, yb), (xt, yb), (xt, ENC_TB_Y)], 1.0))
+    # M6..M4: carril bajo el modulo -> nodo; nodo -> R20k y C; R10k (de pie) -> J8
+    yb0 = DIV_ABAJO_Y
+    for m, x in DIV_ABAJO.items():
+        yp = espa_left_y(ESPA_ENC[m])
+        out.append(("ENC%d_A" % m, [(ex_l, yp), (x, yp), (x, yb0)], 1.0))
+        out.append(("ENC%d_A" % m, [(x, yb0), (x + 3.0, yb0), (x + 3.0, yb0 - 3.0)], 1.0))
+        xt = enc_pin_x(m)
+        out.append(("ENC%d_A5V" % m, [(x, yb0 + 2.54), (x, 87.0), (xt, 88.5), (xt, ENC_TB_Y)], 1.0))
     return out
 
 
@@ -88,9 +129,14 @@ def enc_pin_x(m):
 
 
 ROUTING_FIRST = ["U%d_IN%d" % (u, i) for u in (6, 5, 4) for i in (4, 3, 2, 1)] + \
-    ["MOTOR_EN", "ESPA_RX", "ESPA_TX", "PI_TXD2", "PI_RXD2"] + \
+    ["ESPA_RX", "ESPA_TX", "PI_TXD2", "PI_RXD2"] + \
     ["ENC%d_A" % m for m in range(1, 7)] + ["ENC%d_A5V" % m for m in range(1, 7)]
 ROUTING_EARLY = {"GND": set(), "+5V": {"J5", "C2"}}
+# MOTOR_EN al final: su camino al bus de EN cruzaria la zona de arriba y aislaria GND
+ROUTING_LATE = ["MOTOR_EN"]
+# Bornas de encoders con pads de 2.0 mm (barreno 1.2): quedan 1.5 mm entre pin y pin y por ahi
+# el plano de GND de cada divisor sale a la franja de la orilla inferior (si no, queda aislado).
+PAD_SIZE = {"J7": 2.0, "J8": 2.0}
 
 
 def external_nodes():
@@ -157,6 +203,15 @@ def build():
                  % (k + 1, MOTORS[ma], MOTORS[mb]),
             mpn="Phoenix PT 1,5/6-3,5-H o KF350 3.5mm (3+3)")
 
+    for m, x in DIV_ABAJO.items():
+        y0 = DIV_ABAJO_Y
+        add("R%d" % m, "10k", "Device:R", FP_RV, {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m},
+            (x, y0 + 2.54, 90), _sch_pos(), desc="Divisor encoder M%d (serie)" % m)
+        add("R%d" % (m + 6), "20k", "Device:R", FP_RV, {1: "ENC%d_A" % m, 2: "GND"},
+            (x + 3.0, y0, 0), _sch_pos(), desc="Divisor encoder M%d (a GND)" % m)
+        add("C%d" % (10 + m), "1nF", "Device:C", FP_C25, {1: "ENC%d_A" % m, 2: "GND"},
+            (x + 3.0, y0 - 3.0, 0), _sch_pos(), desc="Filtro de ruido encoder M%d" % m)
+
     for ref, x, ms in ENC_TB:
         pins = {1: "GND", 2: "+5V"}
         for i, m in enumerate(ms):
@@ -169,35 +224,37 @@ def build():
 
     for m, (y, xn, side, lane, yl, xch, yb) in DIVIDERS.items():
         if side == "L":
-            r10, r20, cc = (xn - 7.62, y, 0), (xn, y + 3.6, 180), (xn, y + DIV_C, 180)
+            fr = FP_RV
+            r10, r20, cc = (xn - 2.54, y, 0), (xn, y + DIV_DY, 180), (xn, y + DIV_C, 180)
         else:
-            r10, r20, cc = (xn + 7.62, y, 180), (xn, y + 3.6, 0), (xn, y + DIV_C, 0)
-        add("R%d" % m, "10k", "Device:R", FP_R, {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m},
+            fr = FP_R
+            r10, r20, cc = (xn + 7.62, y, 180), (xn, y + DIV_DY, 0), (xn, y + DIV_C, 0)
+        add("R%d" % m, "10k", "Device:R", fr, {1: "ENC%d_A5V" % m, 2: "ENC%d_A" % m},
             r10, _sch_pos(), desc="Divisor encoder M%d (serie)" % m)
-        add("R%d" % (m + 6), "20k", "Device:R", FP_R, {1: "ENC%d_A" % m, 2: "GND"},
+        add("R%d" % (m + 6), "20k", "Device:R", fr, {1: "ENC%d_A" % m, 2: "GND"},
             r20, _sch_pos(), desc="Divisor encoder M%d (a GND)" % m)
         add("C%d" % (10 + m), "1nF", "Device:C", FP_C25, {1: "ENC%d_A" % m, 2: "GND"},
             cc, _sch_pos(), desc="Filtro de ruido encoder M%d" % m)
 
     add("J5", "5V IN (buck 5V)", "Connector:Screw_Terminal_01x02", FP_TB2,
-        {1: "+5V", 2: "GND"}, (64.0, 5.6, 180), _sch_pos(),
+        {1: "+5V", 2: "GND"}, (57.0, 5.6, 180), _sch_pos(),
         desc="Entrada 5 V desde el step-down (ESP32-A y encoders)", mpn=MPN_TB2)
     add("C2", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "+5V", 2: "GND"},
-        (75.0, 17.0, 0), _sch_pos(), desc="Bulk 5V")
-    add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_A"}, (52.0, 19.2, 0),
+        (66.0, 8.0, 0), _sch_pos(), desc="Bulk 5V")
+    add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_A"}, (54.0, 15.0, 0),
         _sch_pos(), desc="Resistencia LED 5V")
     add("D3", "LED verde 5V", "Device:LED", FP_LED, {1: "GND", 2: "LED5_A"},
-        (69.04, 21.2, 180), _sch_pos(), desc="Indicador 5V")
-    add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (52.0, 23.2, 0),
+        (72.0, 17.0, 180), _sch_pos(), desc="Indicador 5V")
+    add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (52.0, 33.0, 0),
         _sch_pos(), desc="Pull-down MOTOR_EN (motores apagados durante el arranque)")
     add("D5", "1N5819", "Device:D_Schottky", FP_DO41, {1: "VIN_A", 2: "+5V"},
         (52.0, 27.2, 0), _sch_pos(), desc="Schottky +5V -> VIN ESP32-A", mpn="1N5819 DO-41")
 
     add("J9", "PI (UART2)", "Connector:Screw_Terminal_01x03", FP_TB3,
-        {1: "GND", 2: "PI_TXD2", 3: "PI_RXD2"}, PI_TB, _sch_pos(),
-        desc="Hacia el HAT de bornas de la Pi: 1 GND (pin 6), 2 TXD2 = GPIO4 (pin 7), 3 RXD2 = GPIO5 (pin 29)",
+        {1: "GND", 2: "PI_RXD2", 3: "PI_TXD2"}, PI_TB, _sch_pos(),
+        desc="Hacia el HAT de bornas de la Pi: 1 GND (pin 6), 2 RXD2 = GPIO5 (pin 29), 3 TXD2 = GPIO4 (pin 7)",
         mpn="Phoenix PT 1,5/3-3,5-H o KF350-3P 3.5mm")
-    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (66.0, 30.0, 0),
+    add("R13", "1k", "Device:R", FP_R, {1: "PI_TXD2", 2: "ESPA_RX"}, (73.62, 30.0, 180),
         _sch_pos(), desc="Serie UART Pi TXD2 -> ESP32-A RX")
     add("R14", "1k", "Device:R", FP_R, {1: "ESPA_TX", 2: "PI_RXD2"}, (66.0, 34.0, 0),
         _sch_pos(), desc="Serie UART ESP32-A TX -> Pi RXD2")
@@ -221,6 +278,6 @@ def pcb_labels(silk, at, comps):
     x, y, _ = at("J5")
     silk("5V IN: + -", x - 2.54, y + 6.4, 0.8)
     x, y, _ = at("J9")
-    silk("PI: GND TX RX", x - 7.4, y - 3.5, 0.8, rot=90)
+    silk("PI: GND RX TX", x - 7.4, y - 3.5, 0.8, rot=90)
     x, y, _ = at("U2")
     silk("ESP32-A (USB arriba)", x, y + 29.0, 0.9, bold=True)

@@ -613,11 +613,16 @@ def build_pcb(comps, netnames, assignments, route=False):
                     dd = math.hypot(pcbnew.ToMM(pc.x - qc.x), pcbnew.ToMM(pc.y - qc.y))
                     if dd > 0.01:
                         dmin = min(dmin, dd)
-                new = min(max(cur, d + 1.0), max(cur, dmin - 0.5))
+                new = min(max(cur, d + 1.0, getattr(D, "PAD_MIN", 0.0)), max(cur, dmin - getattr(D, "PAD_GAP", 0.5)))
                 if new > cur + 0.01:
                     sx, sy = pcbnew.ToMM(p.GetSize().x), pcbnew.ToMM(p.GetSize().y)
                     k = new / cur
                     p.SetSize(VECTOR2I(FromMM(sx * k), FromMM(sy * k)))
+
+    # pads forzados por variante (p. ej. bornas de encoders de 2.0 mm: entre pin y pin pasa el plano de GND)
+    for ref, dpad in getattr(D, "PAD_SIZE", {}).items():
+        for p in fps[ref].Pads():
+            p.SetSize(VECTOR2I(FromMM(dpad), FromMM(dpad)))
 
     # textos de serigrafia
     def silk(text, x, y, size=1.2, layer=pcbnew.F_SilkS, rot=0, bold=False):
@@ -647,7 +652,7 @@ def build_pcb(comps, netnames, assignments, route=False):
         z.SetMinThickness(FromMM(0.3))
         z.SetThermalReliefGap(FromMM(0.5))
         z.SetThermalReliefSpokeWidth(FromMM(0.8))
-        z.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
+        z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL if getattr(D, "ZONE_FULL", False) else pcbnew.ZONE_CONNECTION_THERMAL)
         z.SetAssignedPriority(prio)
         board.Add(z)
         return z
@@ -694,6 +699,97 @@ def build_pcb(comps, netnames, assignments, route=False):
 # ============================================================================
 #  RUTEO DE UNA CAPA
 # ============================================================================
+def cables_de_la_placa(board):
+    """Cables por arriba de una tarjeta de una cara: cada grupo conexo de pistas de F.Cu
+    (del router o pre-trazadas) es un alambre entre sus 2 extremos."""
+    import pcbnew
+    segs = [t for t in board.GetTracks() if t.GetClass() != "PCB_VIA" and t.GetLayer() == pcbnew.F_Cu]
+    mm = pcbnew.ToMM
+    pts = lambda t: [(round(mm(t.GetStart().x), 2), round(mm(t.GetStart().y), 2)),
+                     (round(mm(t.GetEnd().x), 2), round(mm(t.GetEnd().y), 2))]
+    par = list(range(len(segs)))
+
+    def find(i):
+        while par[i] != i:
+            par[i] = par[par[i]]
+            i = par[i]
+        return i
+    for i in range(len(segs)):
+        for j in range(i + 1, len(segs)):
+            if segs[i].GetNetname() == segs[j].GetNetname() and set(pts(segs[i])) & set(pts(segs[j])):
+                par[find(i)] = find(j)
+    grupos = {}
+    for i in range(len(segs)):
+        grupos.setdefault(find(i), []).append(segs[i])
+    out = []
+    for g in grupos.values():
+        grado = {}
+        for t in g:
+            for q in pts(t):
+                grado[q] = grado.get(q, 0) + 1
+        ends = [q for q, k in grado.items() if k == 1] or list(grado)[:2]
+        (xa, ya), (xb, yb) = ends[0], ends[-1]
+        L = sum(math.hypot(a[0] - c[0], a[1] - c[1]) for a, c in (pts(t) for t in g))
+        out.append((g[0].GetNetname(), xa, ya, xb, yb, L))
+    out.sort(key=lambda j: (round(min(j[2], j[4]) / 10), min(j[1], j[3])))
+    return out
+
+
+def quita_cables_sobrantes(board):
+    """Quita los cables por arriba que no hacen falta (el router no ve los pre-trazados y
+    puede duplicarlos): se prueba cada uno, del mas largo al mas corto, con la
+    conectividad de KiCad (planos rellenados)."""
+    import pcbnew
+    filler = pcbnew.ZONE_FILLER(board)
+
+    def abiertas():
+        filler.Fill(board.Zones())
+        board.BuildConnectivity()
+        return board.GetConnectivity().GetUnconnectedCount(True)
+    base = abiertas()
+    mm = pcbnew.ToMM
+    cab = cables_de_la_placa(board)
+    cab.sort(key=lambda c: -c[5])
+    quitados = 0
+    for (net, xa, ya, xb, yb, L) in cab:
+        f = [t for t in board.GetTracks() if t.GetClass() != "PCB_VIA" and t.GetLayer() == pcbnew.F_Cu
+             and t.GetNetname() == net]
+        ends = {(round(xa, 1), round(ya, 1)), (round(xb, 1), round(yb, 1))}
+        # pistas F del cable: las conectadas a sus extremos (mismo grupo)
+        grupo, pts = [], set(ends)
+        cambio = True
+        while cambio:
+            cambio = False
+            for t in f:
+                if t in grupo:
+                    continue
+                a = (round(mm(t.GetStart().x), 1), round(mm(t.GetStart().y), 1))
+                c = (round(mm(t.GetEnd().x), 1), round(mm(t.GetEnd().y), 1))
+                if a in pts or c in pts:
+                    grupo.append(t); pts |= {a, c}; cambio = True
+        vias = [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA" and t.GetNetname() == net and
+                (round(mm(t.GetPosition().x), 1), round(mm(t.GetPosition().y), 1)) in ends]
+        items = grupo + vias
+        for t in items:
+            board.Remove(t)
+        if abiertas() <= base:
+            quitados += 1
+        else:
+            for t in items:
+                board.Add(t)
+    for _ in range(10):                 # tramos que quedaron colgando
+        board.BuildConnectivity()
+        conn = board.GetConnectivity()
+        d = [t for t in board.GetTracks() if conn.TestTrackEndpointDangling(t, False)]
+        if not d:
+            break
+        for t in d:
+            board.Remove(t)
+    abiertas()
+    if quitados:
+        print("Cables sobrantes quitados: %d" % quitados)
+
+
 def label_jumpers(board, jumpers):
     """Etiqueta W1..Wn en la serigrafia junto a cada puente de alambre."""
     import pcbnew
@@ -754,6 +850,8 @@ def route_board(relaxed_pass=True):
                        two_layer=(D.LAYERS == 2), via_sizes=via_sizes,
                        pad_side=D.pad_side, via_cost_mm=(12.0 if D.FAB == "proto" else 3.0),
                        no_via_under_parts=(D.FAB == "proto"),
+                       via_pad_gap=getattr(D, "VIA_PAD_ESPACIO", getattr(D, "MIN_PAD_ESPACIO", 0.0)),
+                       min_w=(D.DEFAULT_CLASS[0] if getattr(D, "MIN_PAD_ESPACIO", 0) else 0.5),
                        reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE,
                        first=D.ROUTING_FIRST)
     # limpieza: quitar tramos/vias colgantes (no aportan conexion)
@@ -766,6 +864,8 @@ def route_board(relaxed_pass=True):
         for t in dangling:
             board.Remove(t)
     if D.LAYERS == 1:
+        quita_cables_sobrantes(board)
+        r.jumpers = cables_de_la_placa(board)      # incluye los cables pre-trazados
         label_jumpers(board, r.jumpers)
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())

@@ -683,7 +683,8 @@ def main_una_cara():
     os.makedirs(SDIR, exist_ok=True)
     for d in (GDIR, SDIR):
         for f_ in os.listdir(d):
-            os.remove(os.path.join(d, f_))
+            if os.path.isfile(os.path.join(d, f_)):
+                os.remove(os.path.join(d, f_))
     net_polys, pads, vias, holes, keepouts, hard = load()
     w = vbit_width(P["iso_depth"])
     rep = ["Genmitsu Cubiko - CAM y simulacion de la tarjeta %s (%.0f x %.0f mm, UNA cara)" % (D.PROJECT, W, H),
@@ -692,7 +693,7 @@ def main_una_cara():
     hole_geom = unary_union([Point(x, y).buffer(d / 2, resolution=12) for (x, y, d, _, _) in holes])
     copper = unary_union(list(net_polys["B"].values()))
     paths, swept, _ = isolation(copper)
-    mpaths, mswept = via_marks(vias, hard["B"], w)
+    mpaths, mswept = [], Polygon()     # sin dianas: el mapa de cables ya marca cada barreno
     remaining = box(0, 0, W, H).difference(swept.union(mswept)).difference(hole_geom)
     comps = list(remaining.geoms) if hasattr(remaining, "geoms") else [remaining]
     from shapely.strtree import STRtree
@@ -785,11 +786,8 @@ def main_una_cara():
     # ---------------- G-code: 3 archivos, cara de cobre arriba (espejada) ----------------
     jobs = []
     TV = "V-bit 20 grados punta 0.1 mm"
-    g = G("1 - aislamiento de la cara de cobre (B.Cu), espejado, y dianas de los barrenos de cable", TV)
+    g = G("1 - aislamiento de la cara de cobre (B.Cu), espejado", TV)
     for pth in paths:
-        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
-    g.l.append("( dianas alrededor de los barrenos de los cables )")
-    for pth in order_paths(mpaths):
         g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
     jobs.append(g.save("1_vbit_aislamiento.nc"))
     small = [(x, y) for (x, y, d, npth, ref) in holes if d <= P["drill_max"]]
