@@ -182,7 +182,7 @@ Los 5 archivos se corrieron en el gemelo de la Cubiko de <https://fablab.sebs.mx
 | Alineación con H1 y el barreno de la Pi | — | ✓: 0.000°, 0 mm (en simulación la placa no se mueve) |
 | Z0 con la sonda | cobre en Z máquina −36.43 | ídem |
 | Mapa de alturas de 11 × 8 | **0.36 mm de diferencia** (−0.17 a +0.19): sin mapa, el corte de 0.10 mm no sale parejo | ídem |
-| Trabajos (modo prototipo, 1 pasada) | `L1_1` "20 min, atraviesa y entra 1.80 mm en el MDF" ✓ · `L1_2` "59 min, 0.10 mm bajo el cobre" ✓ · `L1_3` "18 min" ✓ | `L2_1` "48 min" ✓ · `L2_2` "18 min, entra 0.25 mm en el MDF" ✓ |
+| Trabajos (modo prototipo, 1 pasada + dianas de las vías) | `L1_1` "20 min, atraviesa y entra 1.80 mm en el MDF" ✓ · `L1_2` "1 h 7 min, 0.10 mm bajo el cobre" ✓ · `L1_3` "18 min" ✓ | `L2_1` "56 min" ✓ · `L2_2` "18 min, entra 0.25 mm en el MDF" ✓ |
 | Resultado | **Board done**, 3 de 3 | **Board done**, 2 de 2 |
 
 **Qué encontró el simulador y ya está corregido:**
