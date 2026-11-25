@@ -27,7 +27,7 @@
   (symbol "ESP32_DevKitV1_30P" (in_bom yes) (on_board yes)
     (property "Reference" "U" (at 0 21.59 0) (effects (font (size 1.27 1.27))))
     (property "Value" "ESP32_DevKitV1_30P" (at 0 -21.59 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "rover:ESP32_DevKitV1_30P_DualPitch" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Footprint" "rover:ESP32_DevKitV1_30P_1x15" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
     (property "Description" "ESP32 DevKit V1 (DOIT) 30 pines" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
     (symbol "ESP32_DevKitV1_30P_0_1"

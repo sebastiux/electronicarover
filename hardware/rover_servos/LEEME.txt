@@ -3,7 +3,8 @@ Abre rover_servos.kicad_pro con KiCad 7 u 8. La carpeta es autocontenida (rover.
 rover.pretty con ${KIPRJMOD}; las huellas estandar van embebidas en la PCB).
 
 - Una sola fresa de 1.0 mm: hueco de 1.0 mm en todo el cobre, pistas de 1.0 mm o mas, pads
-  ovalados 1.5 x 2.2 en filas a 2.54 mm. Todo el fresado va en cnc_servos/gcode/fresa1mm_todo.nc.
+  ovalados 1.4 x 2.2 en filas a 2.54 mm. Todo el fresado va en cnc_servos/gcode/fresa1mm_todo.nc.
+- La ESP32 lleva UNA fila de barrenos por lado (25.4 mm entre filas).
 - Cobre solo en B.Cu. Las pistas de F.Cu NO se fresan: son la guia de los cables aislados
   que van por arriba (puentes W1..Wn, ver puentes_alambre.csv y la serigrafia).
 - Esquematico jerarquico: indice + hojas por bloque, con notas y pines libres. Mismos

@@ -1,11 +1,11 @@
-[11s] simulacion + homing: {"estado":"Idle","mpos":{"x":-143,"y":-108,"z":-2}}
-[12s] material FR1 142x100x1.6 (diseno a X3 Y2): {"tipo":"cobre","ancho":142,"alto":100,"grosor":1.6,"x":3,"y":2}
-[13s] cero XY en la esquina del blank (el MISMO en las 2 caras): {"mpos":{"x":-142,"y":-107,"z":-2}}
-[14s] archivos: {"trabajos":["fresa1mm_todo [Fresa 1.0 mm] 12529 lineas"],"gerber":null}
-[24s] Z0 con la sonda: {"z_maquina":-36.433,"wco_z":-36.433}
-[137s] mapa de alturas 11x8 sobre la tarjeta: {"puntos":88,"min":-0.17,"max":0.19}
-[140s]   app: Mill fresa1mm_todo Mounted: Fresa 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 36 min · Goes through the 1.6 mm and goes 0.30 mm into the MDF Cancel Mill
-[157s] TRABAJO fresa1mm_todo: {"estado":"hecho","grbl":"Idle"} en 19 s reales
+[23s] simulacion + homing: {"estado":"Idle","mpos":{"x":-143,"y":-108,"z":-2}}
+[24s] material FR1 142x100x1.6 (diseno a X3 Y2): {"tipo":"cobre","ancho":142,"alto":100,"grosor":1.6,"x":3,"y":2}
+[28s] cero XY en la esquina del blank (el MISMO en las 2 caras): {"mpos":{"x":-142,"y":-107,"z":-2}}
+[31s] archivos: {"trabajos":["fresa1mm_todo [Fresa 1.0 mm] 11493 lineas"],"gerber":null}
+[65s] Z0 con la sonda: {"z_maquina":-36.433,"wco_z":-36.433}
+[363s] mapa de alturas 11x8 sobre la tarjeta: {"puntos":88,"min":-0.17,"max":0.19}
+[367s]   app: Mill fresa1mm_todo Mounted: Fresa 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 34 min · Goes through the 1.6 mm and goes 0.30 mm into the MDF Cancel Mill
+[382s] TRABAJO fresa1mm_todo: {"estado":"hecho","grbl":"Idle"} en 18 s reales
 --- consola de la app:
 
 FIN

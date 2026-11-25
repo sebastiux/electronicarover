@@ -103,7 +103,7 @@ def custom_symbols():
     left = [(str(i + 1), n) for i, n in enumerate(D.ESP32_LEFT)]
     right = [(str(i + 16), n) for i, n in enumerate(D.ESP32_RIGHT)]
     syms["ESP32_DevKitV1_30P"] = box_symbol("ESP32_DevKitV1_30P", "U", left, right, 20.32,
-                                            fp="rover:ESP32_DevKitV1_30P_DualPitch",
+                                            fp="rover:" + esp32_fp_name(),
                                             descr="ESP32 DevKit V1 (DOIT) 30 pines")
     # RPi
     left = [(str(n), D.RPI_PINS[n]) for n in range(1, 41, 2)]
@@ -243,9 +243,15 @@ def footprint_l298n():
     return "\n".join(L)
 
 
+def esp32_fp_name():
+    return "ESP32_DevKitV1_30P_1x15" if D.ESP32.get("una_fila") else "ESP32_DevKitV1_30P_DualPitch"
+
+
 def footprint_esp32():
     g = D.ESP32
-    L = fp_header("ESP32_DevKitV1_30P_DualPitch",
+    una = g.get("una_fila")
+    L = fp_header(esp32_fp_name(),
+                  "ESP32 DevKit V1 (DOIT) 30 pines en 2 headers hembra 1x15 a 25.4 mm entre filas." if una else
                   "ESP32 DevKit V1 (DOIT) 30 pines. Fila derecha doble: 25.4mm o 22.86mm entre filas. "
                   "Soldar el header hembra en la fila que coincida con tu placa.",
                   "ESP32 DevKit DOIT 30 pin")
@@ -257,7 +263,8 @@ def footprint_esp32():
     if g.get("courtyard") == "rows":
         # patio solo en las filas de pines: bajo el modulo caben piezas de perfil bajo
         n2 = g["pitch"] * (g["pins_per_side"] - 1) / 2
-        for (xa, xb) in ((g["row_left_x"], g["row_left_x"]), (g["row_right_alt_x"], g["row_right_x"])):
+        for (xa, xb) in ((g["row_left_x"], g["row_left_x"]),
+                         (g["row_right_x"] if una else g["row_right_alt_x"], g["row_right_x"])):
             L.append(fp_rect(xa - 1.5, -n2 - 1.5, xb + 1.5, n2 + 1.5, "F.CrtYd", 0.05))
     else:
         L.append(fp_rect(x0 - 0.5, y0 - 0.5, x1 + 0.5, y1 + 0.5, "F.CrtYd", 0.05))
@@ -271,11 +278,14 @@ def footprint_esp32():
         y = ytop + g["pitch"] * i
         L.append(fp_pad(str(i + 1), g["row_left_x"], y, g["pad"], g["drill"], "rect" if i == 0 else "circle"))
         L.append(fp_pad(str(i + 16), g["row_right_x"], y, g["pad"], g["drill"]))
-        L.append(fp_pad(str(i + 16), g["row_right_alt_x"], y, g["pad"], g["drill"]))
+        if not una:
+            L.append(fp_pad(str(i + 16), g["row_right_alt_x"], y, g["pad"], g["drill"]))
         L.append(fp_text("user", D.ESP32_LEFT[i].split("/")[-1], g["row_left_x"] + 3.6, y, "F.SilkS", 0.6))
-        L.append(fp_text("user", D.ESP32_RIGHT[i].split("/")[-1], g["row_right_alt_x"] - 3.8, y, "F.SilkS", 0.6))
+        L.append(fp_text("user", D.ESP32_RIGHT[i].split("/")[-1],
+                         (g["row_right_x"] if una else g["row_right_alt_x"]) - 3.8, y, "F.SilkS", 0.6))
     L.append(fp_text("user", "25.4", g["row_right_x"], ytop - 2.6, "F.SilkS", 0.7))
-    L.append(fp_text("user", "22.86", g["row_right_alt_x"] - 0.6, ytop - 4.0, "F.SilkS", 0.7))
+    if not una:
+        L.append(fp_text("user", "22.86", g["row_right_alt_x"] - 0.6, ytop - 4.0, "F.SilkS", 0.7))
     L.append(")")
     return "\n".join(L)
 
@@ -465,7 +475,25 @@ def netclass_json(name, track, clr, vd, vdr):
     }
 
 
+def write_rules():
+    """Reglas extra de DRC (.kicad_dru): pads de una misma pieza en fila de 2.54 mm a PAD_FILA_CLR."""
+    path = os.path.join(OUT, D.PROJECT + ".kicad_dru")
+    clr = getattr(D, "PAD_FILA_CLR", None)
+    if clr is None:
+        if os.path.exists(path):
+            os.remove(path)
+        return
+    open(path, "w").write(
+        "(version 1)\n"
+        "# Una sola fresa de 1.0 mm: entre pistas, plano y piezas hay 1.2 mm; entre los pads de una\n"
+        "# misma fila a 2.54 mm (headers de la ESP32 y de los servos) solo cabe 1.04 mm, mas que la fresa.\n"
+        "(rule \"pads de una misma fila\"\n"
+        "  (constraint clearance (min %.2fmm))\n"
+        "  (condition \"A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference\"))\n" % clr)
+
+
 def write_project(netnames):
+    write_rules()
     path = os.path.join(OUT, D.PROJECT + ".kicad_pro")
     classes = [netclass_json("Default", *D.DEFAULT_CLASS)]
     classes[0]["priority"] = 2147483647
@@ -946,7 +974,7 @@ def main():
     syms = custom_symbols()
     write_symbol_lib(syms)
     for name, txt in (("L298N_Module_Pins", footprint_l298n()),
-                      ("ESP32_DevKitV1_30P_DualPitch", footprint_esp32()),
+                      (esp32_fp_name(), footprint_esp32()),
                       ("RPi5_HAT_Header_2x20", footprint_rpi()),
                       ("Servo_Header_1x03", footprint_servo())):
         open(os.path.join(OUT, "rover.pretty", name + ".kicad_mod"), "w").write(txt + "\n")

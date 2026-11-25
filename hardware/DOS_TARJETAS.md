@@ -4,13 +4,13 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 | Tarjeta | Lleva | Tamaño | Cables por arriba | Fresado |
 |---|---|---|---|---|
-| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 95 × 96 mm | 8 | ~61 min |
-| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~38 min |
+| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 95 × 96 mm | 8 | ~59 min |
+| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~36 min |
 
 - **Raspberry Pi 5:** coordina a las 2 ESP32. Va aparte, con un **HAT de bornas** (header hembra 2x20 sobre el GPIO). De ahí sale un cable de 3 hilos a la borna `PI` (J9) de cada tarjeta.
 - **ESP32:** van en headers hembra 1x15, como antes. El firmware no cambia de pines.
 - **Una sola fresa de 1.0 mm:** cada tarjeta se fresa completa (aislamiento, barrenos y contorno) con la fresa plana de 1.0 mm, en un solo archivo `fresa1mm_todo.nc`. No hay cambios de herramienta.
-- **Reglas en las 2 tarjetas:** hueco de 1.0 mm en todo el cobre (igual a la fresa), pistas de 1.0 mm o más, pads de 2.2 mm (ovalados de 1.5 × 2.2 en filas a 2.54 mm) y GND unido en sólido (sin rayos). Lo revisa `tools/verifica_espacios.py`.
+- **Reglas en las 2 tarjetas:** hueco de 1.0 mm en todo el cobre (igual a la fresa), pistas de 1.0 mm o más, pads de 2.2 mm (ovalados de 1.4 × 2.2 en filas a 2.54 mm, con 1.14 mm entre ellos), cada ESP32 en una sola fila de barrenos por lado y GND unido en sólido (sin rayos). Lo revisa `tools/verifica_espacios.py`.
 
 ## Diagrama de conexiones
 
@@ -91,7 +91,8 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 | Pads de piezas distintas a menos de 1 mm · pistas de menos de 1 mm | 0 · 0 | 0 · 0 |
 | Cortos con un corte real de 0.90 a 1.10 mm | 0 | 0 |
 | Firmware simulado sobre el netlist (UART por el HAT, EN en Y) | 48/48 | 38/38 |
-| Simulador del Fab Lab (1 archivo, 1 herramienta, sin volteo) | Board done, 1 de 1 (~59 min) | Board done, 1 de 1 (~36 min) |
+| Simulador del Fab Lab con `fresa1mm_todo.nc` (1 herramienta, sin volteo) | Board done, 1 de 1 (~57 min) | Board done, 1 de 1 (~34 min) |
+| Generador de la app, *Traces* con 1 pasada y fresa declarada de 0.95 mm | Board done, 3 de 3 · 0 cortos | Board done, 3 de 3 · 0 cortos |
 
 ## Regenerar
 

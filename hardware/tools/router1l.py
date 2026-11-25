@@ -111,6 +111,7 @@ class Router:
         self.no_via_under_parts = no_via_under_parts
         self.via_pad_gap = via_pad_gap      # cobre libre minimo entre el anillo de un puente y CUALQUIER pad
         self.min_w = min_w                  # ancho minimo de pista (nunca se adelgaza por debajo)
+        self.jw = max(JUMPER_WIRE, min_w)   # guia del cable en F.Cu: al menos el ancho minimo
         # two_layer=True: F.Cu es una capa de cobre real (PCB de 2 capas, vias normales)
         self.two_layer = two_layer
         self.via_sizes = via_sizes or {}
@@ -456,7 +457,7 @@ class Router:
         if path is None and allow_j:
             distF = self._dist(g.F, code)
             jclr = max(JUMPER_CLR, clr) if self.min_w >= 1.0 else JUMPER_CLR
-            freeF = distF >= JUMPER_WIRE / 2 + jclr + RM
+            freeF = distF >= self.jw / 2 + jclr + RM
             viaok = (distB >= JUMPER_PAD / 2 + clr + RM) & (distF >= JUMPER_PAD / 2 + jclr + RM)
             viaok &= ~self.noVia
             for (m, allowed) in self.reserved:
@@ -662,7 +663,7 @@ class Router:
                         self.noVia |= m.astype(bool)
                 L = 0.0
                 for a, c in zip(xy, xy[1:]):
-                    self._add_track(net, code, a, c, w if self.two_layer else JUMPER_WIRE, pcbnew.F_Cu, g.F)
+                    self._add_track(net, code, a, c, w if self.two_layer else self.jw, pcbnew.F_Cu, g.F)
                     L += math.hypot(c[0] - a[0], c[1] - a[1])
                 self.jumpers.append((name, xy[0][0], xy[0][1], xy[-1][0], xy[-1][1], L))
 

@@ -16,7 +16,7 @@ from rover_design import (ESP32_LEFT, ESP32_RIGHT, MOTORS,  # noqa: F401
                           COMPONENTS, FP_R, FP_C25, FP_CP10, FP_LED, FP_DO41, FP_MH,
                           add, esp_pin_number, pad_side)
 from rover_split_comun import *  # noqa: F401,F403
-from rover_split_comun import FP_TB6, FP_TB5, FP_TB3, FP_TB2, MPN_TB2
+from rover_split_comun import FP_ESP32, FP_TB6, FP_TB5, FP_TB3, FP_TB2, MPN_TB2
 FP_RV = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"
 
 PROJECT = "rover_traccion"
@@ -205,7 +205,7 @@ def build():
     espa[esp_pin_number(ESPA_MOTOR_EN)] = "MOTOR_EN"
     espa[esp_pin_number(ESPA_UART_TX)] = "ESPA_TX"
     espa[esp_pin_number(ESPA_UART_RX)] = "ESPA_RX"
-    add("U2", "ESP32-A_Traccion", "rover:ESP32_DevKitV1_30P", "rover:ESP32_DevKitV1_30P_DualPitch",
+    add("U2", "ESP32-A_Traccion", "rover:ESP32_DevKitV1_30P", FP_ESP32,
         espa, ESPA_POS, _sch_pos(), desc="ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15",
         mpn="ESP32 DevKit V1 + 2x header hembra 1x15")
 

@@ -22,4 +22,4 @@ Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;R23;27k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 27k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (bajo)
 1;R24;2.2k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 2.2k 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 12V
 1;R26;470;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 470 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED servos
-1;U3;ESP32-B_Servos;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15
+1;U3;ESP32-B_Servos;rover:ESP32_DevKitV1_30P_1x15;ESP32 DevKit V1 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15

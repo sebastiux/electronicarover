@@ -262,7 +262,7 @@
     (symbol "rover:ESP32_DevKitV1_30P" (in_bom yes) (on_board yes)
         (property "Reference" "U" (at 0 21.59 0) (effects (font (size 1.27 1.27))))
         (property "Value" "ESP32_DevKitV1_30P" (at 0 -21.59 0) (effects (font (size 1.27 1.27))))
-        (property "Footprint" "rover:ESP32_DevKitV1_30P_DualPitch" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+        (property "Footprint" "rover:ESP32_DevKitV1_30P_1x15" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
         (property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
         (property "Description" "ESP32 DevKit V1 (DOIT) 30 pines" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
         (symbol "ESP32_DevKitV1_30P_0_1"
@@ -307,7 +307,7 @@
     (uuid 0b366eda-38cc-5dc8-b0a1-721120fcb77c)
     (property "Reference" "U2" (at 99.06 80.01 0) (effects (font (size 1.27 1.27)) (justify bottom)))
     (property "Value" "ESP32-A_Traccion" (at 99.06 123.19 0) (effects (font (size 1.27 1.27)) (justify top)))
-    (property "Footprint" "rover:ESP32_DevKitV1_30P_DualPitch" (at 99.06 101.6 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Footprint" "rover:ESP32_DevKitV1_30P_1x15" (at 99.06 101.6 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "~" (at 99.06 101.6 0) (effects (font (size 1.27 1.27)) hide))
     (property "Descripcion" "ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15" (at 99.06 101.6 0) (effects (font (size 1.27 1.27)) hide))
     (property "MPN" "ESP32 DevKit V1 + 2x header hembra 1x15" (at 99.06 101.6 0) (effects (font (size 1.27 1.27)) hide))

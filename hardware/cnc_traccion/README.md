@@ -9,7 +9,8 @@
 
 - **Hueco de 1.0 mm en todo el cobre** (pista–pista, pista–pad, pad–pad, plano–todo). Es justo el ancho de la fresa: cada hueco se fresa con una sola pasada por el centro.
 - **Pistas:** toda conexión de al menos **1.0 mm**; +5V y GND de 1.5 mm.
-- **Pads:** redondos de **2.2 mm**. En las filas a 2.54 mm (headers de la ESP32) son **ovalados de 1.5 × 2.2 mm**, para dejar 1.04 mm entre pad y pad.
+- **Pads:** redondos de **2.2 mm**. En las filas a 2.54 mm (headers de la ESP32) son **ovalados de 1.4 × 2.2 mm**: quedan 1.14 mm libres entre pad y pad, más que la fresa.
+- **ESP32 en una sola fila de barrenos por lado** (25.4 mm entre filas, 30 barrenos de 1.0 mm). La huella anterior traía una segunda fila a 1.27 mm (para módulos de 22.86 mm) que encimaba los pads; ya no existe.
 - **GND sin rayos:** los pads de GND van unidos al plano en sólido. En la simulación se ven como un barreno dentro del cobre, sin anillo: el plano mismo es el pad, no está incompleto.
 
 ## Bornas
@@ -33,7 +34,7 @@
 
 | Archivo | Herramienta | Qué hace | Tiempo |
 |---|---|---|---|
-| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | 1. aislamiento: 1 pasada a −0.12 mm alrededor de cada red<br>2. 111 barrenos de 1.0 mm (bajada directa)<br>3. barrenos de más de 1.0 mm en hélice<br>4. contorno con 4 puentes | ~61 min |
+| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | 1. aislamiento: 1 pasada a −0.12 mm alrededor de cada red<br>2. 96 barrenos de 1.0 mm (bajada directa)<br>3. barrenos de más de 1.0 mm en hélice<br>4. contorno con 4 puentes | ~59 min |
 
 1. Monta la fresa de 1.0 mm, haz el homing y pon el **cero XY** en la esquina del blank.
 2. Cero Z con la sonda y **mapa de alturas** sobre la tarjeta.
@@ -52,15 +53,15 @@
 | Cable | Red | Largo con holgura | Dónde |
 |---|---|---|---|
 | W1 | GND | 21 mm | junto a J5 (entrada 5 V) |
-| W2 | GND | 22 mm | entre J43 y J42 |
-| W3 | MOTOR_EN | 18 mm | de la ESP32 hacia R21 (pull-down) |
-| W4 | GND | 26 mm | orilla izquierda, de J8 a la zona de J41 |
+| W2 | MOTOR_EN | 15 mm | junto a la ESP32, del lado de R21 (pull-down) |
+| W3 | GND | 22 mm | entre J43 y J42 |
+| W4 | GND | 22 mm | junto a J41 |
 | W5 | GND | 16 mm | arriba de los divisores M6 y M5 |
 | W6 | GND | 16 mm | arriba de los divisores M5 y M4 |
 | W7 | GND | 24 mm | entre los divisores M1–M3 |
 | W8 | +5V | 50 mm | +5V de J7 a J8 (encoders), por la orilla inferior |
 
-Pon los cables **antes** que los headers de la ESP32: W3 pasa junto al módulo.
+Pon los cables **antes** que los headers de la ESP32: W2 pasa junto al módulo.
 
 **2. Las piezas bajas.**
 - Resistencias, capacitores de 1 nF y D5 (1N5819, banda del lado de la ESP32).
@@ -78,8 +79,27 @@ Pon los cables **antes** que los headers de la ESP32: W3 pasa junto al módulo.
 
 ## Simulación en el Fab Lab (fablab.sebs.mx/cnc)
 
-`fresa1mm_todo.nc` se corrió en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm montada todo el tiempo, sin errores de GRBL ni salidas del recorrido. La app estima 59 min.
+Las 2 formas se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8.
 
-Capturas en `sim/fablab/`, registro en `sim/fablab/registro.txt`.
+**1. Nuestro G-code (`gcode/fresa1mm_todo.nc`): la forma recomendada.** Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm todo el tiempo, sin errores de GRBL. La app estima 57 min. Ya va espejado (cobre abajo).
 
 ![](sim/fablab/fresa1mm_todo_terminado.png)
+
+Acercamiento a los pines de la ESP32: una sola fila de barrenos por lado y cada pad separado por el canal de 1 mm.
+
+![](sim/fablab/zoom_pines_esp32.png)
+
+**2. El generador de la app (Gerbers → *Traces* con 1 pasada).** La app desplaza todo el cobre junto el radio de la fresa. En un hueco de exactamente 1.0 mm, con la fresa declarada de 1.0 mm no encuentra camino y deja unidas las redes. Declarando la fresa un poco más angosta sí pasa por el centro de cada hueco, y la fresa real de 1.0 mm lo limpia completo:
+
+| Fresa declarada en *Traces* (1 pasada) | Cortos (corte real de 1.0 mm) |
+|---|---|
+| 0.90 mm | 0 |
+| **0.95 mm** (punta 0.94, ángulo 5°, profundidad 0.12) | **0** |
+| 1.00 mm | 2 |
+| 1.01 mm | 3 |
+
+Con 0.95 mm: **Board done, 3 de 3** (*Traces*, *Holes* con 1.0 mm y *Outline* con 1.0 mm), 0 cortos y ningún pad dañado. La app pide permitir valores fuera de rango, porque *Traces* espera una fresa en V. Ojo: la app **no espeja** el cobre inferior; para fresar de verdad usa `fresa1mm_todo.nc`.
+
+![](sim/fablab/app_1pasada_terminado.png)
+
+Registros: `sim/fablab/registro.txt` y `sim/fablab/registro_app_1pasada.txt`.

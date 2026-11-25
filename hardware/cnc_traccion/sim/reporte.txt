@@ -1,23 +1,23 @@
 Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_traccion (95 x 96 mm, UNA cara)
 UNA sola herramienta: fresa plana de 1.0 mm (aislamiento a 0.12 mm, barrenos y contorno)
 
-Pads: 128   cables por arriba: 8   taladros: 148
-Piezas de cobre tras el fresado: 85
+Pads: 113   cables por arriba: 8   taladros: 133
+Piezas de cobre tras el fresado: 80
 CORTOS: 0
 REDES ABIERTAS: 0
 
 CABLES POR ARRIBA:
   W1   GND        (54.0, 12.9) -> (64.5, 10.9)  11 mm
-  W2   GND        (25.2, 28.2) -> (13.7, 32.5)  12 mm
-  W3   MOTOR_EN   (46.7, 28.9) -> (46.7, 36.5)  8 mm
-  W4   GND        (10.7, 87.5) -> (10.7, 71.5)  16 mm
+  W2   MOTOR_EN   (49.2, 23.4) -> (46.2, 27.2)  5 mm
+  W3   GND        (25.2, 28.2) -> (13.7, 32.5)  12 mm
+  W4   GND        (25.2, 71.2) -> (13.7, 71.2)  12 mm
   W5   GND        (42.2, 69.7) -> (36.7, 69.7)  6 mm
   W6   GND        (50.7, 71.5) -> (45.0, 71.5)  6 mm
   W7   GND        (66.2, 75.0) -> (55.2, 82.2)  14 mm
   W8   +5V        (67.7, 86.0) -> (28.2, 86.0)  40 mm
 
 TRABAJOS (en este orden, sin voltear la placa):
-  fresa1mm_todo.nc                           60.8 min   corte    4711 mm   bajadas 594
-  Tiempo total de maquina estimado: 61 min (sin cambios de herramienta ni mapa de alturas)
+  fresa1mm_todo.nc                           58.8 min   corte    4644 mm   bajadas 580
+  Tiempo total de maquina estimado: 59 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

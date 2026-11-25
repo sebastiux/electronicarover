@@ -16,7 +16,7 @@ from rover_design import (ESP32_LEFT, ESP32_RIGHT, SERVOS,  # noqa: F401
                           COMPONENTS, FP_R, FP_C, FP_CP10, FP_LED, FP_DO41, FP_MH, FP_SERVO,
                           add, esp_pin_number, pad_side)
 from rover_split_comun import *  # noqa: F401,F403
-from rover_split_comun import FP_TB3, FP_TB2, MPN_TB2
+from rover_split_comun import FP_ESP32, FP_TB3, FP_TB2, MPN_TB2
 FP_RV = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"   # de pie: entra entre la ESP32 y J9
 
 PROJECT = "rover_servos"
@@ -95,7 +95,7 @@ def build():
     espb[esp_pin_number(ESPB_VBAT)] = "VBAT_SENSE"
     espb[esp_pin_number(ESPB_UART_TX)] = "ESPB_TX"
     espb[esp_pin_number(ESPB_UART_RX)] = "ESPB_RX"
-    add("U3", "ESP32-B_Servos", "rover:ESP32_DevKitV1_30P", "rover:ESP32_DevKitV1_30P_DualPitch",
+    add("U3", "ESP32-B_Servos", "rover:ESP32_DevKitV1_30P", FP_ESP32,
         espb, ESPB_POS, _sch_pos(), desc="ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15",
         mpn="ESP32 DevKit V1 + 2x header hembra 1x15")
 
