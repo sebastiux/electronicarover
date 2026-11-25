@@ -85,6 +85,7 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 | Esquemático contra PCB, pin por pin | 113 pines, 0 diferencias | 87 pines, 0 diferencias |
 | Simulación del fresado (`tools/cubiko_cam.py`) | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
 | Firmware simulado sobre el netlist (UART por el HAT, EN en Y) | 48/48 | 38/38 |
+| Simulador del Fab Lab (3 archivos, sin volteo) | Board done, 3 de 3 (~72 min) | Board done, 3 de 3 (~40 min) |
 
 ## Regenerar
 

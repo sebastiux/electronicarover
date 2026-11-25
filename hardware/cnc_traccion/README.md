@@ -59,3 +59,14 @@ Pon los cables **antes** que los headers de la ESP32: W1 y W4 pasan junto al mó
 - **`sim/reporte.txt`:** 0 cortos y 0 redes abiertas, contando los 5 cables.
 - **`sim/resultado_cobre.png` y `sim/trayectorias.png`:** cómo queda el cobre y por dónde pasan las herramientas.
 - **`sim/fablab/`:** la corrida en el simulador del Fab Lab.
+
+## Simulación en el Fab Lab (fablab.sebs.mx/cnc)
+
+Los 3 archivos se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 3 de 3**, sin errores de GRBL ni salidas del recorrido.
+
+| Trabajos (estimación de la app) | `1_vbit` 40 min ✓ · `2_broca` 7 min ✓ · `3_fresa` 24 min ✓ |
+|---|---|
+
+Capturas en `sim/fablab/`, registro en `sim/fablab/registro.txt`.
+
+![](sim/fablab/3_contorno_terminado.png)

@@ -39,3 +39,14 @@ El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, ma
 6. **Prueba:** sin módulos, mide continuidad SERVO_V–GND y 5V–GND (no deben pitar).
 
 **Simulación:** `sim/reporte.txt` da 0 cortos y 0 redes abiertas.
+
+## Simulación en el Fab Lab (fablab.sebs.mx/cnc)
+
+Los 3 archivos se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 3 de 3**, sin errores de GRBL ni salidas del recorrido.
+
+| Trabajos (estimación de la app) | `1_vbit` 17 min ✓ · `2_broca` 7 min ✓ · `3_fresa` 16 min ✓ |
+|---|---|
+
+Capturas en `sim/fablab/`, registro en `sim/fablab/registro.txt`.
+
+![](sim/fablab/3_contorno_terminado.png)
