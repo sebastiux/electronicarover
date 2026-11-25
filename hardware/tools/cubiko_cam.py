@@ -29,7 +29,7 @@ sys.path.insert(0, HERE)
 import pcbnew
 import rover_design as D
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box
-from shapely.ops import unary_union
+from shapely.ops import unary_union, linemerge
 from shapely import affinity
 from PIL import Image, ImageDraw, ImageFont
 
@@ -54,6 +54,7 @@ P = dict(
     outline_depth=1.85, outline_passes=4, tab_w=3.1, tab_h=0.7, n_tabs=4,   # puentes con tope en Z -0.9
     align_d=3.0, align_depth=3.4,               # pines de 3 mm: 1.6 de placa + 1.8 en el MDF (el recorrido Z acaba en el MDF de 2 mm)
     antenna_depth=0.12,
+    flat_iso_depth=0.12,        # aislamiento con la fresa plana de 1 mm (una sola herramienta)
     # marcas de las vias-pin: 2 circulos grabados (diana) con 4 puentes para no aislar el plano
     mark_r=(1.95, 2.75), mark_gap=0.8,
 )
@@ -189,12 +190,45 @@ def order_paths(paths):
     return out
 
 
-def isolation(copper):
-    w = vbit_width(P["iso_depth"])
+def isolation_por_red(nets, w):
+    """Una sola fresa de ancho w con huecos de cobre de exactamente w: cada red lleva su propio
+    anillo a w/2 de su cobre, que en un hueco minimo pasa justo por el centro. Con la union de
+    todo el cobre los anillos de 2 redes vecinas se funden y entre ellas no pasa ningun corte.
+    Donde el anillo de una red cae sobre un corte ya hecho (a menos de 0.03 mm) no se repite."""
+    r = w / 2
+    dentro = box(0, 0, W, H).buffer(-0.05)
+    paths, swept, hechos = [], [], []
+    for n, g in sorted(nets.items(), key=lambda kv: -kv[1].area):
+        if g.is_empty:
+            continue
+        ya = unary_union(hechos) if hechos else None
+        nuevos = []
+        for ring in rings(g.buffer(r, resolution=16)):
+            ls = LineString(ring).intersection(dentro)
+            if ya is not None:
+                ls = ls.difference(ya)
+            for part in (ls.geoms if hasattr(ls, "geoms") else [ls]):
+                if part.length > 0.05 and part.geom_type == "LineString":
+                    nuevos.append(part)
+        if not nuevos:
+            continue
+        m = linemerge(nuevos)
+        for part in (m.geoms if hasattr(m, "geoms") else [m]):
+            paths.append(list(part.coords))
+            swept.append(part.buffer(r, resolution=8))
+            hechos.append(part.buffer(0.03, resolution=2))
+    return order_paths(paths), unary_union(swept), w
+
+
+def isolation(copper, nets=None):
+    flat = getattr(D, "UNA_FRESA", 0)
+    if flat and nets:
+        return isolation_por_red(nets, flat)
+    w = flat if flat else vbit_width(P["iso_depth"])
     step = w * (1 - P["iso_overlap"])
     paths, swept = [], []
     board = box(0, 0, W, H)
-    for k in range(P["iso_passes"]):
+    for k in range(1 if flat else P["iso_passes"]):
         r = w / 2 + k * step
         g = copper.buffer(r, resolution=16)
         for ring in rings(g):
@@ -688,11 +722,13 @@ def main_una_cara():
     net_polys, pads, vias, holes, keepouts, hard = load()
     w = vbit_width(P["iso_depth"])
     rep = ["Genmitsu Cubiko - CAM y simulacion de la tarjeta %s (%.0f x %.0f mm, UNA cara)" % (D.PROJECT, W, H),
+           ("UNA sola herramienta: fresa plana de %.1f mm (aislamiento a %.2f mm, barrenos y contorno)"
+            % (D.UNA_FRESA, P["flat_iso_depth"])) if getattr(D, "UNA_FRESA", 0) else
            "V-bit %.0f grados punta %.2f mm a %.2f mm -> ancho de corte %.3f mm"
            % (P["vbit_angle"], P["vbit_tip"], P["iso_depth"], w)]
     hole_geom = unary_union([Point(x, y).buffer(d / 2, resolution=12) for (x, y, d, _, _) in holes])
     copper = unary_union(list(net_polys["B"].values()))
-    paths, swept, _ = isolation(copper)
+    paths, swept, _ = isolation(copper, net_polys["B"])
     mpaths, mswept = [], Polygon()     # sin dianas: el mapa de cables ya marca cada barreno
     remaining = box(0, 0, W, H).difference(swept.union(mswept)).difference(hole_geom)
     comps = list(remaining.geoms) if hasattr(remaining, "geoms") else [remaining]
@@ -783,23 +819,36 @@ def main_una_cara():
     rep += ["   %s.%s %s: %s" % o for o in opens[:20]]
     ok = not shorts and not opens
 
-    # ---------------- G-code: 3 archivos, cara de cobre arriba (espejada) ----------------
+    # ---------------- G-code: cara de cobre arriba (espejada) ----------------
     jobs = []
-    TV = "V-bit 20 grados punta 0.1 mm"
-    g = G("1 - aislamiento de la cara de cobre (B.Cu), espejado", TV)
-    for pth in paths:
-        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
-    jobs.append(g.save("1_vbit_aislamiento.nc"))
+    TM = "fresa plana tipo maiz 1.0 mm"
     small = [(x, y) for (x, y, d, npth, ref) in holes if d <= P["drill_max"]]
-    g = G("2 - taladros de 1.0 mm (%d agujeros)" % len(small), "broca de PCB 1.0 mm")
+    una = getattr(D, "UNA_FRESA", 0)
+    if una:
+        # UNA sola herramienta para todo: aislamiento, barrenos y contorno en un solo archivo
+        g = G("TODO con la fresa de 1.0 mm: aislamiento (1 pasada), %d barrenos de 1.0 mm, barrenos "
+              "grandes y contorno con %d puentes" % (len(small), P["n_tabs"]), TM)
+        g.l.append("( 1/3 aislamiento: canal de 1 mm alrededor de cada red )")
+        for pth in paths:
+            g.path(pth, -P["flat_iso_depth"], P["mill_feed"], P["mill_plunge"], "B")
+        g.l.append("( 2/3 barrenos de 1.0 mm: la fresa baja y sube )")
+    else:
+        TV = "V-bit 20 grados punta 0.1 mm"
+        g = G("1 - aislamiento de la cara de cobre (B.Cu), espejado", TV)
+        for pth in paths:
+            g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
+        jobs.append(g.save("1_vbit_aislamiento.nc"))
+        g = G("2 - taladros de 1.0 mm (%d agujeros)" % len(small), "broca de PCB 1.0 mm")
     cur, left = (0, 0), list(small)
     while left:
         j = min(range(len(left)), key=lambda k: (left[k][0] - cur[0]) ** 2 + (left[k][1] - cur[1]) ** 2)
         cur = left.pop(j)
-        g.drill(cur[0], cur[1], "B", P["drill_depth"], P["drill_feed"])
-    jobs.append(g.save("2_broca1.0.nc"))
-    TM = "fresa tipo maiz 1.0 mm"
-    g = G("3 - fresa de 1.0 mm: barrenos de 1.2 mm o mas y contorno con %d puentes" % P["n_tabs"], TM)
+        g.drill(cur[0], cur[1], "B", P["drill_depth"], P["mill_plunge"] if una else P["drill_feed"])
+    if una:
+        g.l.append("( 3/3 barrenos de 1.2 mm o mas en espiral y contorno )")
+    else:
+        jobs.append(g.save("2_broca1.0.nc"))
+        g = G("3 - fresa de 1.0 mm: barrenos de 1.2 mm o mas y contorno con %d puentes" % P["n_tabs"], TM)
     for (x, y, d, npth, ref) in holes:
         if d > P["drill_max"]:
             helix_hole(g, x, y, max(d, P["mill_d"]), P["drill_depth"], "B")
@@ -821,7 +870,7 @@ def main_una_cara():
                        P["mill_feed"], P["mill_plunge"], "B")
         else:
             g.path(ring, z, P["mill_feed"], P["mill_plunge"], "B")
-    jobs.append(g.save("3_fresa1mm_barrenos_contorno.nc"))
+    jobs.append(g.save("fresa1mm_todo.nc" if una else "3_fresa1mm_barrenos_contorno.nc"))
 
     # ---------------- imagenes ----------------
     t1 = "Cara de cobre vista en la maquina (espejada)"

@@ -1,15 +1,16 @@
 # Tarjeta de servos (una cara): fresado y montaje
 
 - **Tarjeta:** 76 × 96 mm, cobre solo abajo, **sin cables por arriba**.
+- **Una sola herramienta:** todo se fresa con la **fresa plana de 1.0 mm**, en un solo archivo.
 - **Lleva:** ESP32-B, 8 headers de servo, entrada de 6 V, medición de batería, 5 V de entrada y la borna `PI` (UART4).
 - **Arquitectura y cableado:** en `../DOS_TARJETAS.md`.
 
 ## Reglas de diseño (verificadas con `tools/verifica_espacios.py`)
 
-- **Pistas:** toda conexión de al menos **1.0 mm**; las filas V+ y GND de los servos, de 1.6 mm, y el 6 V, de 2.5 mm donde cabe.
-- **Pads:** de 2.2 mm donde el paso lo permite.
-- **Espacio entre piezas:** al menos 1.0 mm de cobre libre entre pads de piezas distintas.
-- **Headers de servo a 5.08 mm** (antes 2.54): cada conector de servo tiene su espacio y sus pads no se tocan con los del vecino.
+- **Hueco de 1.0 mm en todo el cobre**, igual al ancho de la fresa.
+- **Pistas:** toda conexión de al menos **1.0 mm**; las filas V+ y GND de los servos, de 1.4 mm, y el 6 V, de 2.5 mm donde cabe.
+- **Pads:** redondos de 2.2 mm; ovalados de 1.5 × 2.2 mm en las filas a 2.54 mm.
+- **Headers de servo a 5.08 mm**, 20 mm debajo de la ESP32: cada señal baja recta y se abre en diagonal hasta su header.
 - **GND en sólido:** los pads de GND van unidos al plano, sin rayos.
 
 ## Bornas y headers
@@ -22,17 +23,15 @@
 | J9 `PI` | inferior izquierda | GND, TXD4, RXD4 | HAT de bornas de la Pi: pines 34, 32 y 33 |
 | J31–J38 | abajo, a 5.08 mm | SIG (arriba), V+, GND (abajo) | S1–S4 dirección (DI, DD, TI, TD) · S5 brazo base · S6 hombro · S7 pinza · S8 codo/muñeca |
 
-## Fresado en la Cubiko (sin voltear)
+## Fresado en la Cubiko (una herramienta, sin voltear)
 
 **Material:** FR1 de **una cara**, con el cobre arriba. La tarjeta queda en X 3–79 y Y 2–98.
 
-| # | Archivo | Herramienta | Tiempo |
+| Archivo | Herramienta | Qué hace | Tiempo |
 |---|---|---|---|
-| 1 | `gcode/1_vbit_aislamiento.nc` | V-bit 20° × 0.1 a −0.10 mm | 18 min |
-| 2 | `gcode/2_broca1.0.nc` | broca 1.0 mm (93 agujeros) | 8 min |
-| 3 | `gcode/3_fresa1mm_barrenos_contorno.nc` | fresa de 1.0 mm: barrenos grandes y contorno | 18 min |
+| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | aislamiento (1 pasada a −0.12 mm por red), 93 barrenos de 1.0 mm, barrenos grandes en hélice y contorno con 4 puentes | ~38 min |
 
-El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, mapa de alturas, y después los archivos 1, 2 y 3.
+El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, mapa de alturas y el archivo. La simulación da 0 cortos con un corte real de 0.90 a 1.10 mm.
 
 ## Montaje
 
@@ -50,11 +49,8 @@ El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, ma
 
 ## Simulación en el Fab Lab (fablab.sebs.mx/cnc)
 
-Los 3 archivos se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 3 de 3**, sin errores de GRBL ni salidas del recorrido.
-
-| Trabajos (estimación de la app) | `1_vbit` 18 min ✓ · `2_broca` 7 min ✓ · `3_fresa` 17 min ✓ |
-|---|---|
+`fresa1mm_todo.nc` se corrió en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 1 de 1**, sin errores de GRBL ni salidas del recorrido. La app estima 36 min.
 
 Capturas en `sim/fablab/`, registro en `sim/fablab/registro.txt`.
 
-![](sim/fablab/3_contorno_terminado.png)
+![](sim/fablab/fresa1mm_todo_terminado.png)

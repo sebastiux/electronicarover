@@ -1,16 +1,12 @@
 [12s] simulacion + homing: {"estado":"Idle","mpos":{"x":-143,"y":-108,"z":-2}}
 [12s] material FR1 142x100x1.6 (diseno a X3 Y2): {"tipo":"cobre","ancho":142,"alto":100,"grosor":1.6,"x":3,"y":2}
-[13s] cero XY en la esquina del blank (el MISMO en las 2 caras): {"mpos":{"x":-142,"y":-107,"z":-2}}
-[14s] archivos: {"trabajos":["1_vbit_aislamiento [V-bit 0.1 mm] 20814 lineas","2_broca1.0 [Broca 1.0 mm] 346 lineas","3_fresa1mm_barrenos_contorno [Fresa 1.0 mm] 11857 lineas"],"gerber":null}
+[14s] cero XY en la esquina del blank (el MISMO en las 2 caras): {"mpos":{"x":-142,"y":-107,"z":-2}}
+[15s] archivos: {"trabajos":["fresa1mm_todo [Fresa 1.0 mm] 25607 lineas"],"gerber":null}
 [26s] Z0 con la sonda: {"z_maquina":-36.433,"wco_z":-36.433}
-[139s] mapa de alturas 11x8 sobre la tarjeta: {"puntos":88,"min":-0.17,"max":0.19}
-[142s]   app: Mill 1_vbit_aislamiento Mounted: V-bit 0.1 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 39 min · Goes 0.10 mm below the copper Cancel Mill
-[162s]     1_vbit_aislamiento: 18851/23941 lineas · Run · W 19.1,20.7,-0.08
-[168s] TRABAJO 1_vbit_aislamiento: {"estado":"hecho","grbl":"Idle"} en 29 s reales
-[182s]   app: Mill 2_broca1.0 Mounted: Broca 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 7 min 54 s · Goes through the 1.6 mm and goes 0.30 mm into the MDF Cancel Mill
-[183s] TRABAJO 2_broca1.0: {"estado":"hecho","grbl":"Idle"} en 3 s reales
-[202s]   app: Mill 3_fresa1mm_barrenos_contorno Mounted: Fresa 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 24 min · Goes through the 1.6 mm and goes 0.30 mm into the MDF Cancel Mill
-[215s] TRABAJO 3_fresa1mm_barrenos_contorno: {"estado":"hecho","grbl":"Idle"} en 16 s reales
+[142s] mapa de alturas 11x8 sobre la tarjeta: {"puntos":88,"min":-0.17,"max":0.19}
+[145s]   app: Mill fresa1mm_todo Mounted: Fresa 1.0 mm Board taped down, MDF underneath Alligator clip removed Goggles and lid 59 min · Goes through the 1.6 mm and goes 0.30 mm into the MDF Cancel Mill
+[165s]     fresa1mm_todo: 17238/28797 lineas · Run · W 43.0,92.5,-1.84
+[179s] TRABAJO fresa1mm_todo: {"estado":"hecho","grbl":"Idle"} en 36 s reales
 --- consola de la app:
 
 FIN

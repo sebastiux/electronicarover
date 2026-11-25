@@ -1,14 +1,15 @@
 # Tarjeta de tracción (una cara): fresado y montaje
 
-- **Tarjeta:** 92 × 96 mm, cobre solo abajo.
+- **Tarjeta:** 95 × 96 mm, cobre solo abajo.
+- **Una sola herramienta:** todo (aislamiento, barrenos y contorno) se fresa con la **fresa plana de 1.0 mm**, en un solo archivo. No hay cambios de herramienta.
 - **Lleva:** ESP32-A, 3 bornas para los L298N, 2 bornas de encoders con sus 6 divisores, 5 V de entrada y la borna `PI` (UART2).
 - **Arquitectura y cableado:** en `../DOS_TARJETAS.md`.
 
 ## Reglas de diseño (verificadas con `tools/verifica_espacios.py`)
 
+- **Hueco de 1.0 mm en todo el cobre** (pista–pista, pista–pad, pad–pad, plano–todo). Es justo el ancho de la fresa: cada hueco se fresa con una sola pasada por el centro.
 - **Pistas:** toda conexión de al menos **1.0 mm**; +5V y GND de 1.5 mm.
-- **Pads:** de **2.2 mm** donde el paso lo permite; en headers de 2.54 mm, 1.84 mm. Las bornas de encoders llevan 2.0 mm para que entre pin y pin pase el plano de GND.
-- **Espacio entre piezas:** al menos **1.0 mm de cobre libre** entre pads de piezas distintas, y 0.6 mm entre un barreno de cable y cualquier pad. Nada queda encimado.
+- **Pads:** redondos de **2.2 mm**. En las filas a 2.54 mm (headers de la ESP32) son **ovalados de 1.5 × 2.2 mm**, para dejar 1.04 mm entre pad y pad.
 - **GND sin rayos:** los pads de GND van unidos al plano en sólido. En la simulación se ven como un barreno dentro del cobre, sin anillo: el plano mismo es el pad, no está incompleto.
 
 ## Bornas
@@ -17,7 +18,7 @@
 |---|---|---|---|
 | J43 · J42 · J41 | izquierda, de arriba a abajo | EN, IN4, IN3, IN2, IN1, GND | L298N #3 (M5/M6) · #2 (M3/M4) · #1 (M1/M2). EN a ENA y ENB con cable en Y |
 | J8 | inferior izquierda | GND, +5V, A6, A5, A4 | Encoders de M6, M5 y M4 (cable Pololu: verde GND, azul VCC, amarillo A) |
-| J7 | inferior derecha | GND, +5V, A1, A2, A3 | Encoders de M1, M2 y M3 |
+| J7 | inferior derecha | **A1, A2, A3, +5V, GND** | Encoders de M1, M2 y M3 |
 | J5 | superior centro | +5V, GND | Step-down 5 V |
 | J9 `PI` | derecha | **GND, RXD2, TXD2** | HAT de bornas de la Pi: pines **6, 29 y 7** |
 
@@ -26,22 +27,22 @@
 - **M1–M3:** a la derecha de la ESP32, con resistencias acostadas, a 5 mm entre filas y 13 mm entre bloques.
 - **M4–M6:** en fila **debajo del módulo**, junto a J8, con las resistencias **de pie**. Así el plano de GND de cada bloque sale entre los pines de J8.
 
-## Fresado en la Cubiko (sin voltear)
+## Fresado en la Cubiko (una herramienta, sin voltear)
 
-**Material:** FR1 de **una cara**, 1.6 mm. Pégalo con cinta doble cara al mártir, con el **cobre arriba**. La tarjeta queda en X 3–95 y Y 2–98 desde la esquina frontal izquierda del blank.
+**Material:** FR1 de **una cara**, 1.6 mm. Pégalo con cinta doble cara al mártir, con el **cobre arriba**. La tarjeta queda en X 3–98 y Y 2–98 desde la esquina frontal izquierda del blank.
 
-| # | Archivo | Herramienta | Tiempo |
+| Archivo | Herramienta | Qué hace | Tiempo |
 |---|---|---|---|
-| 1 | `gcode/1_vbit_aislamiento.nc` | V-bit 20° × 0.1 a −0.10 mm, 120 mm/min | 39 min |
-| 2 | `gcode/2_broca1.0.nc` | broca 1.0 mm (111 agujeros) | 10 min |
-| 3 | `gcode/3_fresa1mm_barrenos_contorno.nc` | fresa de 1.0 mm: barrenos de 1.2 mm o más, contorno con 4 puentes | 24 min |
+| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | 1. aislamiento: 1 pasada a −0.12 mm alrededor de cada red<br>2. 111 barrenos de 1.0 mm (bajada directa)<br>3. barrenos de más de 1.0 mm en hélice<br>4. contorno con 4 puentes | ~61 min |
 
-1. Haz el homing y pon el **cero XY** en la esquina del blank.
+1. Monta la fresa de 1.0 mm, haz el homing y pon el **cero XY** en la esquina del blank.
 2. Cero Z con la sonda y **mapa de alturas** sobre la tarjeta.
-3. Corre los archivos 1, 2 y 3. Antes de cada uno: cambia la herramienta y haz el cero Z.
+3. Corre `fresa1mm_todo.nc`.
 4. Corta los puentes y lija el borde.
 
-- **Velocidades, profundidades y GRBL:** son los valores del Fab Lab, en `../cubiko/README.md`, "Parámetros de fresado".
+- **Aislamiento por red:** cada red lleva su propio canal a 0.5 mm de su cobre. En un hueco de 1.0 mm el canal pasa justo por el centro y lo limpia completo. Donde dos canales caerían uno encima del otro, se fresa una sola vez.
+- **Tolerancia:** la simulación da 0 cortos con un corte real de 0.90 a 1.10 mm (fresa gastada o con cabeceo).
+- **Velocidades y GRBL:** avance 120 mm/min, bajada 60 mm/min, 10 000 rpm. El resto, como en `../cubiko/README.md`, "Parámetros de fresado".
 - **Geometría:** el G-code va espejado (ves la cara de cobre desde arriba). `cobre_espejo_1a1.pdf` muestra cómo queda.
 
 ## Montaje
@@ -50,16 +51,16 @@
 
 | Cable | Red | Largo con holgura | Dónde |
 |---|---|---|---|
-| W1 | GND | 14 mm | sobre la ESP32, junto al USB |
-| W2 | GND | 20 mm | bajo J43 |
-| W3 | VIN_A | 22 mm | de D5 al pin VIN de la ESP32 |
-| W4 | +5V | 24 mm | +5V hacia la orilla derecha (de ahí baja a J7) |
-| W5 | GND | 25 mm | bajo J41 |
-| W6 | GND | 16 mm | entre los divisores M4 y M5 |
-| W7 | +5V | 41 mm | +5V a J8 (encoders) |
-| W8 | +5V | 26 mm | +5V a J7 (encoders) |
+| W1 | GND | 21 mm | junto a J5 (entrada 5 V) |
+| W2 | GND | 22 mm | entre J43 y J42 |
+| W3 | MOTOR_EN | 18 mm | de la ESP32 hacia R21 (pull-down) |
+| W4 | GND | 26 mm | orilla izquierda, de J8 a la zona de J41 |
+| W5 | GND | 16 mm | arriba de los divisores M6 y M5 |
+| W6 | GND | 16 mm | arriba de los divisores M5 y M4 |
+| W7 | GND | 24 mm | entre los divisores M1–M3 |
+| W8 | +5V | 50 mm | +5V de J7 a J8 (encoders), por la orilla inferior |
 
-Pon los cables **antes** que los headers de la ESP32: W1 y W3 pasan junto al módulo.
+Pon los cables **antes** que los headers de la ESP32: W3 pasa junto al módulo.
 
 **2. Las piezas bajas.**
 - Resistencias, capacitores de 1 nF y D5 (1N5819, banda del lado de la ESP32).
@@ -77,11 +78,8 @@ Pon los cables **antes** que los headers de la ESP32: W1 y W3 pasan junto al mó
 
 ## Simulación en el Fab Lab (fablab.sebs.mx/cnc)
 
-Los 3 archivos se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 3 de 3**, sin errores de GRBL ni salidas del recorrido.
-
-| Trabajos (estimación de la app) | `1_vbit` 39 min ✓ · `2_broca` 8 min ✓ · `3_fresa` 24 min ✓ |
-|---|---|
+`fresa1mm_todo.nc` se corrió en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8. Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm montada todo el tiempo, sin errores de GRBL ni salidas del recorrido. La app estima 59 min.
 
 Capturas en `sim/fablab/`, registro en `sim/fablab/registro.txt`.
 
-![](sim/fablab/3_contorno_terminado.png)
+![](sim/fablab/fresa1mm_todo_terminado.png)

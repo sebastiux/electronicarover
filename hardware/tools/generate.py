@@ -619,6 +619,36 @@ def build_pcb(comps, netnames, assignments, route=False):
                     k = new / cur
                     p.SetSize(VECTOR2I(FromMM(sx * k), FromMM(sy * k)))
 
+    # pads ovalados (una sola fresa de 1 mm): en paso fino el pad se angosta a lo largo de la
+    # fila (paso - PAD_GAP) y conserva PAD_MIN a lo ancho, para que la fresa pase entre pads
+    if getattr(D, "PAD_OVAL", False):
+        for fp in fps.values():
+            pads = [p for p in fp.Pads() if p.GetAttribute() == pcbnew.PAD_ATTRIB_PTH]
+            for p in pads:
+                d = pcbnew.ToMM(p.GetDrillSize().x)
+                p0 = p.GetPos0()
+                best, vec = 99.0, (1.0, 0.0)
+                for q in pads:
+                    if q is p or q.GetNumber() == p.GetNumber():
+                        continue
+                    q0 = q.GetPos0()
+                    dx, dy = pcbnew.ToMM(q0.x - p0.x), pcbnew.ToMM(q0.y - p0.y)
+                    dd = math.hypot(dx, dy)
+                    if 0.01 < dd < best:
+                        best, vec = dd, (dx, dy)
+                cur = pcbnew.ToMM(min(p.GetSize().x, p.GetSize().y))
+                largo = min(best - D.PAD_GAP, max(cur, D.PAD_MIN))
+                ancho = max(cur, D.PAD_MIN)
+                if largo >= ancho - 0.01:
+                    p.SetSize(VECTOR2I(FromMM(ancho), FromMM(ancho)))
+                    continue
+                largo = max(largo, d + 0.4)
+                a_lo_x = abs(vec[0]) >= abs(vec[1])
+                sx, sy = (largo, ancho) if a_lo_x else (ancho, largo)
+                if p.GetShape() != pcbnew.PAD_SHAPE_RECT:
+                    p.SetShape(pcbnew.PAD_SHAPE_OVAL)
+                p.SetSize(VECTOR2I(FromMM(sx), FromMM(sy)))
+
     # pads forzados por variante (p. ej. bornas de encoders de 2.0 mm: entre pin y pin pasa el plano de GND)
     for ref, dpad in getattr(D, "PAD_SIZE", {}).items():
         for p in fps[ref].Pads():
@@ -659,7 +689,7 @@ def build_pcb(comps, netnames, assignments, route=False):
 
     rect = [(0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)]
     # plano de GND (en las dos caras si la PCB es de 2 capas)
-    zone(pcbnew.B_Cu, "GND", rect, clearance=0.5)
+    zone(pcbnew.B_Cu, "GND", rect, clearance=getattr(D, "ZONE_CLR", 0.5))
     if D.LAYERS == 2 and (D.FAB != "proto" or getattr(D, "TOP_GND_POUR", False)):
         zone(pcbnew.F_Cu, "GND", rect, clearance=0.5)
 

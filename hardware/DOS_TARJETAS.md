@@ -4,12 +4,13 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 | Tarjeta | Lleva | Tamaño | Cables por arriba | Fresado |
 |---|---|---|---|---|
-| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 92 × 96 mm | 8 | ~73 min |
-| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~44 min |
+| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 95 × 96 mm | 8 | ~61 min |
+| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~38 min |
 
 - **Raspberry Pi 5:** coordina a las 2 ESP32. Va aparte, con un **HAT de bornas** (header hembra 2x20 sobre el GPIO). De ahí sale un cable de 3 hilos a la borna `PI` (J9) de cada tarjeta.
 - **ESP32:** van en headers hembra 1x15, como antes. El firmware no cambia de pines.
-- **Reglas en las 2 tarjetas:** pistas de 1.0 mm o más, pads de 2.2 mm donde el paso lo permite, al menos 1 mm de cobre libre entre pads de piezas distintas y GND unido en sólido (sin rayos). Lo revisa `tools/verifica_espacios.py`.
+- **Una sola fresa de 1.0 mm:** cada tarjeta se fresa completa (aislamiento, barrenos y contorno) con la fresa plana de 1.0 mm, en un solo archivo `fresa1mm_todo.nc`. No hay cambios de herramienta.
+- **Reglas en las 2 tarjetas:** hueco de 1.0 mm en todo el cobre (igual a la fresa), pistas de 1.0 mm o más, pads de 2.2 mm (ovalados de 1.5 × 2.2 en filas a 2.54 mm) y GND unido en sólido (sin rayos). Lo revisa `tools/verifica_espacios.py`.
 
 ## Diagrama de conexiones
 
@@ -86,8 +87,9 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 | Esquemático contra PCB, pin por pin | 113 pines, 0 diferencias | 87 pines, 0 diferencias |
 | Simulación del fresado (`tools/cubiko_cam.py`) | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
 | Pads de piezas distintas a menos de 1 mm · pistas de menos de 1 mm | 0 · 0 | 0 · 0 |
+| Cortos con un corte real de 0.90 a 1.10 mm | 0 | 0 |
 | Firmware simulado sobre el netlist (UART por el HAT, EN en Y) | 48/48 | 38/38 |
-| Simulador del Fab Lab (3 archivos, sin volteo) | Board done, 3 de 3 (~71 min) | Board done, 3 de 3 (~42 min) |
+| Simulador del Fab Lab (1 archivo, 1 herramienta, sin volteo) | Board done, 1 de 1 (~59 min) | Board done, 1 de 1 (~36 min) |
 
 ## Regenerar
 
@@ -98,5 +100,5 @@ ROVER_VARIANT=traccion python3 cubiko_cam.py
 ```
 
 - **`generate.py --route`:** rutea la tarjeta y genera su esquemático jerárquico.
-- **`cubiko_cam.py`:** genera los G-code y la simulación en `hardware/cnc_<tarjeta>/`.
+- **`cubiko_cam.py`:** genera `fresa1mm_todo.nc` y la simulación en `hardware/cnc_<tarjeta>/`.
 - **Fuentes del diseño:** `tools/rover_traccion.py`, `tools/rover_servos.py` y `tools/rover_split_comun.py`.

@@ -24,18 +24,22 @@ FP_TB3 = "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-3-3.5-H_1x03_P3.50m
 FP_TB2 = "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal"
 MPN_TB2 = "Phoenix MKDS 1,5/2-5,08 o KF301-2P"
 
-# Reglas de fresado con V-bit: pistas de 1.0 mm minimo, 0.5 mm de separacion
+# Reglas para fresar TODO con una sola fresa plana de 1.0 mm (aislamiento, barrenos y contorno):
+# la fresa abre un canal de 1 mm, asi que entre cobre de redes distintas debe haber >= 1.0 mm.
+UNA_FRESA = 1.0            # diametro de la unica herramienta (mm)
 NETCLASSES = [
-    ("SERVO", 2.5, 0.5, 2.4, 1.0, ["SERVO_V"]),
-    ("PWR", 1.5, 0.5, 2.4, 1.0, ["+5V"]),
-    ("GND", 1.5, 0.5, 2.4, 1.0, ["GND"]),
+    ("SERVO", 2.5, 1.0, 2.4, 1.0, ["SERVO_V"]),
+    ("PWR", 1.5, 1.0, 2.4, 1.0, ["+5V"]),
+    ("GND", 1.5, 1.0, 2.4, 1.0, ["GND"]),
 ]
-DEFAULT_CLASS = (1.0, 0.5, 2.4, 1.0)      # toda conexion de al menos 1.0 mm
+DEFAULT_CLASS = (1.0, 1.0, 2.4, 1.0)      # pista de 1.0 mm, separacion de 1.0 mm
+ZONE_CLR = 1.0             # el plano de GND tambien queda a 1 mm de todo lo demas
 PAD_MIN = 2.2              # pads de 2.2 mm donde el paso lo permite (anillo de 0.6 mm)
-PAD_GAP = 0.7              # separacion minima entre pads de una misma pieza
+PAD_GAP = 1.04             # entre pads de una misma pieza pasa la fresa de 1 mm
+PAD_OVAL = True            # en paso de 2.54: pads ovalados 1.5 mm a lo largo de la fila x 2.2 mm
 ZONE_FULL = True           # pads unidos al plano de GND sin rayos de alivio termico
 MIN_PAD_ESPACIO = 1.0      # cobre libre minimo entre pads de piezas distintas (verifica_espacios.py)
-VIA_PAD_ESPACIO = 0.6      # cobre libre minimo entre el barreno de un cable y cualquier pad
+VIA_PAD_ESPACIO = 1.0      # y entre el barreno de un cable y cualquier pad
 
 
 def routing_reserved():

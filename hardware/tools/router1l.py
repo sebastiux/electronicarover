@@ -262,6 +262,10 @@ class Router:
                     g.mark_circle(arr, mm(p.x), mm(p.y), mm(t.GetWidth()) / 2, code)
                 g.mark_circle(g.E, mm(p.x), mm(p.y), mm(t.GetWidth()) / 2, code, rm=-0.06)
                 self._mark_hole(mm(p.x), mm(p.y), JUMPER_DRILL / 2)
+                if self.via_pad_gap > 0:      # barrenos pre-trazados: ningun cable nuevo se les encima
+                    m = np.zeros(g.B.shape, np.int8)
+                    g.mark_circle(m, mm(p.x), mm(p.y), mm(t.GetWidth()) / 2 + JUMPER_PAD / 2 + 0.2 + self.via_pad_gap, 1)
+                    self.noVia |= m.astype(bool)
             else:
                 arr = g.B if t.GetLayer() == pcbnew.B_Cu else g.F
                 a, c = t.GetStart(), t.GetEnd()
@@ -451,8 +455,9 @@ class Router:
         path = self._astar(freeB, src, tgt, (tx, ty), None, 8.0)
         if path is None and allow_j:
             distF = self._dist(g.F, code)
-            freeF = distF >= JUMPER_WIRE / 2 + JUMPER_CLR + RM
-            viaok = (distB >= JUMPER_PAD / 2 + clr + RM) & (distF >= JUMPER_PAD / 2 + JUMPER_CLR + RM)
+            jclr = max(JUMPER_CLR, clr) if self.min_w >= 1.0 else JUMPER_CLR
+            freeF = distF >= JUMPER_WIRE / 2 + jclr + RM
+            viaok = (distB >= JUMPER_PAD / 2 + clr + RM) & (distF >= JUMPER_PAD / 2 + jclr + RM)
             viaok &= ~self.noVia
             for (m, allowed) in self.reserved:
                 if cls not in allowed and name not in allowed:
