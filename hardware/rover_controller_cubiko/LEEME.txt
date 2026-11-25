@@ -1,0 +1,19 @@
+Rover Controller Cubiko (rev 1.2-C): proyecto KiCad 7
+=====================================================
+
+Abre rover_controller_cubiko.kicad_pro con KiCad 7 u 8.
+La carpeta es autocontenida:
+  - rover.kicad_sym y rover.pretty: simbolos y huellas propios (Pi 5, ESP32, bornas,
+    servos), registrados en sym-lib-table y fp-lib-table con ${KIPRJMOD}.
+  - Las huellas estandar (resistencias, capacitores, borneras) van embebidas en la PCB.
+
+Tarjeta: 136 x 96 mm, 2 capas, para fresar en la Genmitsu Cubiko.
+  - Coordenadas: la esquina superior izquierda de la tarjeta esta en (30, 30) mm de la hoja.
+  - DRC: 0 violaciones, 0 pads sin conectar.
+  - Sin metalizado (check_proto.py): 0 conexiones abiertas. Los pads se sueldan por abajo,
+    menos el header 2x20 de la Pi (por arriba). Las 38 vias son pines de alambre.
+  - La GND de la cara superior es una zona: si mueves algo, rellena con B (Edit > Fill All Zones).
+
+Si la editas, regenera el G-code con:
+  cd hardware/tools && ROVER_VARIANT=cubiko python3 cubiko_cam.py
+(el script lee esta PCB). Las instrucciones de fresado estan en hardware/cubiko/README.md.

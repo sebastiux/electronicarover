@@ -5,6 +5,7 @@ Variante de la v1.2 adaptada al área de trabajo de la **Genmitsu Cubiko** (≈1
 - La tarjeta mide **136 × 96 mm**, en 2 caras, sin barrenos metalizados.
 - Lleva la **Raspberry Pi 5** (debajo de la tarjeta), las **2 ESP32** y los **8 servos**.
 - Los **3 L298N van en el chasis**, con sus bornas originales. Se conectan a la tarjeta con **bornas de tornillo en las orillas**.
+- **Proyecto KiCad:** `hardware/rover_controller_cubiko/` (esquemático, PCB y librerías propias). También viene en `fab/rover_controller_cubiko_kicad.zip` y dentro del zip CNC. Si editas la PCB, regenera el G-code con `ROVER_VARIANT=cubiko python3 tools/cubiko_cam.py`.
 
 ![PCB](img/pcb_cubiko.png)
 
@@ -15,7 +16,7 @@ Variante de la v1.2 adaptada al área de trabajo de la **Genmitsu Cubiko** (≈1
 | **Simulación del fresado** (`tools/cubiko_cam.py`): resta del cobre el ancho real del V-bit y los taladros | **0 cortos, 0 redes abiertas** |
 | Firmware simulado sobre el netlist, con el cableado externo a los L298N y a los encoders | 87/87 OK (48 tracción + 39 servos) |
 | G-code dentro del recorrido de la máquina | X 2–140 mm, Y 1–101 mm, Z −3.4 a 5 mm; comentarios y líneas válidos para GRBL (≤ 79 caracteres, sin paréntesis anidados) |
-| Parámetros | **Modo prototipo:** 1 sola pasada de aislamiento con la V-bit del Fab Lab (20° × 0.1 a 0.10 mm), broca de 1.0 y fresa de 1.0 · **~2.8 h** de máquina |
+| Parámetros | **Modo prototipo:** 1 sola pasada de aislamiento con la V-bit del Fab Lab (20° × 0.1 a 0.10 mm), broca de 1.0 y fresa de 1.0, más las dianas de las vías · **~3.1 h** de máquina |
 
 ![Simulación](sim/resumen_simulacion.png)
 
