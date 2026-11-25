@@ -332,6 +332,7 @@ def footprint_rpi():
 #  ESQUEMATICO
 # ============================================================================
 GRID = 1.27
+SHEETS = None      # hojas del esquematico (None: una sola hoja raiz)
 
 
 def snap(v):
@@ -507,8 +508,11 @@ def write_project(netnames):
             "netclass_patterns": [],
         },
         "pcbnew": {"last_paths": {}, "page_layout_descr_file": ""},
-        "schematic": {"legacy_lib_dir": "", "legacy_lib_list": []},
-        "sheets": [[uid("root-sheet"), ""]],
+        "schematic": {"legacy_lib_dir": "", "legacy_lib_list": [],
+                      "drawing": {"intersheets_ref_show": False, "intersheets_ref_own_page": False,
+                                  "intersheets_ref_short": False, "intersheets_ref_prefix": "[",
+                                  "intersheets_ref_suffix": "]"}},
+        "sheets": SHEETS or [[uid("root-sheet"), ""]],
         "text_variables": {},
     }
     json.dump(pro, open(path, "w"), indent=2)
@@ -576,7 +580,7 @@ def build_pcb(comps, netnames, assignments, route=False):
         fp.SetFPID(pcbnew.LIB_ID(lib, name))
         fp.SetReference(c["ref"])
         fp.SetValue(c["value"])
-        fp.SetPath(pcbnew.KIID_PATH("/" + c["sym_uuid"]))
+        fp.SetPath(pcbnew.KIID_PATH(c.get("sym_path", "/" + c["sym_uuid"])))
         x, y, rot = c["pcb"]
         fp.SetPosition(P(x, y))
         fp.SetOrientationDegrees(rot)
@@ -817,7 +821,13 @@ def main():
                       ("Servo_Header_1x03", footprint_servo())):
         open(os.path.join(OUT, "rover.pretty", name + ".kicad_mod"), "w").write(txt + "\n")
     write_tables()
-    used = write_schematic(comps, syms)
+    if getattr(D, "VARIANT", "") == "cubiko":
+        # esquematico jerarquico por bloques (esquematico.py)
+        import esquematico
+        global SHEETS
+        SHEETS = esquematico.escribir(comps, syms, OUT, D.TITLE)
+    else:
+        write_schematic(comps, syms)
     write_bom(comps)
     netnames = D.nets()
     print("Componentes: %d  Redes: %d" % (len(comps), len(netnames)))

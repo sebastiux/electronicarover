@@ -2,7 +2,7 @@ Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_controller_cubiko (136 x 
 V-bit 20 grados punta 0.10 mm a 0.10 mm de profundidad -> ancho de corte 0.135 mm
 
 Pads: 267   vias (pines): 35   taladros: 310
-Piezas de cobre tras el fresado: B=312  F=474
+Piezas de cobre tras el fresado: B=318  F=482
 CORTOS: 0
 REDES ABIERTAS: 0
 Anillos < 0.3 mm: 0
@@ -10,9 +10,9 @@ Marcas de vias-pin (dianas de 3.9 y 5.5 mm de diametro): 301 tramos abajo, 314 a
 
 TRABAJOS (en este orden):
   L1_1_fresa1mm_alineacion_barrenos_antena_B.nc        19.7 min   corte     782 mm   bajadas 344
-  L1_2_vbit_aislamiento_B.nc                           67.3 min   corte    7443 mm   bajadas 560
+  L1_2_vbit_aislamiento_B.nc                           67.3 min   corte    7441 mm   bajadas 560
   L1_3_broca1.0.nc                                     23.3 min   corte       0 mm   bajadas 263
-  L2_1_vbit_aislamiento_F.nc                           54.7 min   corte    5805 mm   bajadas 710
+  L2_1_vbit_aislamiento_F.nc                           54.6 min   corte    5804 mm   bajadas 710
   L2_2_fresa1mm_antena_contorno_F.nc                   18.5 min   corte    2146 mm   bajadas 22
   Tiempo total de maquina estimado: 183 min (sin cambios de herramienta ni mapa de alturas)
 

@@ -156,12 +156,39 @@
   },
   "schematic": {
     "legacy_lib_dir": "",
-    "legacy_lib_list": []
+    "legacy_lib_list": [],
+    "drawing": {
+      "intersheets_ref_show": false,
+      "intersheets_ref_own_page": false,
+      "intersheets_ref_short": false,
+      "intersheets_ref_prefix": "[",
+      "intersheets_ref_suffix": "]"
+    }
   },
   "sheets": [
     [
       "355c6ecd-3390-5d0c-9267-6b6959b41b17",
       ""
+    ],
+    [
+      "2b51e73f-0e43-52e8-b459-128d9eefe3ac",
+      "Alimentacion"
+    ],
+    [
+      "68c81c1a-ecca-5144-9201-990e8609c22c",
+      "Raspberry Pi 5"
+    ],
+    [
+      "2610bd18-736d-529f-9fe9-5574b58b5289",
+      "ESP32-A traccion"
+    ],
+    [
+      "acba2350-b123-5fa0-b80e-82ea8a5a49e5",
+      "Encoders"
+    ],
+    [
+      "45daee71-4c22-5fbe-9fe1-67a542a36475",
+      "ESP32-B servos"
     ]
   ],
   "text_variables": {}

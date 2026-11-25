@@ -2,6 +2,18 @@ Rover Controller Cubiko (rev 1.2-C): proyecto KiCad 7
 =====================================================
 
 Abre rover_controller_cubiko.kicad_pro con KiCad 7 u 8.
+Esquematico jerarquico (doble clic en una hoja para entrar):
+  rover_controller_cubiko.kicad_sch   indice, tabla de senales entre bloques, barrenos
+  1_alimentacion.kicad_sch            5 V, servos 6 V, medicion de bateria
+  2_raspberry_pi.kicad_sch            header GPIO y UART2/UART4 con sus resistencias
+  3_esp32a_traccion.kicad_sch         ESP32-A y bornas de los 3 L298N
+  4_encoders.kicad_sch                bornas de encoders y divisores 10k/20k
+  5_esp32b_servos.kicad_sch           ESP32-B y 8 headers de servos
+Cada hoja trae notas de diseno y la lista de pines libres. Las redes llevan etiquetas
+globales con el mismo nombre que en la PCB; el esquematico y la PCB coinciden pin a pin.
+Lo genera tools/esquematico.py: si cambias el diseno en rover_cubiko.py, regenera con
+  cd hardware/tools && ROVER_VARIANT=cubiko python3 esquematico.py --pcb
+
 La carpeta es autocontenida:
   - rover.kicad_sym y rover.pretty: simbolos y huellas propios (Pi 5, ESP32, bornas,
     servos), registrados en sym-lib-table y fp-lib-table con ${KIPRJMOD}.

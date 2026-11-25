@@ -5,7 +5,7 @@ Variante de la v1.2 adaptada al área de trabajo de la **Genmitsu Cubiko** (≈1
 - La tarjeta mide **136 × 96 mm**, en 2 caras, sin barrenos metalizados.
 - Lleva la **Raspberry Pi 5** (debajo de la tarjeta), las **2 ESP32** y los **8 servos**.
 - Los **3 L298N van en el chasis**, con sus bornas originales. Se conectan a la tarjeta con **bornas de tornillo en las orillas**.
-- **Proyecto KiCad:** `hardware/rover_controller_cubiko/` (esquemático, PCB y librerías propias). También viene en `fab/rover_controller_cubiko_kicad.zip` y dentro del zip CNC. Si editas la PCB, regenera el G-code con `ROVER_VARIANT=cubiko python3 tools/cubiko_cam.py`.
+- **Proyecto KiCad:** `hardware/rover_controller_cubiko/` (esquemático jerárquico por bloques, PCB y librerías propias). El esquemático también está en PDF: `esquematico_cubiko.pdf` (índice + 5 hojas: alimentación, Raspberry Pi, ESP32-A tracción, encoders y ESP32-B servos, con notas de diseño y los pines libres de cada módulo). También viene en `fab/rover_controller_cubiko_kicad.zip` y dentro del zip CNC. Si editas la PCB, regenera el G-code con `ROVER_VARIANT=cubiko python3 tools/cubiko_cam.py`.
 
 ![PCB](img/pcb_cubiko.png)
 
@@ -220,7 +220,8 @@ Capturas en `sim/fablab/`, registros en `sim/fablab/registro_lado*.txt`. El scri
 2. **Bajo la ESP32-A** van los divisores de los encoders 4–6. Suéldalos (resistencias acostadas y capacitores de disco) **antes** que los headers hembra de la ESP32-A.
 3. El resto de los componentes, de menor a mayor altura. Todos se sueldan **por abajo**, menos el **header 2x20 de la Pi**: va abajo y se suelda **por arriba**.
 4. Las ESP32 van en headers hembra **1x15 en la fila exterior** (25.4 mm entre filas). La fila doble de pads también acepta clones de 22.86 mm.
-5. **Pruebas sin módulos:** continuidad 5V–GND y SERVO_V–GND (no debe pitar). Luego enciende con fuente limitada en corriente.
+5. **LEDs (D2, D3, D4):** el pad **cuadrado** es el cátodo (lado plano del LED, pata corta) y va a GND. La pata larga (ánodo) va al pad redondo, del lado de la resistencia.
+6. **Pruebas sin módulos:** continuidad 5V–GND y SERVO_V–GND (no debe pitar). Luego enciende con fuente limitada en corriente.
 
 ## Notas y límites
 

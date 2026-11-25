@@ -310,10 +310,10 @@ def build():
         (75.0, 17.0, 0), _sch_pos(), desc="Bulk 5V")
     add("D1", "SA5.0A", "Device:D_Zener", FP_DO15, {1: "+5V", 2: "GND"},
         (52.0, 15.0, 0), _sch_pos(), desc="TVS 5V (proteccion Pi)", mpn="SA5.0A DO-15")
-    add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_K"}, (52.0, 19.2, 0),
+    add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_A"}, (52.0, 19.2, 0),
         _sch_pos(), desc="Resistencia LED 5V")
-    add("D3", "LED verde 5V", "Device:LED", FP_LED, {1: "LED5_K", 2: "GND"},
-        (66.5, 21.2, 0), _sch_pos(), desc="Indicador 5V")
+    add("D3", "LED verde 5V", "Device:LED", FP_LED, {1: "GND", 2: "LED5_A"},
+        (69.04, 21.2, 180), _sch_pos(), desc="Indicador 5V")
     add("R21", "10k", "Device:R", FP_R, {1: "MOTOR_EN", 2: "GND"}, (52.0, 23.2, 0),
         _sch_pos(), desc="Pull-down MOTOR_EN (motores apagados durante el arranque)")
     add("D5", "1N5819", "Device:D_Schottky", FP_DO41, {1: "VIN_A", 2: "+5V"},
@@ -342,10 +342,10 @@ def build():
         _sch_pos(), desc="Divisor VBAT (bajo)")
     add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (104.0, 28.0, 0),
         _sch_pos(), desc="Filtro ADC VBAT")
-    add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_K"}, (104.0, 15.6, 0),
+    add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_A"}, (104.0, 15.6, 0),
         _sch_pos(), desc="Resistencia LED 12V")
-    add("D2", "LED rojo 12V", "Device:LED", FP_LED, {1: "LED12_K", 2: "GND"},
-        (115.5, 15.6, 0), _sch_pos(), desc="Indicador bateria")
+    add("D2", "LED rojo 12V", "Device:LED", FP_LED, {1: "GND", 2: "LED12_A"},
+        (118.04, 15.6, 180), _sch_pos(), desc="Indicador bateria")
 
     # ======================= Servos (debajo de la ESP32-B) ==================
     for n in range(1, 9):
@@ -360,10 +360,10 @@ def build():
         (127.5, 44.5, 0), _sch_pos(), desc="Bulk servos")
     add("C4", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
         (83.0, 89.0, 0), _sch_pos(), desc="Bulk servos")
-    add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_K"}, (104.0, 44.0, 0),
+    add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_A"}, (104.0, 44.0, 0),
         _sch_pos(), desc="Resistencia LED servos")
-    add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "LEDS_K", 2: "GND"},
-        (115.5, 44.0, 0), _sch_pos(), desc="Indicador rail servos")
+    add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "GND", 2: "LEDS_A"},
+        (118.04, 44.0, 180), _sch_pos(), desc="Indicador rail servos")
 
     # ======================= Agujeros de montaje ============================
     for i, (x, y) in enumerate(CHASSIS_HOLES):
