@@ -1,4 +1,4 @@
-( LADO 1 - taladros de 1.0 mm [266 agujeros] )
+( LADO 1 - taladros de 1.0 mm [263 agujeros] )
 ( herramienta: broca de PCB 1.0 mm )
 ( Rover Controller Cubiko - hardware/tools/cubiko_cam.py )
 ( X0 Y0 = esquina frontal izquierda del blank; Z0 = cobre )
@@ -759,22 +759,13 @@ G0 Z2.000
 G0 X112.300 Y12.050
 G1 Z-1.900 F60
 G0 Z2.000
-G0 X126.800 Y10.800
-G1 Z-1.900 F60
-G0 Z2.000
-G0 X128.100 Y9.750
-G1 Z-1.900 F60
-G0 Z2.000
-G0 X128.300 Y3.800
+G0 X128.100 Y10.400
 G1 Z-1.900 F60
 G0 Z2.000
 G0 X128.100 Y27.250
 G1 Z-1.900 F60
 G0 Z2.000
 G0 X128.100 Y37.250
-G1 Z-1.900 F60
-G0 Z2.000
-G0 X126.800 Y38.300
 G1 Z-1.900 F60
 G0 Z2.000
 G0 X128.100 Y54.750

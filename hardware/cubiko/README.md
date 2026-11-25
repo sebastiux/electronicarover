@@ -12,7 +12,7 @@ Variante de la v1.2 adaptada al área de trabajo de la **Genmitsu Cubiko** (≈1
 | Verificación | Resultado |
 |---|---|
 | DRC de KiCad | 0 violaciones, 0 conexiones pendientes |
-| Conectividad **sin metalizado**: cada pad conecta solo por su cara de soldadura | 0 conexiones abiertas (38 vías-pin, todas con espacio libre para soldar el alambre por las 2 caras) |
+| Conectividad **sin metalizado**: cada pad conecta solo por su cara de soldadura | 0 conexiones abiertas (35 vías-pin, todas con espacio libre para soldar el alambre por las 2 caras) |
 | **Simulación del fresado** (`tools/cubiko_cam.py`): resta del cobre el ancho real del V-bit y los taladros | **0 cortos, 0 redes abiertas** |
 | Firmware simulado sobre el netlist, con el cableado externo a los L298N y a los encoders | 87/87 OK (48 tracción + 39 servos) |
 | G-code dentro del recorrido de la máquina | X 2–140 mm, Y 1–101 mm, Z −3.4 a 5 mm; comentarios y líneas válidos para GRBL (≤ 79 caracteres, sin paréntesis anidados) |
@@ -130,7 +130,7 @@ Hay 5 archivos, en este orden. El tiempo estimado es **~3.1 h** de máquina, má
 | 2 | `L1_2_vbit_aislamiento_B.nc` | V-bit 20° (aislamiento + marcas de vías) | 67 min |
 | 3 | `L1_3_broca1.0.nc` | broca 1.0 (266 agujeros) | 24 min |
 | — | **voltear la placa** | | |
-| 4 | `L2_1_vbit_aislamiento_F.nc` | V-bit 20° (aislamiento + marcas de vías) | 56 min |
+| 4 | `L2_1_vbit_aislamiento_F.nc` | V-bit 20° (aislamiento + marcas de vías) | 55 min |
 | 5 | `L2_2_fresa1mm_antena_contorno_F.nc` | fresa 1.0 | 19 min |
 
 ### Lado 1: cara inferior hacia arriba
@@ -182,7 +182,7 @@ Los 5 archivos se corrieron en el gemelo de la Cubiko de <https://fablab.sebs.mx
 | Alineación con H1 y el barreno de la Pi | — | ✓: 0.000°, 0 mm (en simulación la placa no se mueve) |
 | Z0 con la sonda | cobre en Z máquina −36.43 | ídem |
 | Mapa de alturas de 11 × 8 | **0.36 mm de diferencia** (−0.17 a +0.19): sin mapa, el corte de 0.10 mm no sale parejo | ídem |
-| Trabajos (modo prototipo, 1 pasada + dianas de las vías) | `L1_1` "20 min, atraviesa y entra 1.80 mm en el MDF" ✓ · `L1_2` "1 h 7 min, 0.10 mm bajo el cobre" ✓ · `L1_3` "18 min" ✓ | `L2_1` "56 min" ✓ · `L2_2` "18 min, entra 0.25 mm en el MDF" ✓ |
+| Trabajos (modo prototipo, 1 pasada + dianas de las vías) | `L1_1` "20 min, atraviesa y entra 1.80 mm en el MDF" ✓ · `L1_2` "1 h 8 min, 0.10 mm bajo el cobre" ✓ · `L1_3` "18 min" ✓ | `L2_1` "55 min" ✓ · `L2_2` "18 min, entra 0.25 mm en el MDF" ✓ |
 | Resultado | **Board done**, 3 de 3 | **Board done**, 2 de 2 |
 
 **Qué encontró el simulador y ya está corregido:**
@@ -198,11 +198,11 @@ Capturas en `sim/fablab/`, registros en `sim/fablab/registro_lado*.txt`. El scri
 
 ## Montaje
 
-1. **Vías-pin (38): así se vuelve de 2 caras.** Las caras se unen con un alambre soldado en cada vía.
+1. **Vías-pin (35): así se vuelve de 2 caras.** Las caras se unen con un alambre soldado en cada vía.
    - **Cómo encontrarlas:** cada vía lleva una **diana grabada en las 2 caras**: dos círculos punteados de **Ø3.9 y Ø5.5 mm** alrededor del barreno (el V-bit los graba con los archivos 2 y 4).
      - Las dianas se cortan donde pasa una pista o un pad, así que no tocan ninguna red. La simulación lo confirma: 0 cortos.
      - A simple vista distingues una vía-pin de un barreno de componente: **todo barreno con diana lleva alambre**.
-   - **Mapas numerados V1–V38**, uno por cara, en PNG y PDF 1:1 para imprimir y poner encima de la placa:
+   - **Mapas numerados V1–V35**, uno por cara, en PNG y PDF 1:1 para imprimir y poner encima de la placa:
      - `mapa_vias_lado1_cara_inferior_1a1.pdf`: cara de abajo, espejada, tal como la ves al soldar por abajo.
      - `mapa_vias_lado2_cara_superior_1a1.pdf`: cara de arriba.
      - `vias_pines.csv`: número, red, coordenadas en la tarjeta y en la máquina (lado 1 y lado 2). Sirve como lista para palomear al soldar y al medir continuidad.
@@ -214,6 +214,8 @@ Capturas en `sim/fablab/`, registros en `sim/fablab/registro_lado*.txt`. El scri
      3. Corta a ras las dos caras y revisa continuidad entre los dos anillos.
    - **Espacio:** ninguna vía queda bajo el cuerpo de una pieza; cada anillo tiene al menos 0.3 mm libres respecto al patio de cualquier componente. Así el cautín entra por arriba aunque ya estén puestas las piezas.
    - **Bajo la ESP32-A** hay vías: suéldalas antes que los zócalos 1x15.
+   - **Ninguna sobra ni está duplicada.** `tools/vias_sobrantes.py` borra cada vía, una por una, y recalcula la conectividad de KiCad sin metalizado. Las 26 de señal y alimentación son todas necesarias: quitar cualquiera abre una conexión. Las otras 9 son de GND y unen la tierra de arriba con la de abajo en puntos distintos. Puedes omitir una sin abrir nada, pero conviene soldarlas porque acortan el regreso de la corriente.
+   - **Ninguna queda bajo un tornillo:** el anillo más cercano a un barreno M3 está a 4.0 mm de su centro (una rondana de 7 mm llega a 3.5), y a 6.3 mm de los M2.5 de la Pi.
    - **Orden:** primero todas las vías y después los componentes.
 2. **Bajo la ESP32-A** van los divisores de los encoders 4–6. Suéldalos (resistencias acostadas y capacitores de disco) **antes** que los headers hembra de la ESP32-A.
 3. El resto de los componentes, de menor a mayor altura. Todos se sueldan **por abajo**, menos el **header 2x20 de la Pi**: va abajo y se suelda **por arriba**.

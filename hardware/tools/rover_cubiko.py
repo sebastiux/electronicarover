@@ -154,8 +154,11 @@ def preroutes():
     ys = []
     for ref in ("U6", "U5", "U4"):
         for i in (0, 5):                      # ENB (pad 1) y ENA (pad 6)
-            y = TB_Y[ref] + 3.5 * i
-            out.append(("MOTOR_EN", [(TB_X, y), (EN_VIA_X, y)], 0.8))
+            y0 = TB_Y[ref] + 3.5 * i
+            # la via de J41.6 sube 0.65 mm: asi su anillo queda a > 3.5 mm del centro de H3
+            # (la rondana M3 de 7 mm tocaria MOTOR_EN y lo uniria al chasis)
+            y = y0 - 0.65 if (ref, i) == ("U4", 5) else y0
+            out.append(("MOTOR_EN", [(TB_X, y0), (EN_VIA_X, y)], 0.8))
             out.append(("VIA", "MOTOR_EN", EN_VIA_X, y))
             ys.append(y)
     out.append(("MOTOR_EN", [(EN_VIA_X, y) for y in sorted(ys)], 0.8, "F.Cu"))
