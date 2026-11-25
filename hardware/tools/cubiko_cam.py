@@ -53,6 +53,8 @@ P = dict(
     outline_depth=1.85, outline_passes=4, tab_w=3.1, tab_h=0.7, n_tabs=4,   # puentes con tope en Z -0.9
     align_d=3.0, align_depth=3.4,               # pines de 3 mm: 1.6 de placa + 1.8 en el MDF (el recorrido Z acaba en el MDF de 2 mm)
     antenna_depth=0.12,
+    # marcas de las vias-pin: 2 circulos grabados (diana) con 4 puentes para no aislar el plano
+    mark_r=(1.95, 2.75), mark_gap=0.8,
 )
 W, H = D.BOARD_W, D.BOARD_H
 OUTDIR = os.path.join(HERE, "..", "cubiko")
@@ -92,6 +94,7 @@ def load():
     err = pcbnew.FromMM(0.005)
     layers = {"F": pcbnew.F_Cu, "B": pcbnew.B_Cu}
     net_polys = {k: {} for k in layers}
+    hard = {k: [] for k in layers}       # pads, pistas y vias (sin planos): lo que una marca no puede cortar
     pads, vias, holes = [], [], []
     for fp in b.GetFootprints():
         ref = fp.GetReference()
@@ -109,7 +112,9 @@ def load():
                     continue
                 ps = pcbnew.SHAPE_POLY_SET()
                 p.TransformShapeToPolygon(ps, L, 0, err)
-                net_polys[k].setdefault(p.GetNetname(), []).extend(polyset(ps))
+                pp = polyset(ps)
+                net_polys[k].setdefault(p.GetNetname(), []).extend(pp)
+                hard[k].extend(pp)
             pads.append(dict(ref=ref, num=p.GetNumber(), net=p.GetNetname(), x=cx, y=cy, side=side,
                              drill=dx, size=min(mm(p.GetSize().x), mm(p.GetSize().y))))
     for t in b.GetTracks():
@@ -120,6 +125,7 @@ def load():
             g = Point(mm(c.x) - O, mm(c.y) - O).buffer(mm(t.GetWidth()) / 2, resolution=16)
             for k in layers:
                 net_polys[k].setdefault(t.GetNetname(), []).append(g)
+                hard[k].append(g)
         else:
             a, e = t.GetStart(), t.GetEnd()
             g = LineString([(mm(a.x) - O, mm(a.y) - O), (mm(e.x) - O, mm(e.y) - O)]).buffer(
@@ -127,6 +133,7 @@ def load():
             for k, L in layers.items():
                 if t.GetLayer() == L:
                     net_polys[k].setdefault(t.GetNetname(), []).append(g)
+                    hard[k].append(g)
         if t.GetClass() == "PCB_VIA":
             c = t.GetPosition()
             vias.append(dict(net=t.GetNetname(), x=mm(c.x) - O, y=mm(c.y) - O, d=mm(t.GetWidth()),
@@ -145,7 +152,9 @@ def load():
             keepouts.append(Polygon([(mm(ol.CPoint(j).x) - O, mm(ol.CPoint(j).y) - O) for j in range(ol.PointCount())]))
     for k in net_polys:
         net_polys[k] = {n: unary_union(v) for n, v in net_polys[k].items() if v}
-    return net_polys, pads, vias, holes, keepouts
+    hard = {k: unary_union(v) for k, v in hard.items()}
+    vias.sort(key=lambda v: (round(v["y"] / 4), v["x"]))      # numeracion V1..Vn por filas, de arriba a abajo
+    return net_polys, pads, vias, holes, keepouts, hard
 
 
 # ---------------------------------------------------------------------------
@@ -193,6 +202,27 @@ def isolation(copper):
                     paths.append(list(part.coords))
                     swept.append(part.buffer(w / 2, resolution=8))
     return order_paths(paths), unary_union(swept), w
+
+
+def via_marks(vias, hard_side, w):
+    """Diana alrededor de cada via-pin: circulos grabados que se cortan donde pasan cerca de
+    cualquier pista o pad (tambien las pistas que salen de la via) y con 4 puentes, para que un
+    plano de cobre nunca quede aislado. Devuelve (trayectorias, area barrida)."""
+    block = hard_side.buffer(w / 2 + 0.12)
+    tablero = box(0.3, 0.3, W - 0.3, H - 0.3)
+    paths, swept = [], []
+    for v in vias:
+        c = Point(v["x"], v["y"])
+        gaps = unary_union([LineString([(v["x"], v["y"]), (v["x"] + 9 * math.cos(math.radians(a)),
+                                                          v["y"] + 9 * math.sin(math.radians(a)))]).buffer(P["mark_gap"] / 2)
+                            for a in (45, 135, 225, 315)])
+        for r in P["mark_r"]:
+            arc = c.buffer(r, resolution=48).exterior.difference(block).difference(gaps).intersection(tablero)
+            for part in (arc.geoms if hasattr(arc, "geoms") else [arc]):
+                if part.geom_type == "LineString" and part.length > 0.6:
+                    paths.append(list(part.coords))
+                    swept.append(part.buffer(w / 2, resolution=8))
+    return paths, (unary_union(swept) if swept else Polygon())
 
 
 def pocket(poly, d, step_frac=0.6):
@@ -372,18 +402,21 @@ def render(side, remaining, hole_geom, paths, flip, title, extra=None):
 def main():
     os.makedirs(GDIR, exist_ok=True)
     os.makedirs(SDIR, exist_ok=True)
-    net_polys, pads, vias, holes, keepouts = load()
+    net_polys, pads, vias, holes, keepouts, hard = load()
     rep = []
     w = vbit_width(P["iso_depth"])
     rep.append("Genmitsu Cubiko - CAM y simulacion de la tarjeta %s (%.0f x %.0f mm)" % (D.PROJECT, W, H))
-    rep.append("V-bit %.0f grados punta %.2f mm a %.2f mm de profundidad -> ancho de corte %.3f mm (3 pasadas al 50 %%)"
+    rep.append("V-bit %.0f grados punta %.2f mm a %.2f mm de profundidad -> ancho de corte %.3f mm"
                % (P["vbit_angle"], P["vbit_tip"], P["iso_depth"], w))
     hole_geom = unary_union([Point(x, y).buffer(d / 2, resolution=12) for (x, y, d, _, _) in holes])
     results, jobs = {}, []
-    iso = {}
+    iso, marks = {}, {}
     for side in ("B", "F"):
         copper = unary_union(list(net_polys[side].values()))
         paths, swept, _ = isolation(copper)
+        mpaths, mswept = via_marks(vias, hard[side], w)
+        marks[side] = mpaths
+        swept = swept.union(mswept)
         clad = box(0, 0, W, H)
         # bajo la antena de la ESP32-B se quita el cobre que no pertenece a ninguna red
         # (las pistas que cruzan la zona se respetan)
@@ -460,6 +493,8 @@ def main():
     for o in opens[:20]:
         rep.append("   %s.%s %s: %s" % o)
     rep.append("Anillos < 0.3 mm: %d" % len(bad_ring))
+    rep.append("Marcas de vias-pin (dianas de %s mm de diametro): %d tramos abajo, %d arriba"
+               % (" y ".join("%.1f" % (2 * r) for r in P["mark_r"]), len(marks["B"]), len(marks["F"])))
     ok = not shorts and not opens
 
     # ---------------- G-code ----------------
@@ -481,6 +516,9 @@ def main():
     g = G("LADO 1 - aislamiento cara inferior (B.Cu), espejado", TV)
     for pth in iso["B"][0]:
         g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
+    g.l.append("( marcas de las vias-pin: dianas alrededor de cada via )")
+    for pth in order_paths(marks["B"]):
+        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
     jobs.append(g.save("L1_2_vbit_aislamiento_B.nc"))
     groups = {d: [] for d in P["drill_bits"]}
     for (x, y, d, npth, ref) in holes:
@@ -500,6 +538,9 @@ def main():
     # LADO 2 (F arriba)
     g = G("LADO 2 (cara superior arriba) - aislamiento F.Cu", TV)
     for pth in iso["F"][0]:
+        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "F")
+    g.l.append("( marcas de las vias-pin: dianas alrededor de cada via )")
+    for pth in order_paths(marks["F"]):
         g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "F")
     jobs.append(g.save("L2_1_vbit_aislamiento_F.nc"))
     g = G("LADO 2 - fresa de 1.0 mm: despeje de antena y contorno con %d puentes" % P["n_tabs"], TM)
@@ -548,6 +589,43 @@ def main():
         img = Image.open(os.path.join(SDIR, "lado1_B_trayectorias.png"))
         x0 = ((W - 50) if flip else 0) * SC + 40
         img.crop((int(x0), int(10 * SC), int(x0 + 50 * SC), int(80 * SC))).save(os.path.join(SDIR, nm))
+
+    # ---------------- mapa de vias-pin (para imprimir a 1:1 y palomear al soldar) ----------------
+    try:
+        fnum = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+    except Exception:
+        fnum = ImageFont.load_default()
+    for side, flip, nombre, titulo in (("B", True, "mapa_vias_lado1_cara_inferior", "VIAS-PIN, cara INFERIOR (espejada, como la ves al soldar por abajo)"),
+                                        ("F", False, "mapa_vias_lado2_cara_superior", "VIAS-PIN, cara SUPERIOR")):
+        def marcar(dr, T, side=side):
+            r = 3.0 * SC
+            cent = [T(v["x"], v["y"]) for v in vias]
+            for (cx, cy) in cent:
+                dr.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(230, 30, 30), width=7)
+            ocup = [(cx - r, cy - r, cx + r, cy + r) for (cx, cy) in cent]
+            choca = lambda a, b: not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
+            for k, (cx, cy) in enumerate(cent, 1):
+                t = "V%d" % k
+                bw, bh = dr.textbbox((0, 0), t, font=fnum)[2:]
+                # la primera posicion libre alrededor del circulo
+                for (ox, oy) in ((0.8, -1.3), (0.8, 0.5), (-0.8, -1.3), (-0.8, 0.5), (1.2, -0.4), (-1.2, -0.4), (0, -2.0), (0, 1.4)):
+                    tx = cx + ox * r - (bw if ox < 0 else 0) - (bw / 2 if ox == 0 else 0)
+                    ty = cy + oy * r - (bh if oy < 0 and oy > -1 else 0)
+                    caja = (tx - 4, ty - 2, tx + bw + 4, ty + bh + 4)
+                    if not any(choca(caja, o) for o in ocup):
+                        break
+                ocup.append(caja)
+                dr.rectangle(caja, fill=(255, 255, 255))
+                dr.text((tx, ty), t, fill=(200, 0, 0), font=fnum)
+        img = render(side, iso[side][2], hole_geom, None, flip, "%s  -  %d vias: alambre de 0.5-0.6 mm soldado por las 2 caras" % (titulo, len(vias)), marcar)
+        img.save(os.path.join(OUTDIR, nombre + ".png"))
+        img.convert("RGB").save(os.path.join(OUTDIR, nombre + "_1a1.pdf"), resolution=SC * 25.4)
+    with open(os.path.join(OUTDIR, "vias_pines.csv"), "w") as f:
+        f.write("Via;Red;X tarjeta (mm);Y tarjeta (mm);X maquina lado 1;Y maquina lado 1;X maquina lado 2;Y maquina lado 2;Taladro (mm)\n")
+        for k, v in enumerate(vias, 1):
+            x1, y1 = to_machine(v["x"], v["y"], "B")
+            x2, y2 = to_machine(v["x"], v["y"], "F")
+            f.write("V%d;%s;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.1f\n" % (k, v["net"], v["x"], v["y"], x1, y1, x2, y2, v["drill"]))
 
     # ---------------- archivos para FlatCAM / revision ----------------
     import subprocess, shutil

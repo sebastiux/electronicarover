@@ -93,6 +93,7 @@ Ya están dentro de los archivos `gcode/*.nc`. Si quieres regenerarlos con otros
 | Taladros | broca 1.0 | 10 000 | — | 60 mm/min | −1.9 mm | Atraviesa 1.6 mm y entra 0.3 mm en la cinta / martir |
 | Pines de alineación | fresa 1.0 | 10 000 | 72 mm/min (helicoidal) | 60 mm/min | −3.4 mm | 1.6 de placa + 1.8 en el MDF: el recorrido Z de la Cubiko termina en la cara del MDF de 2 mm. Ø3.0 mm. |
 | Barrenos de 1.2 mm o más (bornas, M3, M2.5) | fresa 1.0 | 10 000 | 72 mm/min | 60 mm/min | −1.9 mm | Helicoidal, pasos de 0.3 mm |
+| Marcas de vías-pin (dianas) | V-bit 20° × 0.1 | 10 000 | 120 mm/min | 60 mm/min | −0.10 mm | 2 círculos punteados de Ø3.9 y Ø5.5 alrededor de cada vía, en las 2 caras. Van al final de los archivos 2 y 4. |
 | Despeje bajo la antena de la ESP32-B | fresa 1.0 | 10 000 | 120 mm/min | 60 mm/min | −0.12 mm | Solo el cobre que no es de ninguna red |
 | Contorno | fresa 1.0 | 10 000 | 120 mm/min | 60 mm/min | −1.85 mm | 4 pasadas por fuera de la línea. 4 puentes de 3.1 mm con tope en Z −0.9 (quedan 0.7 mm). |
 
@@ -103,7 +104,7 @@ Ya están dentro de los archivos `gcode/*.nc`. Si quieres regenerarlos con otros
 
 **Por qué estos valores:** son los que trae por defecto la app CNC del Fab Lab (<https://fablab.sebs.mx/cnc/>), calibrados en esta misma máquina.
 - **Ancho del corte.** El V-bit corta más ancho entre más baja: 0.1 + 2·d·tan 10° → a 0.10 mm da 0.135 mm. La separación mínima del diseño es 0.5 mm.
-- **Pasadas.** En **modo prototipo** se da **1 sola pasada**: el tiempo baja de ~6.4 h a ~2.8 h. Cada red queda rodeada por un corte cerrado de 0.135 mm, y la simulación confirma 0 cortos. El costo, como advierte el Fab Lab, es que entre dos pistas puede quedar un **hilo de cobre suelto** (aislado, no conecta nada). Antes de soldar, revisa la placa con lupa y raspa con cúter cualquier hilo que se haya levantado. Si prefieres la limpieza del Fab Lab, pon `iso_passes=3` en `tools/cubiko_cam.py` y regenera.
+- **Pasadas.** En **modo prototipo** se da **1 sola pasada**: el tiempo baja de ~6.4 h a ~3.1 h (con las marcas de las vías). Cada red queda rodeada por un corte cerrado de 0.135 mm, y la simulación confirma 0 cortos. El costo, como advierte el Fab Lab, es que entre dos pistas puede quedar un **hilo de cobre suelto** (aislado, no conecta nada). Antes de soldar, revisa la placa con lupa y raspa con cúter cualquier hilo que se haya levantado. Si prefieres la limpieza del Fab Lab, pon `iso_passes=3` en `tools/cubiko_cam.py` y regenera.
 - **Profundidad.** El cobre mide 35 µm. 0.10 mm lo atraviesa siempre que se use el **mapa de alturas**: la cama de la Cubiko no es plana.
 - **Brocas.** Una sola broca de 1.0 mm para todo lo que mide entre 0.6 y 1.15 mm, como en el flujo del Fab Lab. Lo más grande lo abre la fresa de 1.0 mm en círculo.
 
@@ -120,15 +121,15 @@ Usa los Gerbers de `gerbers/`. Los equivalentes son:
 
 ## Paso a paso
 
-Hay 5 archivos, en este orden. El tiempo estimado es **~2.8 h** de máquina, más cambios de herramienta y mapas de alturas.
+Hay 5 archivos, en este orden. El tiempo estimado es **~3.1 h** de máquina, más cambios de herramienta y mapas de alturas.
 
 | # | Archivo | Herramienta | Tiempo |
 |---|---|---|---|
 | 1 | `L1_1_fresa1mm_alineacion_barrenos_antena_B.nc` | fresa 1.0 | 20 min |
-| 2 | `L1_2_vbit_aislamiento_B.nc` | V-bit 20° | 59 min |
+| 2 | `L1_2_vbit_aislamiento_B.nc` | V-bit 20° (aislamiento + marcas de vías) | 67 min |
 | 3 | `L1_3_broca1.0.nc` | broca 1.0 (266 agujeros) | 24 min |
 | — | **voltear la placa** | | |
-| 4 | `L2_1_vbit_aislamiento_F.nc` | V-bit 20° | 48 min |
+| 4 | `L2_1_vbit_aislamiento_F.nc` | V-bit 20° (aislamiento + marcas de vías) | 56 min |
 | 5 | `L2_2_fresa1mm_antena_contorno_F.nc` | fresa 1.0 | 19 min |
 
 ### Lado 1: cara inferior hacia arriba
@@ -197,6 +198,13 @@ Capturas en `sim/fablab/`, registros en `sim/fablab/registro_lado*.txt`. El scri
 ## Montaje
 
 1. **Vías-pin (38): así se vuelve de 2 caras.** Las caras se unen con un alambre soldado en cada vía.
+   - **Cómo encontrarlas:** cada vía lleva una **diana grabada en las 2 caras**: dos círculos punteados de **Ø3.9 y Ø5.5 mm** alrededor del barreno (el V-bit los graba con los archivos 2 y 4).
+     - Las dianas se cortan donde pasa una pista o un pad, así que no tocan ninguna red. La simulación lo confirma: 0 cortos.
+     - A simple vista distingues una vía-pin de un barreno de componente: **todo barreno con diana lleva alambre**.
+   - **Mapas numerados V1–V38**, uno por cara, en PNG y PDF 1:1 para imprimir y poner encima de la placa:
+     - `mapa_vias_lado1_cara_inferior_1a1.pdf`: cara de abajo, espejada, tal como la ves al soldar por abajo.
+     - `mapa_vias_lado2_cara_superior_1a1.pdf`: cara de arriba.
+     - `vias_pines.csv`: número, red, coordenadas en la tarjeta y en la máquina (lado 1 y lado 2). Sirve como lista para palomear al soldar y al medir continuidad.
    - **El hueco:** cada vía es un barreno de 1.0 mm con anillo de cobre de 0.6 mm en las dos caras.
    - **El alambre:** usa alambre de cobre estañado de 0.5–0.6 mm. Sirven los recortes de las patas de resistencias, o un pin de header de 0.64 mm.
    - **Cómo soldarlo:**
