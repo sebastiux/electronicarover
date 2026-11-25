@@ -655,7 +655,9 @@ def hoja_alim_servos(h):
     h.punta(j2["1"], 2.54)
     yb = 20.32
     h.cable(j2["2"][:2], (129.54, j2["2"][1]), (129.54, yb), (215.9, yb))
-    h.etiqueta("VBAT_F", 129.54, yb, (0, -1))
+    h.cable((185.42, yb), (185.42, 27.94))       # etiqueta abajo del titulo del marco
+    h.union(185.42, yb)
+    h.etiqueta("VBAT_F", 185.42, 27.94, (1, 0))
     h.union(147.32, yb)
     r22 = h.comp("R22", 147.32, 30.48)
     r23 = h.comp("R23", 147.32, 48.26)
