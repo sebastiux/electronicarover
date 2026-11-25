@@ -14,6 +14,8 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 ## Diagrama de conexiones
 
+Para entender el circuito completo (voltajes, señales y cada tarjeta por dentro) está `esquema_didactico/esquema_rover.pdf`.
+
 ```
                   Batería 3S ── fusible 15 A ── bloque de distribución (GND en estrella)
                                                   │

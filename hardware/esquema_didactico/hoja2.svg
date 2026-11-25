@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">
+<rect x="0.00" y="0.00" width="420.00" height="297.00" rx="0.00" fill="#ffffff" stroke="none"/>
+<text x="14.00" y="15.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="7.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="14.00" dy="0.00">2 · Señales: la Raspberry Pi coordina a las 2 ESP32</tspan></text>
+<text x="14.00" y="22.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">La Pi manda órdenes de texto por 2 UART (una por tarjeta). Cada ESP32 genera los PWM y lee sus sensores; si la Pi deja de hablar, la tracción se detiene sola.</tspan></text>
+<text x="406.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="406.00" dy="0.00">Rover - esquema para entender el circuito  ·  hoja 2 de 4</tspan></text>
+<text x="14.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">Generado por hardware/tools/esquema_didactico.py desde rover_design.py (mismos pines y redes que las PCB)</tspan></text>
+<rect x="14.00" y="112.00" width="64.00" height="74.00" rx="1.80" fill="#fde7ec" stroke="#e39aac" stroke-width="0.45"/>
+<text x="46.00" y="117.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="46.00" dy="0.00">Raspberry Pi 5</tspan></text>
+<text x="46.00" y="124.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">coordina: decide la velocidad</tspan><tspan x="46.00" dy="3.30">de cada motor y la posición</tspan><tspan x="46.00" dy="3.30">de cada servo</tspan></text>
+<text x="46.00" y="138.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="46.00" dy="0.00">HAT de bornas (GPIO 2x20)</tspan></text>
+<text x="76.00" y="144.90" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="76.00" dy="0.00">pin 6  · GND</tspan></text>
+<text x="76.00" y="149.90" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="76.00" dy="0.00">pin 29 · GPIO5 RXD2</tspan></text>
+<text x="76.00" y="154.90" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="76.00" dy="0.00">pin 7  · GPIO4 TXD2</tspan></text>
+<text x="76.00" y="166.90" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="76.00" dy="0.00">pin 34 · GND</tspan></text>
+<text x="76.00" y="171.90" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="76.00" dy="0.00">pin 32 · GPIO12 TXD4</tspan></text>
+<text x="76.00" y="176.90" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="76.00" dy="0.00">pin 33 · GPIO13 RXD4</tspan></text>
+<rect x="112.00" y="30.00" width="118.00" height="124.00" rx="2.40" fill="#eef7ee" stroke="#9cc79f" stroke-width="0.60"/>
+<text x="116.00" y="37.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.00" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="116.00" dy="0.00">Tarjeta de TRACCIÓN</tspan></text>
+<rect x="121.00" y="114.90" width="6.00" height="16.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="124.00" cy="118.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M123.00,119.00 L125.00,117.00" stroke="#555" stroke-width="0.3"/>
+<text x="128.20" y="118.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="128.20" dy="0.00">1</tspan></text>
+<circle cx="124.00" cy="123.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M123.00,124.00 L125.00,122.00" stroke="#555" stroke-width="0.3"/>
+<text x="128.20" y="123.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="128.20" dy="0.00">2</tspan></text>
+<circle cx="124.00" cy="128.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M123.00,129.00 L125.00,127.00" stroke="#555" stroke-width="0.3"/>
+<text x="128.20" y="128.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="128.20" dy="0.00">3</tspan></text>
+<text x="124.00" y="113.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="124.00" dy="0.00">J9</tspan></text>
+<text x="124.00" y="134.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="124.00" dy="0.00">PI (UART2)</tspan></text>
+<path d="M78.00,144.00 L92.00,144.00 L92.00,118.00 L121.00,118.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M78.00,149.00 L97.00,149.00 L97.00,123.00 L121.00,123.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M78.00,154.00 L102.00,154.00 L102.00,128.00 L121.00,128.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="79.50,149.00 81.74,147.72 81.74,150.28" fill="#2e7d32"/>
+<polygon points="120.80,128.00 118.56,126.72 118.56,129.28" fill="#2e7d32"/>
+<text x="46.00" y="192.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#2e7d32" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">cada UART: cable trenzado de 3 hilos, &lt; 50 cm</tspan></text>
+<path d="M127.00,123.00 L150.00,123.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="127.20,123.00 129.44,121.72 129.44,124.28" fill="#2e7d32"/>
+<path d="M127.00,128.00 L150.00,128.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="149.80,128.00 147.56,126.72 147.56,129.28" fill="#2e7d32"/>
+<text x="148.50" y="122.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#2e7d32" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="148.50" dy="0.00">IO27 TX · R14</tspan></text>
+<text x="148.50" y="131.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#2e7d32" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="148.50" dy="0.00">IO14 RX · R13</tspan></text>
+<rect x="150.00" y="52.00" width="36.00" height="90.00" rx="1.80" fill="#e3f2fd" stroke="#7fb1e3" stroke-width="0.45"/>
+<text x="168.00" y="57.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="168.00" dy="0.00">ESP32-A</tspan></text>
+<text x="168.00" y="66.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="168.00" dy="0.00">genera 12 PWM</tspan><tspan x="168.00" dy="3.30">(2 por motor) a</tspan><tspan x="168.00" dy="3.30">10 kHz y cuenta</tspan><tspan x="168.00" dy="3.30">los pulsos de</tspan><tspan x="168.00" dy="3.30">los 6 encoders</tspan></text>
+<text x="168.00" y="96.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="168.00" dy="0.00">MOTOR_EN arranca</tspan><tspan x="168.00" dy="3.30">en LOW (R21 10k):</tspan><tspan x="168.00" dy="3.30">nada se mueve</tspan><tspan x="168.00" dy="3.30">hasta "EN 1"</tspan></text>
+<path d="M186.00,46.00 L262.00,46.00" fill="none" stroke="#1565c0" stroke-width="1.20" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="188.00" y="44.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="188.00" dy="0.00">IN1–IN4: IO23  IO22  IO1  IO21</tspan></text>
+<text x="188.00" y="49.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="188.00" dy="0.00">+ EN + GND</tspan></text>
+<rect x="227.00" y="42.50" width="6.00" height="7.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<text x="230.00" y="41.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="230.00" dy="0.00">J41</tspan></text>
+<rect x="262.00" y="33.00" width="38.00" height="26.00" rx="1.80" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="281.00" y="37.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="281.00" dy="0.00">L298N #1</tspan></text>
+<text x="281.00" y="41.59" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="281.00" dy="0.00">ENA+ENB ← EN (Y)</tspan><tspan x="281.00" dy="3.10">IN1/IN2 → motor A</tspan><tspan x="281.00" dy="3.10">IN3/IN4 → motor B</tspan></text>
+<path d="M248.00,36.00 L248.00,37.00 L262.00,37.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M300.00,41.00 L330.00,41.00 L330.00,37.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M300.00,51.00 L330.00,51.00 L330.00,54.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="335.00" cy="37.00" r="5" fill="#fff" stroke="#6d4c41" stroke-width="0.6"/>
+<text x="335.00" y="38.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.60" fill="#6d4c41" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">M</tspan></text>
+<text x="342.00" y="36.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">M1  Delantero izq.</tspan></text>
+<text x="342.00" y="40.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="342.00" dy="0.00">OUT1/OUT2</tspan></text>
+<circle cx="335.00" cy="54.00" r="5" fill="#fff" stroke="#6d4c41" stroke-width="0.6"/>
+<text x="335.00" y="55.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.60" fill="#6d4c41" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">M</tspan></text>
+<text x="342.00" y="53.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">M2  Delantero der.</tspan></text>
+<text x="342.00" y="57.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="342.00" dy="0.00">OUT3/OUT4</tspan></text>
+<path d="M186.00,84.00 L262.00,84.00" fill="none" stroke="#1565c0" stroke-width="1.20" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="188.00" y="82.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="188.00" dy="0.00">IN1–IN4: IO19  IO18  IO5  IO17</tspan></text>
+<text x="188.00" y="87.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="188.00" dy="0.00">+ EN + GND</tspan></text>
+<rect x="227.00" y="80.50" width="6.00" height="7.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<text x="230.00" y="79.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="230.00" dy="0.00">J42</tspan></text>
+<rect x="262.00" y="71.00" width="38.00" height="26.00" rx="1.80" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="281.00" y="75.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="281.00" dy="0.00">L298N #2</tspan></text>
+<text x="281.00" y="79.59" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="281.00" dy="0.00">ENA+ENB ← EN (Y)</tspan><tspan x="281.00" dy="3.10">IN1/IN2 → motor A</tspan><tspan x="281.00" dy="3.10">IN3/IN4 → motor B</tspan></text>
+<path d="M248.00,36.00 L248.00,75.00 L262.00,75.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M300.00,79.00 L330.00,79.00 L330.00,75.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M300.00,89.00 L330.00,89.00 L330.00,92.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="335.00" cy="75.00" r="5" fill="#fff" stroke="#6d4c41" stroke-width="0.6"/>
+<text x="335.00" y="76.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.60" fill="#6d4c41" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">M</tspan></text>
+<text x="342.00" y="74.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">M3  Medio izq.</tspan></text>
+<text x="342.00" y="78.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="342.00" dy="0.00">OUT1/OUT2</tspan></text>
+<circle cx="335.00" cy="92.00" r="5" fill="#fff" stroke="#6d4c41" stroke-width="0.6"/>
+<text x="335.00" y="93.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.60" fill="#6d4c41" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">M</tspan></text>
+<text x="342.00" y="91.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">M4  Medio der.</tspan></text>
+<text x="342.00" y="95.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="342.00" dy="0.00">OUT3/OUT4</tspan></text>
+<path d="M186.00,122.00 L262.00,122.00" fill="none" stroke="#1565c0" stroke-width="1.20" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="188.00" y="120.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="188.00" dy="0.00">IN1–IN4: IO16  IO4  IO2  IO15</tspan></text>
+<text x="188.00" y="125.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="188.00" dy="0.00">+ EN + GND</tspan></text>
+<rect x="227.00" y="118.50" width="6.00" height="7.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<text x="230.00" y="117.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="230.00" dy="0.00">J43</tspan></text>
+<rect x="262.00" y="109.00" width="38.00" height="26.00" rx="1.80" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="281.00" y="113.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="281.00" dy="0.00">L298N #3</tspan></text>
+<text x="281.00" y="117.59" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="281.00" dy="0.00">ENA+ENB ← EN (Y)</tspan><tspan x="281.00" dy="3.10">IN1/IN2 → motor A</tspan><tspan x="281.00" dy="3.10">IN3/IN4 → motor B</tspan></text>
+<path d="M248.00,36.00 L248.00,113.00 L262.00,113.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M300.00,117.00 L330.00,117.00 L330.00,113.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M300.00,127.00 L330.00,127.00 L330.00,130.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="335.00" cy="113.00" r="5" fill="#fff" stroke="#6d4c41" stroke-width="0.6"/>
+<text x="335.00" y="114.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.60" fill="#6d4c41" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">M</tspan></text>
+<text x="342.00" y="112.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">M5  Trasero izq.</tspan></text>
+<text x="342.00" y="116.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="342.00" dy="0.00">OUT1/OUT2</tspan></text>
+<circle cx="335.00" cy="130.00" r="5" fill="#fff" stroke="#6d4c41" stroke-width="0.6"/>
+<text x="335.00" y="131.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.60" fill="#6d4c41" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">M</tspan></text>
+<text x="342.00" y="129.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">M6  Trasero der.</tspan></text>
+<text x="342.00" y="133.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="342.00" dy="0.00">OUT3/OUT4</tspan></text>
+<text x="246.00" y="35.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#c62828" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="246.00" dy="0.00">12 V del bloque</tspan></text>
+<path d="M335.00,42.00 L335.00,44.20 L404.00,44.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="404.00" cy="44.20" r="0.75" fill="#6a1b9a"/>
+<path d="M335.00,59.00 L335.00,61.20 L404.00,61.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="404.00" cy="61.20" r="0.75" fill="#6a1b9a"/>
+<path d="M335.00,80.00 L335.00,82.20 L404.00,82.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="404.00" cy="82.20" r="0.75" fill="#6a1b9a"/>
+<path d="M404.00,44.20 L404.00,166.00 L170.00,166.00 L170.00,154.00" fill="none" stroke="#6a1b9a" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="166.00" y="151.00" width="8.00" height="6.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<text x="165.00" y="153.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="165.00" dy="0.00">J7</tspan></text>
+<text x="173.00" y="169.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="173.00" dy="0.00">encoders M1–M3: canal A + 5V + GND</tspan></text>
+<path d="M170.00,151.00 L170.00,148.00 L170.00,148.00 L170.00,142.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M335.00,97.00 L335.00,99.20 L398.00,99.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="398.00" cy="99.20" r="0.75" fill="#6a1b9a"/>
+<path d="M335.00,118.00 L335.00,120.20 L398.00,120.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="398.00" cy="120.20" r="0.75" fill="#6a1b9a"/>
+<path d="M335.00,135.00 L335.00,137.20 L398.00,137.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="398.00" cy="137.20" r="0.75" fill="#6a1b9a"/>
+<path d="M398.00,99.20 L398.00,160.00 L205.00,160.00 L205.00,154.00" fill="none" stroke="#6a1b9a" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="201.00" y="151.00" width="8.00" height="6.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<text x="200.00" y="153.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="200.00" dy="0.00">J8</tspan></text>
+<text x="208.00" y="163.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="208.00" dy="0.00">encoders M4–M6: canal A + 5V + GND</tspan></text>
+<path d="M205.00,151.00 L205.00,148.00 L180.00,148.00 L180.00,142.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="210.00" y="146.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#6a1b9a" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="210.00" dy="0.00">divisores 10k/20k: 5 V → 3.3 V</tspan></text>
+<rect x="112.00" y="178.00" width="118.00" height="100.00" rx="2.40" fill="#eef7ee" stroke="#9cc79f" stroke-width="0.60"/>
+<text x="116.00" y="185.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.00" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="116.00" dy="0.00">Tarjeta de SERVOS</tspan></text>
+<rect x="121.00" y="196.90" width="6.00" height="16.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="124.00" cy="200.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M123.00,201.00 L125.00,199.00" stroke="#555" stroke-width="0.3"/>
+<text x="128.20" y="200.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="128.20" dy="0.00">1</tspan></text>
+<circle cx="124.00" cy="205.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M123.00,206.00 L125.00,204.00" stroke="#555" stroke-width="0.3"/>
+<text x="128.20" y="205.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="128.20" dy="0.00">2</tspan></text>
+<circle cx="124.00" cy="210.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M123.00,211.00 L125.00,209.00" stroke="#555" stroke-width="0.3"/>
+<text x="128.20" y="210.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="128.20" dy="0.00">3</tspan></text>
+<text x="124.00" y="195.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="124.00" dy="0.00">J9</tspan></text>
+<text x="124.00" y="216.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="124.00" dy="0.00">PI (UART4)</tspan></text>
+<path d="M78.00,166.00 L102.00,166.00 L102.00,200.00 L121.00,200.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M78.00,171.00 L97.00,171.00 L97.00,205.00 L121.00,205.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M78.00,176.00 L92.00,176.00 L92.00,210.00 L121.00,210.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="120.80,205.00 118.56,203.72 118.56,206.28" fill="#2e7d32"/>
+<polygon points="79.50,176.00 81.74,174.72 81.74,177.28" fill="#2e7d32"/>
+<rect x="150.00" y="196.00" width="36.00" height="66.00" rx="1.80" fill="#e3f2fd" stroke="#7fb1e3" stroke-width="0.45"/>
+<text x="168.00" y="201.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="168.00" dy="0.00">ESP32-B</tspan></text>
+<text x="168.00" y="210.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="168.00" dy="0.00">8 PWM de servo</tspan><tspan x="168.00" dy="3.30">(50 Hz, 800 a</tspan><tspan x="168.00" dy="3.30">2200 µs) y lee</tspan><tspan x="168.00" dy="3.30">la batería por</tspan><tspan x="168.00" dy="3.30">el ADC (IO34)</tspan></text>
+<path d="M127.00,205.00 L150.00,205.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="149.80,205.00 147.56,203.72 147.56,206.28" fill="#2e7d32"/>
+<path d="M127.00,210.00 L150.00,210.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="127.20,210.00 129.44,208.72 129.44,211.28" fill="#2e7d32"/>
+<text x="148.50" y="204.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#2e7d32" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="148.50" dy="0.00">IO15 RX · R15</tspan></text>
+<text x="148.50" y="213.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#2e7d32" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="148.50" dy="0.00">IO2 TX · R16</tspan></text>
+<rect x="262.00" y="196.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="278.00" y="202.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="278.00" dy="0.00">S1 · J31</tspan></text>
+<text x="278.00" y="206.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">Dirección DI</tspan></text>
+<text x="278.00" y="211.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="278.00" dy="0.00">IO23</tspan></text>
+<rect x="299.00" y="196.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="315.00" y="202.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="315.00" dy="0.00">S2 · J32</tspan></text>
+<text x="315.00" y="206.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="315.00" dy="0.00">Dirección DD</tspan></text>
+<text x="315.00" y="211.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="315.00" dy="0.00">IO22</tspan></text>
+<rect x="336.00" y="196.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="352.00" y="202.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="352.00" dy="0.00">S3 · J33</tspan></text>
+<text x="352.00" y="206.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="352.00" dy="0.00">Dirección TI</tspan></text>
+<text x="352.00" y="211.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="352.00" dy="0.00">IO21</tspan></text>
+<rect x="373.00" y="196.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="389.00" y="202.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="389.00" dy="0.00">S4 · J34</tspan></text>
+<text x="389.00" y="206.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="389.00" dy="0.00">Dirección TD</tspan></text>
+<text x="389.00" y="211.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="389.00" dy="0.00">IO19</tspan></text>
+<rect x="262.00" y="240.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="278.00" y="246.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="278.00" dy="0.00">S5 · J35</tspan></text>
+<text x="278.00" y="250.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">Brazo base</tspan></text>
+<text x="278.00" y="255.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="278.00" dy="0.00">IO18</tspan></text>
+<rect x="299.00" y="240.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="315.00" y="246.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="315.00" dy="0.00">S6 · J36</tspan></text>
+<text x="315.00" y="250.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="315.00" dy="0.00">Brazo hombro</tspan></text>
+<text x="315.00" y="255.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="315.00" dy="0.00">IO17</tspan></text>
+<rect x="336.00" y="240.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="352.00" y="246.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="352.00" dy="0.00">S7 · J37</tspan></text>
+<text x="352.00" y="250.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="352.00" dy="0.00">Brazo pinza</tspan></text>
+<text x="352.00" y="255.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="352.00" dy="0.00">IO16</tspan></text>
+<rect x="373.00" y="240.00" width="32.00" height="20.00" rx="1.60" fill="#fff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="389.00" y="246.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="389.00" dy="0.00">S8 · J38</tspan></text>
+<text x="389.00" y="250.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="389.00" dy="0.00">Brazo codo/muñeca</tspan></text>
+<text x="389.00" y="255.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="389.00" dy="0.00">IO4</tspan></text>
+<path d="M186.00,216.00 L240.00,216.00 L240.00,206.00 L262.00,206.00" fill="none" stroke="#1565c0" stroke-width="1.20" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="188.00" y="214.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="188.00" dy="0.00">4 señales PWM</tspan></text>
+<path d="M186.00,236.00 L240.00,236.00 L240.00,250.00 L262.00,250.00" fill="none" stroke="#1565c0" stroke-width="1.20" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="188.00" y="234.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="188.00" dy="0.00">4 señales PWM</tspan></text>
+<text x="262.00" y="192.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="262.00" dy="0.00">Dirección (las 4 ruedas de las esquinas)</tspan></text>
+<text x="262.00" y="236.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="262.00" dy="0.00">Brazo robot (4 ejes)</tspan></text>
+<rect x="14.00" y="30.00" width="92.00" height="76.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="37.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#2e7d32" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">Qué se dicen (115200 baud, 8N1)</tspan></text>
+<text x="18.00" y="42.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">Pi → ESP32-A (tracción)</tspan></text>
+<text x="18.00" y="47.00" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">EN 1            habilita motores</tspan><tspan x="18.00" dy="3.17">M p1 … p6       −1000…1000 por motor</tspan><tspan x="18.00" dy="3.17">STOP            rampa a 0 y apaga</tspan><tspan x="18.00" dy="3.17">T c1…c6 v1…v6 f ← cuentas y pulsos/s</tspan></text>
+<text x="18.00" y="71.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">Pi → ESP32-B (servos)</tspan></text>
+<text x="18.00" y="76.00" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">S n us           servo n en µs</tspan><tspan x="18.00" dy="3.17">A n grados       servo n en grados</tspan><tspan x="18.00" dy="3.17">B mv f         ← batería en mV</tspan></text>
+<text x="18.00" y="94.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">Una línea de texto por mensaje; *HH opcional</tspan><tspan x="18.00" dy="3.17">(checksum XOR, como NMEA).</tspan></text>
+<rect x="14.00" y="216.00" width="92.00" height="64.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="223.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">Seguridad</tspan></text>
+<text x="18.00" y="227.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.55" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">• Watchdog: si la Pi no manda nada en 300 ms,</tspan><tspan x="18.00" dy="3.37">  la ESP32-A baja los motores a 0 y MOTOR_EN</tspan><tspan x="18.00" dy="3.37">  a LOW.</tspan><tspan x="18.00" dy="3.37">• R21 10k mantiene MOTOR_EN en LOW mientras</tspan><tspan x="18.00" dy="3.37">  la ESP32 arranca o se programa.</tspan><tspan x="18.00" dy="3.37">• Rampa: de 0 a 1000 en 400 ms (protege al</tspan><tspan x="18.00" dy="3.37">  L298N del pico de arranque).</tspan><tspan x="18.00" dy="3.37">• Bloqueo: PWM alto sin pulsos de encoder</tspan><tspan x="18.00" dy="3.37">  600 ms → avisa a la Pi.</tspan><tspan x="18.00" dy="3.37">• 1k en cada línea del UART: si un pin queda</tspan><tspan x="18.00" dy="3.37">  mal configurado, limita la corriente.</tspan></text>
+</svg>

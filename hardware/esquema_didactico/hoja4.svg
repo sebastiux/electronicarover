@@ -1,0 +1,370 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">
+<rect x="0.00" y="0.00" width="420.00" height="297.00" rx="0.00" fill="#ffffff" stroke="none"/>
+<text x="14.00" y="15.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="7.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="14.00" dy="0.00">4 · Tarjeta de SERVOS por dentro</tspan></text>
+<text x="14.00" y="22.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">ESP32-B, 8 headers de servo con su riel de 6 V, medición de batería, entrada de 5 V y enlace UART4 con la Pi.</tspan></text>
+<text x="406.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="406.00" dy="0.00">Rover - esquema para entender el circuito  ·  hoja 4 de 4</tspan></text>
+<text x="14.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">Generado por hardware/tools/esquema_didactico.py desde rover_design.py (mismos pines y redes que las PCB)</tspan></text>
+<rect x="14.00" y="28.00" width="128.00" height="50.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="35.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">1 · Entrada 5 V</tspan></text>
+<rect x="24.50" y="46.90" width="7.00" height="11.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="28.00" cy="50.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M27.00,51.00 L29.00,49.00" stroke="#555" stroke-width="0.3"/>
+<text x="23.30" y="50.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#ad1457" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="23.30" dy="0.00">1 +5V</tspan></text>
+<circle cx="28.00" cy="55.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M27.00,56.00 L29.00,54.00" stroke="#555" stroke-width="0.3"/>
+<text x="23.30" y="55.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="23.30" dy="0.00">2 GND</tspan></text>
+<text x="28.00" y="45.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="28.00" dy="0.00">J5</tspan></text>
+<text x="28.00" y="61.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="28.00" dy="0.00">del step-down</tspan></text>
+<g transform="translate(70.00,50.00) rotate(0)"><path d="M-5,0 L-1.6,0" stroke="#ad1457" stroke-width="0.90"/><path d="M1.6,0 L5,0" stroke="#ad1457" stroke-width="0.90"/><polygon points="-1.6,-1.8 -1.6,1.8 1.6,0" fill="#1f2328"/><path d="M1.6,-1.8 L1.6,1.8" stroke="#1f2328" stroke-width="0.45"/></g>
+<text x="70.00" y="55.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="middle" font-weight="600" xml:space="preserve"><tspan x="70.00" dy="0.00">D6  1N5819</tspan></text>
+<path d="M31.50,50.00 L65.00,50.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M75.00,50.00 L92.00,50.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="92.00,50.00 89.76,48.72 89.76,51.28" fill="#ad1457"/>
+<text x="94.00" y="50.84" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#ad1457" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="94.00" dy="0.00">VIN_B → pin 15</tspan></text>
+<path d="M31.50,55.00 L40.00,55.00 L40.00,66.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M40.00,66.00 L40.00,67.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M37.60,67.60 L42.40,67.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M38.40,68.35 L41.60,68.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M39.20,69.10 L40.80,69.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="50.00" y="66.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="50.00" dy="0.00">D6: el USB de la ESP32 no regresa al 5 V.</tspan></text>
+<rect x="14.00" y="84.00" width="128.00" height="66.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="91.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#2e7d32" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">2 · Enlace con la Pi (UART4)</tspan></text>
+<rect x="58.50" y="100.90" width="7.00" height="16.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="62.00" cy="104.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M61.00,105.00 L63.00,103.00" stroke="#555" stroke-width="0.3"/>
+<text x="57.30" y="104.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="57.30" dy="0.00">1 GND</tspan></text>
+<circle cx="62.00" cy="109.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M61.00,110.00 L63.00,108.00" stroke="#555" stroke-width="0.3"/>
+<text x="57.30" y="109.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="57.30" dy="0.00">2 TXD4</tspan></text>
+<circle cx="62.00" cy="114.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M61.00,115.00 L63.00,113.00" stroke="#555" stroke-width="0.3"/>
+<text x="57.30" y="114.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="57.30" dy="0.00">3 RXD4</tspan></text>
+<text x="62.00" y="99.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="62.00" dy="0.00">J9</tspan></text>
+<text x="62.00" y="120.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="62.00" dy="0.00">PI (UART4)</tspan></text>
+<text x="46.00" y="104.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">Pi pin 34 (GND)</tspan></text>
+<text x="46.00" y="109.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">Pi pin 32 (GPIO12)</tspan></text>
+<text x="46.00" y="114.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">Pi pin 33 (GPIO13)</tspan></text>
+<path d="M65.50,104.00 L76.00,104.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M76.00,104.00 L76.00,105.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M73.60,105.60 L78.40,105.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M74.40,106.35 L77.60,106.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M75.20,107.10 L76.80,107.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M80.00,109.00 L82.80,109.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M89.20,109.00 L92.00,109.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="82.80" y="107.70" width="6.40" height="2.60" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="86.00" y="106.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="middle" font-weight="600" xml:space="preserve"><tspan x="86.00" dy="0.00">R15  1k</tspan></text>
+<path d="M65.50,109.00 L80.00,109.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M92.00,109.00 L110.00,109.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="110.00,109.00 107.76,107.72 107.76,110.28" fill="#2e7d32"/>
+<text x="111.00" y="109.91" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="111.00" dy="0.00">IO15 = RX</tspan></text>
+<path d="M80.00,118.00 L82.80,118.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M89.20,118.00 L92.00,118.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="82.80" y="116.70" width="6.40" height="2.60" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="86.00" y="115.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="middle" font-weight="600" xml:space="preserve"><tspan x="86.00" dy="0.00">R16  1k</tspan></text>
+<path d="M65.50,114.00 L74.00,114.00 L74.00,118.00 L80.00,118.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M92.00,118.00 L110.00,118.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="73.10,118.00 75.34,116.72 75.34,119.28" fill="#2e7d32"/>
+<text x="111.00" y="118.91" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="111.00" dy="0.00">IO2 = TX</tspan></text>
+<text x="18.00" y="140.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">Igual que en tracción: cruzado y con 1k en serie.</tspan></text>
+<rect x="14.00" y="156.00" width="128.00" height="128.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="163.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#c62828" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">3 · Batería: medir 12 V con un pin de 3.3 V</tspan></text>
+<rect x="24.50" y="174.90" width="7.00" height="11.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="28.00" cy="178.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M27.00,179.00 L29.00,177.00" stroke="#555" stroke-width="0.3"/>
+<text x="23.30" y="178.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#c62828" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="23.30" dy="0.00">2 VBAT</tspan></text>
+<circle cx="28.00" cy="183.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M27.00,184.00 L29.00,182.00" stroke="#555" stroke-width="0.3"/>
+<text x="23.30" y="183.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="23.30" dy="0.00">1 GND</tspan></text>
+<text x="28.00" y="173.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="28.00" dy="0.00">J2</tspan></text>
+<text x="28.00" y="189.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="28.00" dy="0.00">derivación</tspan><tspan x="28.00" dy="3.17">de batería</tspan></text>
+<path d="M31.50,178.00 L34.50,178.00 L34.50,172.00 L110.00,172.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M31.50,183.00 L33.00,183.00 L33.00,262.00 L110.00,262.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,184.00 L56.00,186.80" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,193.20 L56.00,196.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="54.70" y="186.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="53.40" y="189.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="53.40" dy="0.00">R22</tspan></text>
+<text x="53.40" y="192.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="53.40" dy="0.00">100k</tspan></text>
+<path d="M56.00,172.00 L56.00,184.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="56.00" cy="172.00" r="0.99" fill="#c62828"/>
+<path d="M56.00,196.00 L56.00,206.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="56.00" cy="206.00" r="0.75" fill="#1565c0"/>
+<path d="M56.00,218.00 L56.00,220.80" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,227.20 L56.00,230.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="54.70" y="220.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="53.40" y="223.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="53.40" dy="0.00">R23</tspan></text>
+<text x="53.40" y="226.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="53.40" dy="0.00">27k</tspan></text>
+<path d="M56.00,206.00 L56.00,218.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,230.00 L56.00,262.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="56.00" cy="262.00" r="0.87" fill="#263238"/>
+<path d="M70.00,219.00 L70.00,223.20" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M70.00,224.80 L70.00,229.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M67.70,223.20 L72.30,223.20" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M67.70,224.80 L72.30,224.80" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="73.20" y="223.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="73.20" dy="0.00">C5</tspan></text>
+<text x="73.20" y="226.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="73.20" dy="0.00">100 nF</tspan></text>
+<path d="M56.00,206.00 L70.00,206.00 L70.00,219.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M70.00,229.00 L70.00,262.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="70.00" cy="262.00" r="0.87" fill="#263238"/>
+<path d="M70.00,206.00 L82.00,206.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="82.00,206.00 79.76,204.72 79.76,207.28" fill="#1565c0"/>
+<text x="84.00" y="206.84" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="84.00" dy="0.00">VBAT_SENSE → IO34</tspan></text>
+<path d="M110.00,180.00 L110.00,182.80" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M110.00,189.20 L110.00,192.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="108.70" y="182.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="107.40" y="185.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="107.40" dy="0.00">R24</tspan></text>
+<text x="107.40" y="188.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="107.40" dy="0.00">2.2k</tspan></text>
+<path d="M110.00,172.00 L110.00,180.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<g transform="translate(110.00,236.00) rotate(90)"><path d="M-5,0 L-1.6,0" stroke="#c62828" stroke-width="1.10"/><path d="M1.6,0 L5,0" stroke="#263238" stroke-width="0.80"/><polygon points="-1.6,-1.8 -1.6,1.8 1.6,0" fill="#c62828"/><path d="M1.6,-1.8 L1.6,1.8" stroke="#1f2328" stroke-width="0.45"/><path d="M-0.60,-2.2 L0.80,-4.4" stroke="#c62828" stroke-width="0.35"/><polygon points="0.80,-4.4 0.00,-3.5 0.80,-3.9" fill="#c62828"/><path d="M1.00,-2.2 L2.40,-4.4" stroke="#c62828" stroke-width="0.35"/><polygon points="2.40,-4.4 1.60,-3.5 2.40,-3.9" fill="#c62828"/></g>
+<text x="116.00" y="235.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="116.00" dy="0.00">D2</tspan></text>
+<text x="116.00" y="238.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="116.00" dy="0.00">LED rojo</tspan></text>
+<path d="M110.00,192.00 L110.00,231.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M110.00,241.00 L110.00,262.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M90.00,262.00 L90.00,263.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M87.60,263.60 L92.40,263.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M88.40,264.35 L91.60,264.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M89.20,265.10 L90.80,265.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="84.00" y="213.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="84.00" dy="0.00">12.6 V × 27k / 127k</tspan><tspan x="84.00" dy="3.04">= 2.68 V en el ADC.</tspan><tspan x="84.00" dy="3.04">Satura con 15.5 V.</tspan><tspan x="84.00" dy="3.04">C5 estabiliza.</tspan></text>
+<text x="18.00" y="274.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">D2 + R24: "hay batería" (~5 mA). Bajo 9.9 V la ESP32-B avisa a la Pi (B mv 1).</tspan></text>
+<rect x="148.00" y="28.00" width="258.00" height="50.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="152.00" y="35.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#e65100" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="152.00" dy="0.00">4 · Riel de 6 V de los servos (SERVO_V)</tspan></text>
+<rect x="158.50" y="48.90" width="7.00" height="11.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="162.00" cy="52.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M161.00,53.00 L163.00,51.00" stroke="#555" stroke-width="0.3"/>
+<text x="157.30" y="52.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="157.30" dy="0.00">2 +6V</tspan></text>
+<circle cx="162.00" cy="57.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M161.00,58.00 L163.00,56.00" stroke="#555" stroke-width="0.3"/>
+<text x="157.30" y="57.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="157.30" dy="0.00">1 GND</tspan></text>
+<text x="162.00" y="47.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="162.00" dy="0.00">J6</tspan></text>
+<text x="162.00" y="63.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="162.00" dy="0.00">BEC 6 V</tspan></text>
+<path d="M165.50,52.00 L168.50,52.00 L168.50,44.00 L330.00,44.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M165.50,57.00 L167.00,57.00 L167.00,70.00 L330.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M196.00,52.00 L196.00,56.20" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M196.00,57.80 L196.00,62.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M193.70,56.20 L198.30,56.20" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="193.70" y="57.55" width="4.60" height="0.70" rx="0.00" fill="#1f2328" stroke="none"/>
+<text x="192.60" y="55.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="192.60" dy="0.00">+</tspan></text>
+<text x="199.20" y="56.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="199.20" dy="0.00">C3</tspan></text>
+<text x="199.20" y="59.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="199.20" dy="0.00">1000 µF 10V</tspan></text>
+<path d="M196.00,44.00 L196.00,52.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M196.00,62.00 L196.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="196.00" cy="44.00" r="0.95" fill="#e65100"/>
+<circle cx="196.00" cy="70.00" r="0.87" fill="#263238"/>
+<path d="M222.00,52.00 L222.00,56.20" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M222.00,57.80 L222.00,62.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M219.70,56.20 L224.30,56.20" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="219.70" y="57.55" width="4.60" height="0.70" rx="0.00" fill="#1f2328" stroke="none"/>
+<text x="218.60" y="55.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="218.60" dy="0.00">+</tspan></text>
+<text x="225.20" y="56.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="225.20" dy="0.00">C4</tspan></text>
+<text x="225.20" y="59.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="225.20" dy="0.00">1000 µF 10V</tspan></text>
+<path d="M222.00,44.00 L222.00,52.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M222.00,62.00 L222.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="222.00" cy="44.00" r="0.95" fill="#e65100"/>
+<circle cx="222.00" cy="70.00" r="0.87" fill="#263238"/>
+<path d="M256.00,44.00 L256.00,46.80" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M256.00,53.20 L256.00,56.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="254.70" y="46.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="258.60" y="49.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="258.60" dy="0.00">R26</tspan></text>
+<text x="258.60" y="52.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="258.60" dy="0.00">470</tspan></text>
+<path d="M256.00,44.00 L256.00,44.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="256.00" cy="44.00" r="0.95" fill="#e65100"/>
+<g transform="translate(256.00,61.00) rotate(90)"><path d="M-5,0 L-1.6,0" stroke="#e65100" stroke-width="1.00"/><path d="M1.6,0 L5,0" stroke="#263238" stroke-width="0.80"/><polygon points="-1.6,-1.8 -1.6,1.8 1.6,0" fill="#1565c0"/><path d="M1.6,-1.8 L1.6,1.8" stroke="#1f2328" stroke-width="0.45"/><path d="M-0.60,-2.2 L0.80,-4.4" stroke="#1565c0" stroke-width="0.35"/><polygon points="0.80,-4.4 0.00,-3.5 0.80,-3.9" fill="#1565c0"/><path d="M1.00,-2.2 L2.40,-4.4" stroke="#1565c0" stroke-width="0.35"/><polygon points="2.40,-4.4 1.60,-3.5 2.40,-3.9" fill="#1565c0"/></g>
+<text x="262.00" y="60.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="262.00" dy="0.00">D4</tspan></text>
+<text x="262.00" y="63.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="262.00" dy="0.00">LED azul</tspan></text>
+<path d="M256.00,56.00 L256.00,56.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M256.00,66.00 L256.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="256.00" cy="70.00" r="0.87" fill="#263238"/>
+<path d="M330.00,44.00 L338.00,44.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="338.00,44.00 335.76,42.72 335.76,45.28" fill="#e65100"/>
+<text x="340.00" y="44.84" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#e65100" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="340.00" dy="0.00">V+ de J31…J38 (pin 2)</tspan></text>
+<path d="M330.00,70.00 L338.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="338.00,70.00 335.76,68.72 335.76,71.28" fill="#263238"/>
+<text x="340.00" y="70.84" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#263238" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="340.00" dy="0.00">GND de J31…J38 (pin 1)</tspan></text>
+<text x="292.00" y="56.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="292.00" dy="0.00">C3, C4: absorben el pico</tspan><tspan x="292.00" dy="3.10">de arranque de los servos.</tspan></text>
+<rect x="148.00" y="84.00" width="258.00" height="200.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="152.00" y="91.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="152.00" dy="0.00">5 · ESP32-B y los 8 servos</tspan></text>
+<rect x="184.00" y="94.00" width="34.00" height="171.00" rx="2.00" fill="#e3f2fd" stroke="#7fb1e3" stroke-width="0.50"/>
+<text x="201.00" y="173.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="201.00" dy="0.00">ESP32-B</tspan></text>
+<text x="201.00" y="178.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="201.00" dy="0.00">U3</tspan><tspan x="201.00" dy="3.04">DevKit V1</tspan><tspan x="201.00" dy="3.04">30 pines</tspan></text>
+<path d="M184.00,102.50 L181.50,102.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="103.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">1 EN</tspan></text>
+<path d="M184.00,113.50 L181.50,113.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="114.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">2 VP/IO36</tspan></text>
+<path d="M184.00,124.50 L181.50,124.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="125.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">3 VN/IO39</tspan></text>
+<path d="M184.00,135.50 L181.50,135.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="136.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="185.40" dy="0.00">4 IO34</tspan></text>
+<path d="M184.00,146.50 L181.50,146.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="147.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">5 IO35</tspan></text>
+<path d="M184.00,157.50 L181.50,157.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="158.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">6 IO32</tspan></text>
+<path d="M184.00,168.50 L181.50,168.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="169.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">7 IO33</tspan></text>
+<path d="M184.00,179.50 L181.50,179.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="180.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">8 IO25</tspan></text>
+<path d="M184.00,190.50 L181.50,190.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="191.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">9 IO26</tspan></text>
+<path d="M184.00,201.50 L181.50,201.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="202.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">10 IO27</tspan></text>
+<path d="M184.00,212.50 L181.50,212.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="213.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">11 IO14</tspan></text>
+<path d="M184.00,223.50 L181.50,223.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="224.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">12 IO12</tspan></text>
+<path d="M184.00,234.50 L181.50,234.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="235.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="185.40" dy="0.00">13 IO13</tspan></text>
+<path d="M184.00,245.50 L181.50,245.50" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="246.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="185.40" dy="0.00">14 GND</tspan></text>
+<path d="M184.00,256.50 L181.50,256.50" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="185.40" y="257.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="185.40" dy="0.00">15 VIN</tspan></text>
+<path d="M218.00,102.50 L220.50,102.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="103.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO23 16</tspan></text>
+<path d="M218.00,113.50 L220.50,113.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="114.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO22 17</tspan></text>
+<path d="M218.00,124.50 L220.50,124.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="125.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="216.60" dy="0.00">TX0/IO1 18</tspan></text>
+<path d="M218.00,135.50 L220.50,135.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="136.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="216.60" dy="0.00">RX0/IO3 19</tspan></text>
+<path d="M218.00,146.50 L220.50,146.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="147.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO21 20</tspan></text>
+<path d="M218.00,157.50 L220.50,157.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="158.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO19 21</tspan></text>
+<path d="M218.00,168.50 L220.50,168.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="169.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO18 22</tspan></text>
+<path d="M218.00,179.50 L220.50,179.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="180.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="216.60" dy="0.00">IO5 23</tspan></text>
+<path d="M218.00,190.50 L220.50,190.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="191.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">TX2/IO17 24</tspan></text>
+<path d="M218.00,201.50 L220.50,201.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="202.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">RX2/IO16 25</tspan></text>
+<path d="M218.00,212.50 L220.50,212.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="213.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO4 26</tspan></text>
+<path d="M218.00,223.50 L220.50,223.50" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="224.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO2 27</tspan></text>
+<path d="M218.00,234.50 L220.50,234.50" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="235.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">IO15 28</tspan></text>
+<path d="M218.00,245.50 L220.50,245.50" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="246.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="216.60" dy="0.00">GND 29</tspan></text>
+<path d="M218.00,256.50 L220.50,256.50" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="216.60" y="257.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="216.60" dy="0.00">3V3 30</tspan></text>
+<text x="180.70" y="136.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="180.70" dy="0.00">VBAT_SENSE</tspan></text>
+<text x="180.70" y="246.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="180.70" dy="0.00">GND</tspan></text>
+<text x="180.70" y="257.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#ad1457" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="180.70" dy="0.00">VIN_B (D6)</tspan></text>
+<rect x="297.40" y="100.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="101.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="104.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="106.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,105.50 L307.00,105.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="105.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="107.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="109.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,108.50 L310.00,108.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="108.50" r="0.87" fill="#263238"/>
+<path d="M220.50,102.50 L297.40,102.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="101.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO1</tspan></text>
+<text x="296.40" y="101.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J31</tspan></text>
+<text x="316.00" y="103.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S1 · Dirección DI</tspan></text>
+<text x="316.00" y="107.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO23 → J31-3 (SIG)</tspan></text>
+<rect x="297.40" y="111.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="112.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="115.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="117.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,116.50 L307.00,116.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="116.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="118.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="120.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,119.50 L310.00,119.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="119.50" r="0.87" fill="#263238"/>
+<path d="M220.50,113.50 L297.40,113.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="112.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO2</tspan></text>
+<text x="296.40" y="112.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J32</tspan></text>
+<text x="316.00" y="114.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S2 · Dirección DD</tspan></text>
+<text x="316.00" y="118.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO22 → J32-3 (SIG)</tspan></text>
+<rect x="297.40" y="144.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="145.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="148.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="150.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,149.50 L307.00,149.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="149.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="151.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="153.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,152.50 L310.00,152.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="152.50" r="0.87" fill="#263238"/>
+<path d="M220.50,146.50 L297.40,146.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="145.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO3</tspan></text>
+<text x="296.40" y="145.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J33</tspan></text>
+<text x="316.00" y="147.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S3 · Dirección TI</tspan></text>
+<text x="316.00" y="151.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO21 → J33-3 (SIG)</tspan></text>
+<rect x="297.40" y="155.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="156.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="159.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="161.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,160.50 L307.00,160.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="160.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="162.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="164.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,163.50 L310.00,163.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="163.50" r="0.87" fill="#263238"/>
+<path d="M220.50,157.50 L297.40,157.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="156.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO4</tspan></text>
+<text x="296.40" y="156.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J34</tspan></text>
+<text x="316.00" y="158.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S4 · Dirección TD</tspan></text>
+<text x="316.00" y="162.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO19 → J34-3 (SIG)</tspan></text>
+<rect x="297.40" y="166.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="167.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="170.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="172.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,171.50 L307.00,171.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="171.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="173.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="175.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,174.50 L310.00,174.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="174.50" r="0.87" fill="#263238"/>
+<path d="M220.50,168.50 L297.40,168.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="167.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO5</tspan></text>
+<text x="296.40" y="167.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J35</tspan></text>
+<text x="316.00" y="169.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S5 · Brazo base</tspan></text>
+<text x="316.00" y="173.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO18 → J35-3 (SIG)</tspan></text>
+<rect x="297.40" y="188.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="189.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="192.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="194.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,193.50 L307.00,193.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="193.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="195.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="197.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,196.50 L310.00,196.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="196.50" r="0.87" fill="#263238"/>
+<path d="M220.50,190.50 L297.40,190.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="189.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO6</tspan></text>
+<text x="296.40" y="189.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J36</tspan></text>
+<text x="316.00" y="191.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S6 · Brazo hombro</tspan></text>
+<text x="316.00" y="195.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO17 → J36-3 (SIG)</tspan></text>
+<rect x="297.40" y="199.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="200.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="203.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="205.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,204.50 L307.00,204.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="204.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="206.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="208.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,207.50 L310.00,207.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="207.50" r="0.87" fill="#263238"/>
+<path d="M220.50,201.50 L297.40,201.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="200.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO7</tspan></text>
+<text x="296.40" y="200.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J37</tspan></text>
+<text x="316.00" y="202.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S7 · Brazo pinza</tspan></text>
+<text x="316.00" y="206.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO16 → J37-3 (SIG)</tspan></text>
+<rect x="297.40" y="210.50" width="5.20" height="10.00" rx="0.80" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<rect x="299.20" y="211.70" width="1.6" height="1.6" fill="#555"/>
+<rect x="299.20" y="214.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="216.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">2 V+</tspan></text>
+<path d="M302.60,215.50 L307.00,215.50" fill="none" stroke="#e65100" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="307.00" cy="215.50" r="0.95" fill="#e65100"/>
+<rect x="299.20" y="217.70" width="1.6" height="1.6" fill="#555"/>
+<text x="296.40" y="219.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.10" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="296.40" dy="0.00">1 GND</tspan></text>
+<path d="M302.60,218.50 L310.00,218.50" fill="none" stroke="#263238" stroke-width="0.60" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="310.00" cy="218.50" r="0.87" fill="#263238"/>
+<path d="M220.50,212.50 L297.40,212.50" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="221.50" y="211.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.50" dy="0.00">SERVO8</tspan></text>
+<text x="296.40" y="211.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="296.40" dy="0.00">J38</tspan></text>
+<text x="316.00" y="213.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="316.00" dy="0.00">S8 · Brazo codo/muñeca</tspan></text>
+<text x="316.00" y="217.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#1565c0" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">IO4 → J38-3 (SIG)</tspan></text>
+<path d="M307.00,105.50 L307.00,226.50" fill="none" stroke="#e65100" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M310.00,108.50 L310.00,226.50" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="307.00" y="230.31" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#e65100" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="307.00" dy="0.00">SERVO_V</tspan></text>
+<text x="311.00" y="230.31" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#263238" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="311.00" dy="0.00">GND</tspan></text>
+<text x="152.00" y="275.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="152.00" dy="0.00">Cada servo recibe un pulso cada 20 ms (50 Hz): 800 µs = un extremo, 1500 µs = centro,</tspan><tspan x="152.00" dy="3.17">2200 µs = otro extremo. El PWM de 3.3 V de la ESP32 lo aceptan directo.</tspan></text>
+<text x="221.30" y="222.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.30" dy="0.00">ESPB_TX</tspan></text>
+<text x="221.30" y="233.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.30" dy="0.00">ESPB_RX</tspan></text>
+<text x="221.30" y="244.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#263238" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="221.30" dy="0.00">GND</tspan></text>
+</svg>

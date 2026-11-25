@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">
+<rect x="0.00" y="0.00" width="420.00" height="297.00" rx="0.00" fill="#ffffff" stroke="none"/>
+<text x="14.00" y="15.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="7.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="14.00" dy="0.00">1 · Alimentación: de dónde sale cada voltaje</tspan></text>
+<text x="14.00" y="22.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">Una batería 3S alimenta todo. Cada rama lleva su positivo (color) y su GND (negro); todos los GND se juntan en un solo punto (estrella).</tspan></text>
+<text x="406.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="406.00" dy="0.00">Rover - esquema para entender el circuito  ·  hoja 1 de 4</tspan></text>
+<text x="14.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">Generado por hardware/tools/esquema_didactico.py desde rover_design.py (mismos pines y redes que las PCB)</tspan></text>
+<rect x="14.00" y="128.00" width="40.00" height="30.00" rx="1.80" fill="#fde7ec" stroke="#e39aac" stroke-width="0.45"/>
+<text x="34.00" y="133.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="34.00" dy="0.00">Batería LiPo 3S</tspan></text>
+<text x="34.00" y="137.42" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="34.00" dy="0.00">11.1 V nominal</tspan><tspan x="34.00" dy="3.43">12.6 V llena</tspan><tspan x="34.00" dy="3.43">9.9 V: alarma</tspan></text>
+<path d="M54.00,137.00 L60.00,137.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="60.00" y="135.40" width="10.00" height="3.20" rx="0.80" fill="#fff" stroke="#c62828" stroke-width="0.50"/>
+<text x="65.00" y="134.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="65.00" dy="0.00">Fusible 15 A</tspan></text>
+<path d="M70.00,137.00 L84.00,137.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M54.00,140.00 L84.00,140.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="84.00" y="34.00" width="18.00" height="242.00" rx="1.60" fill="#fbe9e7" stroke="#d7a49a" stroke-width="0.45"/>
+<text x="93.00" y="31.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="93.00" dy="0.00">Bloque de distribución</tspan></text>
+<path d="M89.00,40.00 L89.00,270.00" fill="none" stroke="#c62828" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M97.00,40.00 L97.00,270.00" fill="none" stroke="#263238" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="89.00" y="274.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#c62828" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="89.00" dy="0.00">+</tspan></text>
+<text x="97.00" y="274.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#263238" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="97.00" dy="0.00">−</tspan></text>
+<circle cx="89.00" cy="137.00" r="0.99" fill="#c62828"/>
+<circle cx="97.00" cy="140.00" r="0.87" fill="#263238"/>
+<path d="M89.00,52.00 L130.00,52.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="89.00" cy="52.00" r="0.99" fill="#c62828"/>
+<path d="M97.00,55.00 L130.00,55.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="97.00" cy="55.00" r="0.87" fill="#263238"/>
+<text x="104.00" y="50.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#c62828" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="104.00" dy="0.00">12 V</tspan></text>
+<rect x="130.00" y="40.00" width="46.00" height="30.00" rx="1.80" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="153.00" y="45.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="153.00" dy="0.00">3 × L298N</tspan></text>
+<text x="153.00" y="49.42" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="153.00" dy="0.00">puentes H de los motores</tspan><tspan x="153.00" dy="3.43">el 12 V NO pasa por</tspan><tspan x="153.00" dy="3.43">las tarjetas</tspan></text>
+<path d="M176.00,52.00 L196.00,52.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M176.00,55.00 L196.00,55.00" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="196.00" y="40.00" width="52.00" height="30.00" rx="1.80" fill="#ffffff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="222.00" y="45.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="222.00" dy="0.00">6 motores Pololu 37D</tspan></text>
+<text x="222.00" y="49.42" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="222.00" dy="0.00">2 por cada L298N</tspan><tspan x="222.00" dy="3.43">hasta 5.5 A c/u al arrancar</tspan><tspan x="222.00" dy="3.43">(por eso la rampa)</tspan></text>
+<path d="M89.00,112.00 L130.00,112.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="89.00" cy="112.00" r="0.99" fill="#c62828"/>
+<path d="M97.00,115.00 L130.00,115.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="97.00" cy="115.00" r="0.87" fill="#263238"/>
+<text x="104.00" y="110.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#c62828" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="104.00" dy="0.00">12 V</tspan></text>
+<rect x="130.00" y="100.00" width="46.00" height="30.00" rx="1.80" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="153.00" y="105.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="153.00" dy="0.00">Step-down 5 V, 5 A</tspan></text>
+<text x="153.00" y="109.42" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="153.00" dy="0.00">12 V → 5 V</tspan><tspan x="153.00" dy="3.43">la Pi pide hasta 5 A</tspan></text>
+<path d="M176.00,112.00 L186.00,112.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M176.00,115.00 L189.00,115.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M186.00,112.00 L186.00,86.00 L210.00,86.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M189.00,115.00 L189.00,89.00 L210.00,89.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="210.00" y="77.00" width="74.00" height="22.00" rx="1.80" fill="#fde7ec" stroke="#e39aac" stroke-width="0.45"/>
+<text x="247.00" y="81.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="247.00" dy="0.00">Raspberry Pi 5 (HAT de bornas)</tspan></text>
+<text x="247.00" y="85.85" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="247.00" dy="0.00">5V → pines 2 y 4 · GND → pin 6</tspan><tspan x="247.00" dy="3.30">TVS SA5.0A en esas bornas</tspan></text>
+<path d="M186.00,112.00 L186.00,112.00 L210.00,112.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M189.00,115.00 L189.00,115.00 L210.00,115.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="210.00" y="103.00" width="74.00" height="22.00" rx="1.80" fill="#eef7ee" stroke="#9cc79f" stroke-width="0.45"/>
+<text x="247.00" y="107.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="247.00" dy="0.00">Tracción · J5</tspan></text>
+<text x="247.00" y="111.85" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="247.00" dy="0.00">+5V → D5 → VIN de la ESP32-A</tspan><tspan x="247.00" dy="3.30">+5V → encoders (J7, J8)</tspan></text>
+<path d="M186.00,112.00 L186.00,138.00 L210.00,138.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M189.00,115.00 L189.00,141.00 L210.00,141.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="210.00" y="129.00" width="74.00" height="22.00" rx="1.80" fill="#eef7ee" stroke="#9cc79f" stroke-width="0.45"/>
+<text x="247.00" y="133.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="247.00" dy="0.00">Servos · J5</tspan></text>
+<text x="247.00" y="137.85" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="247.00" dy="0.00">+5V → D6 → VIN de la ESP32-B</tspan></text>
+<circle cx="186.00" cy="112.00" r="0.91" fill="#ad1457"/>
+<circle cx="189.00" cy="115.00" r="0.87" fill="#263238"/>
+<path d="M89.00,204.00 L130.00,204.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="89.00" cy="204.00" r="0.99" fill="#c62828"/>
+<path d="M97.00,207.00 L130.00,207.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="97.00" cy="207.00" r="0.87" fill="#263238"/>
+<text x="104.00" y="202.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#c62828" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="104.00" dy="0.00">12 V</tspan></text>
+<rect x="130.00" y="192.00" width="46.00" height="30.00" rx="1.80" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="153.00" y="197.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="153.00" dy="0.00">BEC 6 V, ≥ 10 A</tspan></text>
+<text x="153.00" y="201.42" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="153.00" dy="0.00">12 V → 6 V</tspan><tspan x="153.00" dy="3.43">8 servos de ~1.2 A al</tspan><tspan x="153.00" dy="3.43">arrancar</tspan></text>
+<path d="M176.00,204.00 L210.00,204.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M176.00,207.00 L210.00,207.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="210.00" y="193.00" width="74.00" height="22.00" rx="1.80" fill="#eef7ee" stroke="#9cc79f" stroke-width="0.45"/>
+<text x="247.00" y="197.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="247.00" dy="0.00">Servos · J6 → SERVO_V</tspan></text>
+<text x="247.00" y="201.85" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="247.00" dy="0.00">C3 + C4 (1000 µF): picos</tspan><tspan x="247.00" dy="3.30">LED azul D4: hay 6 V</tspan></text>
+<path d="M284.00,204.00 L300.00,204.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M284.00,207.00 L300.00,207.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="300.00" y="193.00" width="70.00" height="22.00" rx="1.80" fill="#ffffff" stroke="#c9d3dc" stroke-width="0.45"/>
+<text x="335.00" y="197.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="335.00" dy="0.00">8 servos Power HD 1501MG</tspan></text>
+<text x="335.00" y="201.85" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="335.00" dy="0.00">V+ (rojo) y GND (café)</tspan><tspan x="335.00" dy="3.30">de cada header</tspan></text>
+<path d="M89.00,244.00 L210.00,244.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="89.00" cy="244.00" r="0.99" fill="#c62828"/>
+<path d="M97.00,247.00 L210.00,247.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="97.00" cy="247.00" r="0.87" fill="#263238"/>
+<text x="104.00" y="242.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#c62828" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="104.00" dy="0.00">12 V (solo medición)</tspan></text>
+<rect x="210.00" y="233.00" width="74.00" height="22.00" rx="1.80" fill="#eef7ee" stroke="#9cc79f" stroke-width="0.45"/>
+<text x="247.00" y="237.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.00" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="247.00" dy="0.00">Servos · J2 (BAT SENSE)</tspan></text>
+<text x="247.00" y="241.85" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="247.00" dy="0.00">divisor 100k / 27k → IO34</tspan><tspan x="247.00" dy="3.30">LED rojo D2: hay batería</tspan></text>
+<text x="104.00" y="258.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="104.00" dy="0.00">Esta rama lleva menos de 10 mA:</tspan><tspan x="104.00" dy="3.30">cable delgado, después del fusible.</tspan></text>
+<rect x="300.00" y="34.00" width="106.00" height="70.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="304.00" y="41.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="304.00" dy="0.00">¿Por qué así?</tspan></text>
+<text x="304.00" y="46.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.65" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="304.00" dy="0.00">• Los motores toman el 12 V directo del bloque:</tspan><tspan x="304.00" dy="3.50">  su corriente (hasta 30 A en total) nunca pasa</tspan><tspan x="304.00" dy="3.50">  por las tarjetas fresadas.</tspan><tspan x="304.00" dy="3.50">• El 5 V (step-down) es para la lógica: Pi, las 2</tspan><tspan x="304.00" dy="3.50">  ESP32 y los encoders. Separado de los motores,</tspan><tspan x="304.00" dy="3.50">  el ruido de las escobillas no reinicia nada.</tspan><tspan x="304.00" dy="3.50">• Los servos tienen su propio 6 V (BEC): al</tspan><tspan x="304.00" dy="3.50">  arrancar los 8 juntos piden varios amperes y</tspan><tspan x="304.00" dy="3.50">  no deben tirar el 5 V de la Pi.</tspan><tspan x="304.00" dy="3.50">• D5 y D6 (Schottky 1N5819) dejan pasar el 5 V a</tspan><tspan x="304.00" dy="3.50">  cada ESP32, pero cuando la conectas por USB a la</tspan><tspan x="304.00" dy="3.50">  PC, su 5 V no regresa a la Pi ni a los encoders.</tspan><tspan x="304.00" dy="3.50">• GND en estrella: todos los negativos llegan al</tspan><tspan x="304.00" dy="3.50">  bloque. Así la Pi y las ESP32 comparten la misma</tspan><tspan x="304.00" dy="3.50">  referencia para el UART.</tspan></text>
+<rect x="300.00" y="110.00" width="106.00" height="34.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="304.00" y="117.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="304.00" dy="0.00">Colores</tspan></text>
+<path d="M306.00,123.00 L314.00,123.00" fill="none" stroke="#c62828" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="316.00" y="123.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">12 V batería (motores)</tspan></text>
+<path d="M306.00,127.60 L314.00,127.60" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="316.00" y="128.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">6 V servos (BEC)</tspan></text>
+<path d="M306.00,132.20 L314.00,132.20" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="316.00" y="133.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">5 V lógica (step-down)</tspan></text>
+<path d="M306.00,136.80 L314.00,136.80" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="316.00" y="137.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="316.00" dy="0.00">GND común</tspan></text>
+<path d="M358.00,123.00 L366.00,123.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="368.00" y="123.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="368.00" dy="0.00">UART Pi ↔ ESP32</tspan></text>
+<path d="M358.00,127.60 L366.00,127.60" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="368.00" y="128.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="368.00" dy="0.00">control / PWM</tspan></text>
+<path d="M358.00,132.20 L366.00,132.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="368.00" y="133.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="368.00" dy="0.00">encoders</tspan></text>
+<path d="M358.00,136.80 L366.00,136.80" fill="none" stroke="#6d4c41" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="368.00" y="137.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="368.00" dy="0.00">salidas a motores</tspan></text>
+<rect x="300.00" y="150.00" width="106.00" height="38.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="304.00" y="157.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="304.00" dy="0.00">Al encender por primera vez</tspan></text>
+<text x="304.00" y="161.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.65" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="304.00" dy="0.00">1. Sin módulos: continuidad 5V–GND y 6V–GND</tspan><tspan x="304.00" dy="3.50">   (no debe pitar).</tspan><tspan x="304.00" dy="3.50">2. Fuente limitada a 0.5 A: revisa 5 V en J5 y 6 V</tspan><tspan x="304.00" dy="3.50">   en J6 antes de poner la Pi y las ESP32.</tspan><tspan x="304.00" dy="3.50">3. Los LED D3 (verde), D4 (azul) y D2 (rojo)</tspan><tspan x="304.00" dy="3.50">   te dicen qué voltaje está presente.</tspan></text>
+</svg>

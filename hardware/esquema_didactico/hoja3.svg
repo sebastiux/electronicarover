@@ -1,0 +1,430 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">
+<rect x="0.00" y="0.00" width="420.00" height="297.00" rx="0.00" fill="#ffffff" stroke="none"/>
+<text x="14.00" y="15.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="7.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="14.00" dy="0.00">3 · Tarjeta de TRACCIÓN por dentro</tspan></text>
+<text x="14.00" y="22.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">ESP32-A, bornas de los 3 L298N, 6 divisores de encoder, entrada de 5 V y enlace UART2 con la Pi. Números de pin y valores tal cual están en la PCB.</tspan></text>
+<text x="406.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="406.00" dy="0.00">Rover - esquema para entender el circuito  ·  hoja 3 de 4</tspan></text>
+<text x="14.00" y="291.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="14.00" dy="0.00">Generado por hardware/tools/esquema_didactico.py desde rover_design.py (mismos pines y redes que las PCB)</tspan></text>
+<rect x="14.00" y="28.00" width="128.00" height="92.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="35.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">1 · Entrada 5 V</tspan></text>
+<rect x="24.50" y="48.90" width="7.00" height="11.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="28.00" cy="52.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M27.00,53.00 L29.00,51.00" stroke="#555" stroke-width="0.3"/>
+<text x="23.30" y="52.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#ad1457" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="23.30" dy="0.00">1 +5V</tspan></text>
+<circle cx="28.00" cy="57.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M27.00,58.00 L29.00,56.00" stroke="#555" stroke-width="0.3"/>
+<text x="23.30" y="57.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="23.30" dy="0.00">2 GND</tspan></text>
+<text x="28.00" y="47.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="28.00" dy="0.00">J5</tspan></text>
+<text x="28.00" y="63.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="28.00" dy="0.00">del step-down</tspan></text>
+<path d="M31.50,52.00 L34.50,52.00 L34.50,46.00 L122.00,46.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M31.50,57.00 L33.00,57.00 L33.00,106.00 L122.00,106.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M52.00,71.00 L52.00,75.20" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M52.00,76.80 L52.00,81.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M49.70,75.20 L54.30,75.20" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="49.70" y="76.55" width="4.60" height="0.70" rx="0.00" fill="#1f2328" stroke="none"/>
+<text x="48.60" y="74.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="48.60" dy="0.00">+</tspan></text>
+<text x="55.20" y="75.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="55.20" dy="0.00">C2</tspan></text>
+<text x="55.20" y="78.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="55.20" dy="0.00">1000 µF 10V</tspan></text>
+<path d="M52.00,46.00 L52.00,71.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M52.00,81.00 L52.00,106.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.00" cy="46.00" r="0.91" fill="#ad1457"/>
+<circle cx="52.00" cy="106.00" r="0.87" fill="#263238"/>
+<path d="M74.00,54.00 L74.00,56.80" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M74.00,63.20 L74.00,66.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="72.70" y="56.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="76.60" y="59.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="76.60" dy="0.00">R25</tspan></text>
+<text x="76.60" y="62.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="76.60" dy="0.00">330</tspan></text>
+<path d="M74.00,46.00 L74.00,54.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="74.00" cy="46.00" r="0.91" fill="#ad1457"/>
+<g transform="translate(74.00,84.00) rotate(90)"><path d="M-5,0 L-1.6,0" stroke="#ad1457" stroke-width="0.90"/><path d="M1.6,0 L5,0" stroke="#263238" stroke-width="0.80"/><polygon points="-1.6,-1.8 -1.6,1.8 1.6,0" fill="#2e7d32"/><path d="M1.6,-1.8 L1.6,1.8" stroke="#1f2328" stroke-width="0.45"/><path d="M-0.60,-2.2 L0.80,-4.4" stroke="#2e7d32" stroke-width="0.35"/><polygon points="0.80,-4.4 0.00,-3.5 0.80,-3.9" fill="#2e7d32"/><path d="M1.00,-2.2 L2.40,-4.4" stroke="#2e7d32" stroke-width="0.35"/><polygon points="2.40,-4.4 1.60,-3.5 2.40,-3.9" fill="#2e7d32"/></g>
+<text x="80.00" y="83.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="80.00" dy="0.00">D3</tspan></text>
+<text x="80.00" y="86.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="80.00" dy="0.00">LED verde</tspan></text>
+<path d="M74.00,66.00 L74.00,79.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M74.00,89.00 L74.00,106.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="74.00" cy="106.00" r="0.87" fill="#263238"/>
+<g transform="translate(104.00,64.00) rotate(90)"><path d="M-5,0 L-1.6,0" stroke="#ad1457" stroke-width="0.90"/><path d="M1.6,0 L5,0" stroke="#ad1457" stroke-width="0.90"/><polygon points="-1.6,-1.8 -1.6,1.8 1.6,0" fill="#1f2328"/><path d="M1.6,-1.8 L1.6,1.8" stroke="#1f2328" stroke-width="0.45"/></g>
+<text x="107.20" y="63.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="107.20" dy="0.00">D5</tspan></text>
+<text x="107.20" y="66.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="107.20" dy="0.00">1N5819</tspan></text>
+<path d="M104.00,46.00 L104.00,59.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="104.00" cy="46.00" r="0.91" fill="#ad1457"/>
+<path d="M104.00,69.00 L104.00,76.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="106.00" y="76.81" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#ad1457" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="106.00" dy="0.00">VIN_A → pin 15 (VIN) ESP32-A</tspan></text>
+<path d="M122.00,46.00 L122.00,40.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="120.00" y="38.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#ad1457" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="120.00" dy="0.00">+5V → encoders (J7-4, J8-2)</tspan></text>
+<path d="M122.00,106.00 L122.00,107.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M119.60,107.60 L124.40,107.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M120.40,108.35 L123.60,108.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M121.20,109.10 L122.80,109.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="18.00" y="114.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">C2: reserva para picos.  D3: "hay 5 V" (~9 mA).  D5: el 5 V entra a la ESP32 pero</tspan><tspan x="18.00" dy="3.17">el del USB no regresa a la tarjeta cuando la programas.</tspan></text>
+<rect x="14.00" y="126.00" width="128.00" height="68.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="133.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#2e7d32" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">2 · Enlace con la Pi (UART2)</tspan></text>
+<rect x="58.50" y="142.90" width="7.00" height="16.20" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="62.00" cy="146.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M61.00,147.00 L63.00,145.00" stroke="#555" stroke-width="0.3"/>
+<text x="57.30" y="146.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="57.30" dy="0.00">1 GND</tspan></text>
+<circle cx="62.00" cy="151.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M61.00,152.00 L63.00,150.00" stroke="#555" stroke-width="0.3"/>
+<text x="57.30" y="151.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="57.30" dy="0.00">2 RXD2</tspan></text>
+<circle cx="62.00" cy="156.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M61.00,157.00 L63.00,155.00" stroke="#555" stroke-width="0.3"/>
+<text x="57.30" y="156.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="57.30" dy="0.00">3 TXD2</tspan></text>
+<text x="62.00" y="141.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="62.00" dy="0.00">J9</tspan></text>
+<text x="62.00" y="162.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="62.00" dy="0.00">PI (UART2)</tspan></text>
+<text x="46.00" y="146.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">Pi pin 6 (GND)</tspan></text>
+<text x="46.00" y="151.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">Pi pin 29 (GPIO5)</tspan></text>
+<text x="46.00" y="156.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="46.00" dy="0.00">Pi pin 7 (GPIO4)</tspan></text>
+<path d="M65.50,146.00 L76.00,146.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M76.00,146.00 L76.00,147.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M73.60,147.60 L78.40,147.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M74.40,148.35 L77.60,148.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M75.20,149.10 L76.80,149.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M80.00,151.00 L82.80,151.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M89.20,151.00 L92.00,151.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="82.80" y="149.70" width="6.40" height="2.60" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="86.00" y="148.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="middle" font-weight="600" xml:space="preserve"><tspan x="86.00" dy="0.00">R14  1k</tspan></text>
+<path d="M65.50,151.00 L80.00,151.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M92.00,151.00 L110.00,151.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="69.10,151.00 71.34,149.72 71.34,152.28" fill="#2e7d32"/>
+<text x="111.00" y="151.91" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="111.00" dy="0.00">IO27 = TX</tspan></text>
+<path d="M80.00,160.00 L82.80,160.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M89.20,160.00 L92.00,160.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="82.80" y="158.70" width="6.40" height="2.60" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="86.00" y="157.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="middle" font-weight="600" xml:space="preserve"><tspan x="86.00" dy="0.00">R13  1k</tspan></text>
+<path d="M65.50,156.00 L74.00,156.00 L74.00,160.00 L80.00,160.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M92.00,160.00 L110.00,160.00" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="110.00,160.00 107.76,158.72 107.76,161.28" fill="#2e7d32"/>
+<text x="111.00" y="160.91" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#2e7d32" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="111.00" dy="0.00">IO14 = RX</tspan></text>
+<text x="18.00" y="182.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="18.00" dy="0.00">El TX de uno va al RX del otro (cruzado). 1k en serie: si un pin queda como</tspan><tspan x="18.00" dy="3.17">salida por error, la corriente queda en ~3 mA y nada se daña.</tspan></text>
+<rect x="148.00" y="28.00" width="104.00" height="166.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="152.00" y="35.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="152.00" dy="0.00">3 · ESP32-A</tspan></text>
+<rect x="178.00" y="38.00" width="42.00" height="150.00" rx="2.00" fill="#e3f2fd" stroke="#7fb1e3" stroke-width="0.50"/>
+<text x="199.00" y="107.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="3.40" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="199.00" dy="0.00">ESP32-A</tspan></text>
+<text x="199.00" y="111.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="199.00" dy="0.00">U2</tspan><tspan x="199.00" dy="3.04">DevKit V1</tspan><tspan x="199.00" dy="3.04">30 pines</tspan></text>
+<path d="M178.00,45.80 L175.50,45.80" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="46.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="179.40" dy="0.00">1 EN</tspan></text>
+<path d="M178.00,55.40 L175.50,55.40" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="56.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">2 VP/IO36</tspan></text>
+<path d="M178.00,65.00 L175.50,65.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="65.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">3 VN/IO39</tspan></text>
+<path d="M178.00,74.60 L175.50,74.60" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="75.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">4 IO34</tspan></text>
+<path d="M178.00,84.20 L175.50,84.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="85.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">5 IO35</tspan></text>
+<path d="M178.00,93.80 L175.50,93.80" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="94.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">6 IO32</tspan></text>
+<path d="M178.00,103.40 L175.50,103.40" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="104.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">7 IO33</tspan></text>
+<path d="M178.00,113.00 L175.50,113.00" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="113.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="179.40" dy="0.00">8 IO25</tspan></text>
+<path d="M178.00,122.60 L175.50,122.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="123.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="179.40" dy="0.00">9 IO26</tspan></text>
+<path d="M178.00,132.20 L175.50,132.20" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="133.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">10 IO27</tspan></text>
+<path d="M178.00,141.80 L175.50,141.80" fill="none" stroke="#2e7d32" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="142.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">11 IO14</tspan></text>
+<path d="M178.00,151.40 L175.50,151.40" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="152.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="179.40" dy="0.00">12 IO12</tspan></text>
+<path d="M178.00,161.00 L175.50,161.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="161.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">13 IO13</tspan></text>
+<path d="M178.00,170.60 L175.50,170.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="171.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">14 GND</tspan></text>
+<path d="M178.00,180.20 L175.50,180.20" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="179.40" y="181.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="179.40" dy="0.00">15 VIN</tspan></text>
+<path d="M220.00,45.80 L222.50,45.80" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="46.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO23 16</tspan></text>
+<path d="M220.00,55.40 L222.50,55.40" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="56.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO22 17</tspan></text>
+<path d="M220.00,65.00 L222.50,65.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="65.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">TX0/IO1 18</tspan></text>
+<path d="M220.00,74.60 L222.50,74.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="75.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="218.60" dy="0.00">RX0/IO3 19</tspan></text>
+<path d="M220.00,84.20 L222.50,84.20" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="85.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO21 20</tspan></text>
+<path d="M220.00,93.80 L222.50,93.80" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="94.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO19 21</tspan></text>
+<path d="M220.00,103.40 L222.50,103.40" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="104.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO18 22</tspan></text>
+<path d="M220.00,113.00 L222.50,113.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="113.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO5 23</tspan></text>
+<path d="M220.00,122.60 L222.50,122.60" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="123.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">TX2/IO17 24</tspan></text>
+<path d="M220.00,132.20 L222.50,132.20" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="133.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">RX2/IO16 25</tspan></text>
+<path d="M220.00,141.80 L222.50,141.80" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="142.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO4 26</tspan></text>
+<path d="M220.00,151.40 L222.50,151.40" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="152.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO2 27</tspan></text>
+<path d="M220.00,161.00 L222.50,161.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="161.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">IO15 28</tspan></text>
+<path d="M220.00,170.60 L222.50,170.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="171.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#1f2328" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="218.60" dy="0.00">GND 29</tspan></text>
+<path d="M220.00,180.20 L222.50,180.20" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="218.60" y="181.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#9aa5b1" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="218.60" dy="0.00">3V3 30</tspan></text>
+<text x="174.70" y="56.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#6a1b9a" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ENC1 (M1)</tspan></text>
+<text x="174.70" y="65.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#6a1b9a" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ENC2 (M2)</tspan></text>
+<text x="174.70" y="75.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#6a1b9a" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ENC3 (M3)</tspan></text>
+<text x="174.70" y="85.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#6a1b9a" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ENC4 (M4)</tspan></text>
+<text x="174.70" y="94.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#6a1b9a" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ENC5 (M5)</tspan></text>
+<text x="174.70" y="104.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#6a1b9a" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ENC6 (M6)</tspan></text>
+<text x="174.70" y="133.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ESPA_TX</tspan></text>
+<text x="174.70" y="142.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#2e7d32" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">ESPA_RX</tspan></text>
+<text x="174.70" y="161.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">MOTOR_EN (J41-43)</tspan></text>
+<text x="174.70" y="171.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">GND</tspan></text>
+<text x="174.70" y="181.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#ad1457" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="174.70" dy="0.00">VIN_A (D5)</tspan></text>
+<text x="223.30" y="46.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#1_IN1 → J41-5</tspan></text>
+<text x="223.30" y="56.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#1_IN2 → J41-4</tspan></text>
+<text x="223.30" y="65.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#1_IN3 → J41-3</tspan></text>
+<text x="223.30" y="85.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#1_IN4 → J41-2</tspan></text>
+<text x="223.30" y="94.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#2_IN1 → J42-5</tspan></text>
+<text x="223.30" y="104.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#2_IN2 → J42-4</tspan></text>
+<text x="223.30" y="113.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#2_IN3 → J42-3</tspan></text>
+<text x="223.30" y="123.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#2_IN4 → J42-2</tspan></text>
+<text x="223.30" y="133.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#3_IN1 → J43-5</tspan></text>
+<text x="223.30" y="142.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#3_IN2 → J43-4</tspan></text>
+<text x="223.30" y="152.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#3_IN3 → J43-3</tspan></text>
+<text x="223.30" y="161.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">#3_IN4 → J43-2</tspan></text>
+<text x="223.30" y="171.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.25" fill="#263238" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="223.30" dy="0.00">GND</tspan></text>
+<text x="152.00" y="190.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="152.00" dy="0.00">Gris = pin libre. IO12 libre: debe estar en LOW al arrancar.</tspan></text>
+<rect x="258.00" y="28.00" width="148.00" height="166.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="262.00" y="35.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="262.00" dy="0.00">4 · Bornas de los L298N (1 por módulo)</tspan></text>
+<rect x="296.50" y="43.10" width="7.00" height="28.80" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="300.00" cy="46.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,47.00 L301.00,45.00" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="46.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">1 EN</tspan></text>
+<circle cx="300.00" cy="50.60" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,51.60 L301.00,49.60" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="51.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">2 IN4</tspan></text>
+<circle cx="300.00" cy="55.20" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,56.20 L301.00,54.20" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="56.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">3 IN3</tspan></text>
+<circle cx="300.00" cy="59.80" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,60.80 L301.00,58.80" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="60.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">4 IN2</tspan></text>
+<circle cx="300.00" cy="64.40" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,65.40 L301.00,63.40" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="65.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">5 IN1</tspan></text>
+<circle cx="300.00" cy="69.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,70.00 L301.00,68.00" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="69.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">6 GND</tspan></text>
+<text x="300.00" y="41.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="300.00" dy="0.00">J41</tspan></text>
+<path d="M272.00,46.00 L289.50,46.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="272.00" cy="46.00" r="0.75" fill="#1565c0"/>
+<text x="286.00" y="51.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="56.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="60.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="65.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<rect x="322.00" y="41.00" width="40.00" height="30.00" rx="1.60" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="342.00" y="39.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">L298N #1  (M1 / M2)</tspan></text>
+<text x="323.80" y="45.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">ENA</tspan></text>
+<circle cx="322.00" cy="44.40" r="0.6" fill="#1f2328"/>
+<path d="M316.00,46.00 L316.00,44.40 L322.00,44.40" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="48.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">ENB</tspan></text>
+<circle cx="322.00" cy="47.60" r="0.6" fill="#1f2328"/>
+<path d="M316.00,46.00 L316.00,47.60 L322.00,47.60" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="51.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN4</tspan></text>
+<circle cx="322.00" cy="50.60" r="0.6" fill="#1f2328"/>
+<path d="M303.50,50.60 L322.00,50.60" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="56.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN3</tspan></text>
+<circle cx="322.00" cy="55.20" r="0.6" fill="#1f2328"/>
+<path d="M303.50,55.20 L322.00,55.20" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="60.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN2</tspan></text>
+<circle cx="322.00" cy="59.80" r="0.6" fill="#1f2328"/>
+<path d="M303.50,59.80 L322.00,59.80" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="65.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN1</tspan></text>
+<circle cx="322.00" cy="64.40" r="0.6" fill="#1f2328"/>
+<path d="M303.50,64.40 L322.00,64.40" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="69.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">GND</tspan></text>
+<circle cx="322.00" cy="69.00" r="0.6" fill="#1f2328"/>
+<path d="M303.50,69.00 L322.00,69.00" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M303.50,46.00 L316.00,46.00" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="316.00" cy="46.00" r="0.75" fill="#1565c0"/>
+<text x="319.00" y="43.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="319.00" dy="0.00">Y</tspan></text>
+<text x="346.00" y="52.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="346.00" dy="0.00">quita los 2</tspan><tspan x="346.00" dy="2.90">jumpers de</tspan><tspan x="346.00" dy="2.90">ENA/ENB y une</tspan><tspan x="346.00" dy="2.90">ambos al EN</tspan></text>
+<text x="364.00" y="48.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#6d4c41" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="364.00" dy="0.00">OUT1/OUT2</tspan><tspan x="364.00" dy="2.90">→ motor A</tspan><tspan x="364.00" dy="2.90">(izquierdo)</tspan><tspan x="364.00" dy="2.90"></tspan><tspan x="364.00" dy="2.90">OUT3/OUT4</tspan><tspan x="364.00" dy="2.90">→ motor B</tspan><tspan x="364.00" dy="2.90">(derecho)</tspan></text>
+<rect x="296.50" y="81.10" width="7.00" height="28.80" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="300.00" cy="84.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,85.00 L301.00,83.00" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="84.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">1 EN</tspan></text>
+<circle cx="300.00" cy="88.60" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,89.60 L301.00,87.60" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="89.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">2 IN4</tspan></text>
+<circle cx="300.00" cy="93.20" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,94.20 L301.00,92.20" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="94.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">3 IN3</tspan></text>
+<circle cx="300.00" cy="97.80" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,98.80 L301.00,96.80" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="98.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">4 IN2</tspan></text>
+<circle cx="300.00" cy="102.40" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,103.40 L301.00,101.40" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="103.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">5 IN1</tspan></text>
+<circle cx="300.00" cy="107.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,108.00 L301.00,106.00" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="107.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">6 GND</tspan></text>
+<text x="300.00" y="79.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="300.00" dy="0.00">J42</tspan></text>
+<path d="M272.00,84.00 L289.50,84.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="272.00" cy="84.00" r="0.75" fill="#1565c0"/>
+<text x="286.00" y="89.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="94.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="98.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="103.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<rect x="322.00" y="79.00" width="40.00" height="30.00" rx="1.60" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="342.00" y="77.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">L298N #2  (M3 / M4)</tspan></text>
+<text x="323.80" y="83.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">ENA</tspan></text>
+<circle cx="322.00" cy="82.40" r="0.6" fill="#1f2328"/>
+<path d="M316.00,84.00 L316.00,82.40 L322.00,82.40" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="86.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">ENB</tspan></text>
+<circle cx="322.00" cy="85.60" r="0.6" fill="#1f2328"/>
+<path d="M316.00,84.00 L316.00,85.60 L322.00,85.60" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="89.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN4</tspan></text>
+<circle cx="322.00" cy="88.60" r="0.6" fill="#1f2328"/>
+<path d="M303.50,88.60 L322.00,88.60" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="94.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN3</tspan></text>
+<circle cx="322.00" cy="93.20" r="0.6" fill="#1f2328"/>
+<path d="M303.50,93.20 L322.00,93.20" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="98.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN2</tspan></text>
+<circle cx="322.00" cy="97.80" r="0.6" fill="#1f2328"/>
+<path d="M303.50,97.80 L322.00,97.80" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="103.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN1</tspan></text>
+<circle cx="322.00" cy="102.40" r="0.6" fill="#1f2328"/>
+<path d="M303.50,102.40 L322.00,102.40" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="107.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">GND</tspan></text>
+<circle cx="322.00" cy="107.00" r="0.6" fill="#1f2328"/>
+<path d="M303.50,107.00 L322.00,107.00" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M303.50,84.00 L316.00,84.00" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="316.00" cy="84.00" r="0.75" fill="#1565c0"/>
+<text x="319.00" y="81.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="319.00" dy="0.00">Y</tspan></text>
+<text x="346.00" y="90.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="346.00" dy="0.00">quita los 2</tspan><tspan x="346.00" dy="2.90">jumpers de</tspan><tspan x="346.00" dy="2.90">ENA/ENB y une</tspan><tspan x="346.00" dy="2.90">ambos al EN</tspan></text>
+<text x="364.00" y="86.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#6d4c41" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="364.00" dy="0.00">OUT1/OUT2</tspan><tspan x="364.00" dy="2.90">→ motor A</tspan><tspan x="364.00" dy="2.90">(izquierdo)</tspan><tspan x="364.00" dy="2.90"></tspan><tspan x="364.00" dy="2.90">OUT3/OUT4</tspan><tspan x="364.00" dy="2.90">→ motor B</tspan><tspan x="364.00" dy="2.90">(derecho)</tspan></text>
+<rect x="296.50" y="119.10" width="7.00" height="28.80" rx="1.00" fill="#e8f0e0" stroke="#7e9f6a" stroke-width="0.40"/>
+<circle cx="300.00" cy="122.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,123.00 L301.00,121.00" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="122.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">1 EN</tspan></text>
+<circle cx="300.00" cy="126.60" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,127.60 L301.00,125.60" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="127.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">2 IN4</tspan></text>
+<circle cx="300.00" cy="131.20" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,132.20 L301.00,130.20" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="132.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">3 IN3</tspan></text>
+<circle cx="300.00" cy="135.80" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,136.80 L301.00,134.80" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="136.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">4 IN2</tspan></text>
+<circle cx="300.00" cy="140.40" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,141.40 L301.00,139.40" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="141.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1565c0" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">5 IN1</tspan></text>
+<circle cx="300.00" cy="145.00" r="1.5" fill="#ffffff" stroke="#555" stroke-width="0.3"/><path d="M299.00,146.00 L301.00,144.00" stroke="#555" stroke-width="0.3"/>
+<text x="295.30" y="145.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#263238" text-anchor="end" font-weight="600" xml:space="preserve"><tspan x="295.30" dy="0.00">6 GND</tspan></text>
+<text x="300.00" y="117.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.80" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="300.00" dy="0.00">J43</tspan></text>
+<path d="M272.00,122.00 L289.50,122.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="272.00" cy="122.00" r="0.75" fill="#1565c0"/>
+<text x="286.00" y="127.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="132.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="136.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<text x="286.00" y="141.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.00" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="286.00" dy="0.00"></tspan></text>
+<rect x="322.00" y="117.00" width="40.00" height="30.00" rx="1.60" fill="#fff8e1" stroke="#e0c36a" stroke-width="0.45"/>
+<text x="342.00" y="115.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="342.00" dy="0.00">L298N #3  (M5 / M6)</tspan></text>
+<text x="323.80" y="121.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">ENA</tspan></text>
+<circle cx="322.00" cy="120.40" r="0.6" fill="#1f2328"/>
+<path d="M316.00,122.00 L316.00,120.40 L322.00,120.40" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="124.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">ENB</tspan></text>
+<circle cx="322.00" cy="123.60" r="0.6" fill="#1f2328"/>
+<path d="M316.00,122.00 L316.00,123.60 L322.00,123.60" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="127.50" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN4</tspan></text>
+<circle cx="322.00" cy="126.60" r="0.6" fill="#1f2328"/>
+<path d="M303.50,126.60 L322.00,126.60" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="132.10" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN3</tspan></text>
+<circle cx="322.00" cy="131.20" r="0.6" fill="#1f2328"/>
+<path d="M303.50,131.20 L322.00,131.20" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="136.70" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN2</tspan></text>
+<circle cx="322.00" cy="135.80" r="0.6" fill="#1f2328"/>
+<path d="M303.50,135.80 L322.00,135.80" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="141.30" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">IN1</tspan></text>
+<circle cx="322.00" cy="140.40" r="0.6" fill="#1f2328"/>
+<path d="M303.50,140.40 L322.00,140.40" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="323.80" y="145.90" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="323.80" dy="0.00">GND</tspan></text>
+<circle cx="322.00" cy="145.00" r="0.6" fill="#1f2328"/>
+<path d="M303.50,145.00 L322.00,145.00" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M303.50,122.00 L316.00,122.00" fill="none" stroke="#1565c0" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="316.00" cy="122.00" r="0.75" fill="#1565c0"/>
+<text x="319.00" y="119.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#1565c0" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="319.00" dy="0.00">Y</tspan></text>
+<text x="346.00" y="128.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#5b6573" text-anchor="middle" font-weight="400" xml:space="preserve"><tspan x="346.00" dy="0.00">quita los 2</tspan><tspan x="346.00" dy="2.90">jumpers de</tspan><tspan x="346.00" dy="2.90">ENA/ENB y une</tspan><tspan x="346.00" dy="2.90">ambos al EN</tspan></text>
+<text x="364.00" y="124.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.20" fill="#6d4c41" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="364.00" dy="0.00">OUT1/OUT2</tspan><tspan x="364.00" dy="2.90">→ motor A</tspan><tspan x="364.00" dy="2.90">(izquierdo)</tspan><tspan x="364.00" dy="2.90"></tspan><tspan x="364.00" dy="2.90">OUT3/OUT4</tspan><tspan x="364.00" dy="2.90">→ motor B</tspan><tspan x="364.00" dy="2.90">(derecho)</tspan></text>
+<path d="M272.00,42.00 L272.00,128.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="271.00" y="40.84" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#1565c0" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="271.00" dy="0.00">MOTOR_EN (IO13)</tspan></text>
+<path d="M272.00,128.00 L272.00,130.80" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M272.00,137.20 L272.00,140.00" fill="none" stroke="#1565c0" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="270.70" y="130.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="269.40" y="133.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="269.40" dy="0.00">R21</tspan></text>
+<text x="269.40" y="136.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="269.40" dy="0.00">10k</tspan></text>
+<path d="M272.00,140.00 L272.00,142.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M272.00,142.00 L272.00,143.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M269.60,143.60 L274.40,143.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M270.40,144.35 L273.60,144.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M271.20,145.10 L272.80,145.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="262.00" y="162.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.70" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="262.00" dy="0.00">Cómo se mueve cada motor (EN = 1):</tspan></text>
+<text x="262.00" y="167.00" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="262.00" dy="0.00">IN1     IN2     motor A</tspan><tspan x="262.00" dy="3.17">PWM     0       gira en un sentido (velocidad = PWM)</tspan><tspan x="262.00" dy="3.17">0       PWM     gira al revés</tspan><tspan x="262.00" dy="3.17">0       0       freno          EN = 0 → motor suelto</tspan></text>
+<text x="262.00" y="187.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.30" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="262.00" dy="0.00">IN3/IN4 hacen lo mismo con el motor B. Si un lado gira al revés, invierte OUT1/OUT2.</tspan></text>
+<rect x="14.00" y="200.00" width="392.00" height="84.00" rx="2.20" fill="#f7f9fb" stroke="#c9d3dc" stroke-width="0.35"/>
+<text x="18.00" y="207.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="4.20" fill="#6a1b9a" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="18.00" dy="0.00">5 · Encoders: bajar el canal A de 5 V a 3.3 V (6 divisores iguales)</tspan></text>
+<text x="22.00" y="215.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="22.00" dy="0.00">J7-1</tspan></text>
+<text x="22.00" y="219.91" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="22.00" dy="0.00">ENC1_A5V (0 / 5 V)</tspan></text>
+<path d="M48.00,219.00 L56.00,219.00 L56.00,222.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,222.00 L56.00,224.80" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,231.20 L56.00,234.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="54.70" y="224.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="58.60" y="227.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="58.60" dy="0.00">R1</tspan></text>
+<text x="58.60" y="230.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="58.60" dy="0.00">10k</tspan></text>
+<path d="M56.00,234.00 L56.00,240.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="56.00" cy="240.00" r="0.75" fill="#6a1b9a"/>
+<path d="M56.00,246.00 L56.00,248.80" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,255.20 L56.00,258.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="54.70" y="248.80" width="2.60" height="6.40" rx="0.30" fill="#ffffff" stroke="#1f2328" stroke-width="0.35"/>
+<text x="53.40" y="251.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="end" font-weight="700" xml:space="preserve"><tspan x="53.40" dy="0.00">R7</tspan></text>
+<text x="53.40" y="254.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="end" font-weight="400" xml:space="preserve"><tspan x="53.40" dy="0.00">20k</tspan></text>
+<path d="M56.00,240.00 L56.00,246.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M56.00,258.00 L56.00,266.00 L72.00,266.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M72.00,247.00 L72.00,251.20" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M72.00,252.80 L72.00,257.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M69.70,251.20 L74.30,251.20" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M69.70,252.80 L74.30,252.80" fill="none" stroke="#263238" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="75.20" y="251.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="75.20" dy="0.00">C11</tspan></text>
+<text x="75.20" y="254.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="75.20" dy="0.00">1nF</tspan></text>
+<path d="M56.00,240.00 L72.00,240.00 L72.00,247.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M72.00,257.00 L72.00,266.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M64.00,266.00 L64.00,267.60" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M61.60,267.60 L66.40,267.60" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M62.40,268.35 L65.60,268.35" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M63.20,269.10 L64.80,269.10" fill="none" stroke="#263238" stroke-width="0.40" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M72.00,240.00 L92.00,240.00" fill="none" stroke="#6a1b9a" stroke-width="0.50" stroke-linejoin="round" stroke-linecap="round"/>
+<polygon points="92.00,240.00 89.76,238.72 89.76,241.28" fill="#6a1b9a"/>
+<text x="94.00" y="240.91" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="94.00" dy="0.00">ENC1_A → IO36</tspan></text>
+<text x="96.00" y="250.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.40" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="96.00" dy="0.00">V = 5 V × 20k / (10k + 20k) = 3.33 V</tspan><tspan x="96.00" dy="3.17">(la ESP32 aguanta 3.6 V como máximo)</tspan><tspan x="96.00" dy="3.17">10k ∥ 20k = 6.7k con 1 nF: filtro a ~24 kHz.</tspan><tspan x="96.00" dy="3.17">La señal real llega a ~2.7 kHz: pasa entera.</tspan></text>
+<text x="172.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="172.00" dy="0.00">Motor</tspan></text>
+<text x="194.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="194.00" dy="0.00">Borna-pin</tspan></text>
+<text x="216.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="216.00" dy="0.00">10k</tspan></text>
+<text x="230.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="230.00" dy="0.00">20k</tspan></text>
+<text x="244.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="244.00" dy="0.00">1 nF</tspan></text>
+<text x="260.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="260.00" dy="0.00">GPIO</tspan></text>
+<text x="278.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="278.00" dy="0.00">Rueda</tspan></text>
+<text x="172.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="172.00" dy="0.00">M1</tspan></text>
+<text x="194.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="194.00" dy="0.00">J7-1</tspan></text>
+<text x="216.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="216.00" dy="0.00">R1</tspan></text>
+<text x="230.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="230.00" dy="0.00">R7</tspan></text>
+<text x="244.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="244.00" dy="0.00">C11</tspan></text>
+<text x="260.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="260.00" dy="0.00">IO36</tspan></text>
+<text x="278.00" y="219.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">delantera izq.</tspan></text>
+<text x="172.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="172.00" dy="0.00">M2</tspan></text>
+<text x="194.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="194.00" dy="0.00">J7-2</tspan></text>
+<text x="216.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="216.00" dy="0.00">R2</tspan></text>
+<text x="230.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="230.00" dy="0.00">R8</tspan></text>
+<text x="244.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="244.00" dy="0.00">C12</tspan></text>
+<text x="260.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="260.00" dy="0.00">IO39</tspan></text>
+<text x="278.00" y="223.80" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">delantera der.</tspan></text>
+<text x="172.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="172.00" dy="0.00">M3</tspan></text>
+<text x="194.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="194.00" dy="0.00">J7-3</tspan></text>
+<text x="216.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="216.00" dy="0.00">R3</tspan></text>
+<text x="230.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="230.00" dy="0.00">R9</tspan></text>
+<text x="244.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="244.00" dy="0.00">C13</tspan></text>
+<text x="260.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="260.00" dy="0.00">IO34</tspan></text>
+<text x="278.00" y="228.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">media izq.</tspan></text>
+<text x="172.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="172.00" dy="0.00">M4</tspan></text>
+<text x="194.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="194.00" dy="0.00">J8-5</tspan></text>
+<text x="216.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="216.00" dy="0.00">R4</tspan></text>
+<text x="230.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="230.00" dy="0.00">R10</tspan></text>
+<text x="244.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="244.00" dy="0.00">C14</tspan></text>
+<text x="260.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="260.00" dy="0.00">IO35</tspan></text>
+<text x="278.00" y="233.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">media der.</tspan></text>
+<text x="172.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="172.00" dy="0.00">M5</tspan></text>
+<text x="194.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="194.00" dy="0.00">J8-4</tspan></text>
+<text x="216.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="216.00" dy="0.00">R5</tspan></text>
+<text x="230.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="230.00" dy="0.00">R11</tspan></text>
+<text x="244.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="244.00" dy="0.00">C15</tspan></text>
+<text x="260.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="260.00" dy="0.00">IO32</tspan></text>
+<text x="278.00" y="238.20" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">trasera izq.</tspan></text>
+<text x="172.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="172.00" dy="0.00">M6</tspan></text>
+<text x="194.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="194.00" dy="0.00">J8-3</tspan></text>
+<text x="216.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="216.00" dy="0.00">R6</tspan></text>
+<text x="230.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="230.00" dy="0.00">R12</tspan></text>
+<text x="244.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="244.00" dy="0.00">C16</tspan></text>
+<text x="260.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#6a1b9a" text-anchor="start" font-weight="600" xml:space="preserve"><tspan x="260.00" dy="0.00">IO33</tspan></text>
+<text x="278.00" y="243.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="278.00" dy="0.00">trasera der.</tspan></text>
+<text x="312.00" y="214.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="312.00" dy="0.00">Bornas de encoders</tspan></text>
+<text x="312.00" y="219.00" font-family="'DejaVu Sans Mono', monospace" font-size="2.40" fill="#1f2328" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="312.00" dy="0.00">J7: 1 A(M1) · 2 A(M2) · 3 A(M3)</tspan><tspan x="312.00" dy="3.17">    4 +5V · 5 GND</tspan><tspan x="312.00" dy="3.17">J8: 1 GND · 2 +5V</tspan><tspan x="312.00" dy="3.17">    3 A(M6) · 4 A(M5) · 5 A(M4)</tspan></text>
+<text x="312.00" y="242.00" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.35" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="312.00" dy="0.00">Cable Pololu 37D: verde GND, azul VCC,</tspan><tspan x="312.00" dy="3.10">amarillo canal A, blanco canal B (sin usar:</tspan><tspan x="312.00" dy="3.10">el sentido lo sabe el firmware).</tspan></text>
+</svg>

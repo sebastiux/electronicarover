@@ -2,6 +2,8 @@
 
 > **Versión para fresar en casa en 2 tarjetas de una cara (tracción y servos):** ver [`DOS_TARJETAS.md`](DOS_TARJETAS.md). La versión de una sola tarjeta de 2 caras para la Cubiko está en [`cubiko/README.md`](cubiko/README.md).
 
+> **Para entender el circuito:** [`esquema_didactico/`](esquema_didactico/README.md) (4 hojas: alimentación, señales y cada tarjeta por dentro).
+
 PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
 
 | Bloque | Módulo | Función |
