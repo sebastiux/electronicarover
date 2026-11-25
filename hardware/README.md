@@ -1,12 +1,14 @@
 # Rover Controller v1.2: PCB de 2 capas (KiCad)
 
+> **Versión para fresar en casa en 2 tarjetas de una cara (tracción y servos):** ver [`DOS_TARJETAS.md`](DOS_TARJETAS.md). La versión de una sola tarjeta de 2 caras para la Cubiko está en [`cubiko/README.md`](cubiko/README.md).
+
 PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
 
 | Bloque | Módulo | Función |
 |---|---|---|
 | U1 | **Raspberry Pi 5**, debajo de la PCB con header hembra 2x20 | Cerebro |
 | U2 | **ESP32 DevKit V1 30p** (ESP32-A, horizontal) | Tracción: 6 motores + 6 encoders |
-| U3 | **ESP32 DevKit V1 30p** (ESP32-B, vertical) | 4 servos de dirección + 3 del brazo + 1 de reserva, voltaje de batería |
+| U3 | **ESP32 DevKit V1 30p** (ESP32-B, vertical) | 4 servos de dirección + 4 del brazo (base, hombro, pinza, codo/muñeca), voltaje de batería |
 | U4–U6 | **3× L298N (HW-095)** con pines en vez de bornas | 6× Pololu 37D 12V 30:1 |
 | J1 | **XT60 macho** | Batería LiPo 3S (Gens Ace 5000 mAh) |
 | J3 / J4 / J5 / J6 | Borneras 5.08 mm | 12 V hacia el step-down de 5 V, 12 V hacia el BEC de servos, entrada de 5 V/5 A y entrada de servos a 6 V |

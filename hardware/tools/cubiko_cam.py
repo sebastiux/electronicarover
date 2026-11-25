@@ -20,6 +20,7 @@ V-bit a la profundidad de corte) y los taladros, y despues comprueba que:
   - los anillos de los pads queden aislados del cobre sobrante.
 
 Uso: ROVER_VARIANT=cubiko python3 cubiko_cam.py
+     ROVER_VARIANT=traccion | servos python3 cubiko_cam.py   (tarjetas de UNA cara: hardware/cnc_<variante>/)
 """
 import math, os, sys
 os.environ.setdefault("ROVER_VARIANT", "cubiko")
@@ -57,7 +58,8 @@ P = dict(
     mark_r=(1.95, 2.75), mark_gap=0.8,
 )
 W, H = D.BOARD_W, D.BOARD_H
-OUTDIR = os.path.join(HERE, "..", "cubiko")
+UNA_CARA = getattr(D, "LAYERS", 2) == 1      # tarjetas de traccion / servos: solo cobre abajo
+OUTDIR = os.path.join(HERE, "..", "cnc_" + D.VARIANT if UNA_CARA else "cubiko")
 GDIR, SDIR = os.path.join(OUTDIR, "gcode"), os.path.join(OUTDIR, "sim")
 PCB = os.path.join(HERE, "..", D.PROJECT, D.PROJECT + ".kicad_pcb")
 O = 30.0          # desfase de la PCB en KiCad (generate.py)
@@ -672,5 +674,233 @@ def main():
     return 0 if ok else 1
 
 
+def main_una_cara():
+    """Tarjeta de UNA cara (FR1 con cobre solo abajo): todo se fresa con la cara de cobre
+    hacia arriba (espejada), sin volteo. Los cables de arriba (puentes) se modelan como la
+    union de los 2 barrenos de cada cable."""
+    import csv, shutil, subprocess
+    os.makedirs(GDIR, exist_ok=True)
+    os.makedirs(SDIR, exist_ok=True)
+    for d in (GDIR, SDIR):
+        for f_ in os.listdir(d):
+            os.remove(os.path.join(d, f_))
+    net_polys, pads, vias, holes, keepouts, hard = load()
+    w = vbit_width(P["iso_depth"])
+    rep = ["Genmitsu Cubiko - CAM y simulacion de la tarjeta %s (%.0f x %.0f mm, UNA cara)" % (D.PROJECT, W, H),
+           "V-bit %.0f grados punta %.2f mm a %.2f mm -> ancho de corte %.3f mm"
+           % (P["vbit_angle"], P["vbit_tip"], P["iso_depth"], w)]
+    hole_geom = unary_union([Point(x, y).buffer(d / 2, resolution=12) for (x, y, d, _, _) in holes])
+    copper = unary_union(list(net_polys["B"].values()))
+    paths, swept, _ = isolation(copper)
+    mpaths, mswept = via_marks(vias, hard["B"], w)
+    remaining = box(0, 0, W, H).difference(swept.union(mswept)).difference(hole_geom)
+    comps = list(remaining.geoms) if hasattr(remaining, "geoms") else [remaining]
+    from shapely.strtree import STRtree
+    tree = STRtree(comps)
+    parent = {}
+
+    def find(a):
+        parent.setdefault(a, a)
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    def comp_at(geom):
+        best, area = None, 0.0
+        for i in tree.query(geom):
+            a = comps[i].intersection(geom).area
+            if a > area:
+                best, area = i, a
+        return best
+    shorts = []
+    for i, c in enumerate(comps):
+        touched = [n for n, g in net_polys["B"].items() if n and c.intersects(g) and c.intersection(g).area > 0.002]
+        if len(touched) > 1:
+            shorts.append(("B", touched, c.representative_point().coords[0]))
+    # cables de arriba: puentes_alambre.csv (W1..Wn, red, extremos)
+    cables = []
+    fcsv = os.path.join(HERE, "..", D.PROJECT, "puentes_alambre.csv")
+    if os.path.exists(fcsv):
+        for r in csv.DictReader(open(fcsv), delimiter=";"):
+            cables.append(dict(w=r["Puente"], net=r["Red"], a=(float(r["X1(mm)"]), float(r["Y1(mm)"])),
+                               b=(float(r["X2(mm)"]), float(r["Y2(mm)"])), L=float(r["Largo(mm)"])))
+    # recorrido de cada cable: las pistas de F.Cu de su red (guia del alambre)
+    b = pcbnew.LoadBoard(PCB)
+    fseg = {}
+    for t in b.GetTracks():
+        if t.GetClass() != "PCB_VIA" and t.GetLayer() == pcbnew.F_Cu:
+            s0, e0 = t.GetStart(), t.GetEnd()
+            fseg.setdefault(t.GetNetname(), []).append(((mm(s0.x) - O, mm(s0.y) - O), (mm(e0.x) - O, mm(e0.y) - O)))
+    for c in cables:
+        segs = fseg.get(c["net"], [])
+        pts, cur, used = [c["a"]], c["a"], set()
+        for _ in range(len(segs)):
+            nxt = None
+            for k, (p0, p1) in enumerate(segs):
+                if k in used:
+                    continue
+                if math.hypot(p0[0] - cur[0], p0[1] - cur[1]) < 0.05:
+                    nxt = (k, p1)
+                elif math.hypot(p1[0] - cur[0], p1[1] - cur[1]) < 0.05:
+                    nxt = (k, p0)
+                if nxt:
+                    break
+            if not nxt:
+                break
+            used.add(nxt[0]); cur = nxt[1]; pts.append(cur)
+            if math.hypot(cur[0] - c["b"][0], cur[1] - c["b"][1]) < 0.05:
+                break
+        c["pts"] = pts if math.hypot(pts[-1][0] - c["b"][0], pts[-1][1] - c["b"][1]) < 0.05 else [c["a"], c["b"]]
+    # la union electrica que hace cada cable
+    for c in cables:
+        ends = []
+        for (x, y) in (c["a"], c["b"]):
+            ring = Point(x, y).buffer(1.05).difference(Point(x, y).buffer(0.55))
+            ends.append(comp_at(ring))
+        if None in ends:
+            shorts.append(("cable", [c["net"]], c["a"]))
+            continue
+        parent[find(ends[0])] = find(ends[1])
+    opens, by_net = [], {}
+    for p in pads:
+        if not p["net"]:
+            continue
+        ring = Point(p["x"], p["y"]).buffer(p["size"] / 2 * 0.95).difference(Point(p["x"], p["y"]).buffer(p["drill"] / 2 + 0.01))
+        c = comp_at(ring)
+        if c is None:
+            opens.append((p["ref"], p["num"], p["net"], "anillo destruido"))
+            continue
+        by_net.setdefault(p["net"], set()).add(find(c))
+    for n, roots in by_net.items():
+        if len({find(r) for r in roots}) > 1:
+            opens.append(("-", "-", n, "%d piezas separadas" % len({find(r) for r in roots})))
+    rep += ["", "Pads: %d   cables por arriba: %d   taladros: %d" % (len(pads), len(cables), len(holes)),
+            "Piezas de cobre tras el fresado: %d" % len(comps), "CORTOS: %d" % len(shorts)]
+    rep += ["   %s redes %s cerca de (%.1f, %.1f)" % (x[0], ",".join(x[1]), x[2][0], x[2][1]) for x in shorts[:20]]
+    rep.append("REDES ABIERTAS: %d" % len(opens))
+    rep += ["   %s.%s %s: %s" % o for o in opens[:20]]
+    ok = not shorts and not opens
+
+    # ---------------- G-code: 3 archivos, cara de cobre arriba (espejada) ----------------
+    jobs = []
+    TV = "V-bit 20 grados punta 0.1 mm"
+    g = G("1 - aislamiento de la cara de cobre (B.Cu), espejado, y dianas de los barrenos de cable", TV)
+    for pth in paths:
+        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
+    g.l.append("( dianas alrededor de los barrenos de los cables )")
+    for pth in order_paths(mpaths):
+        g.path(pth, -P["iso_depth"], P["iso_feed"], P["iso_plunge"], "B")
+    jobs.append(g.save("1_vbit_aislamiento.nc"))
+    small = [(x, y) for (x, y, d, npth, ref) in holes if d <= P["drill_max"]]
+    g = G("2 - taladros de 1.0 mm (%d agujeros)" % len(small), "broca de PCB 1.0 mm")
+    cur, left = (0, 0), list(small)
+    while left:
+        j = min(range(len(left)), key=lambda k: (left[k][0] - cur[0]) ** 2 + (left[k][1] - cur[1]) ** 2)
+        cur = left.pop(j)
+        g.drill(cur[0], cur[1], "B", P["drill_depth"], P["drill_feed"])
+    jobs.append(g.save("2_broca1.0.nc"))
+    TM = "fresa tipo maiz 1.0 mm"
+    g = G("3 - fresa de 1.0 mm: barrenos de 1.2 mm o mas y contorno con %d puentes" % P["n_tabs"], TM)
+    for (x, y, d, npth, ref) in holes:
+        if d > P["drill_max"]:
+            helix_hole(g, x, y, max(d, P["mill_d"]), P["drill_depth"], "B")
+    ring, L, tab_d = outline_paths()
+    z = 0.0
+    while z > -P["outline_depth"] + 1e-6:
+        z = max(z - P["outline_depth"] / P["outline_passes"], -P["outline_depth"])
+        if z < -(P["thickness"] - P["tab_h"]) - 1e-6:
+            segs, last = [], 0.0
+            for d0 in sorted(tab_d):
+                a_, b_ = d0 - (P["tab_w"] + P["mill_d"]) / 2, d0 + (P["tab_w"] + P["mill_d"]) / 2
+                segs.append((last, a_)); last = b_
+            segs.append((last, L.length))
+            for (a_, b_) in segs:
+                if b_ - a_ < 0.1:
+                    continue
+                n = max(2, int((b_ - a_) / 1.0))
+                g.path([L.interpolate(a_ + (b_ - a_) * t / n).coords[0] for t in range(n + 1)], z,
+                       P["mill_feed"], P["mill_plunge"], "B")
+        else:
+            g.path(ring, z, P["mill_feed"], P["mill_plunge"], "B")
+    jobs.append(g.save("3_fresa1mm_barrenos_contorno.nc"))
+
+    # ---------------- imagenes ----------------
+    t1 = "Cara de cobre vista en la maquina (espejada)"
+    render("B", remaining, hole_geom, None, True, t1 + "  -  cobre tras el fresado").save(os.path.join(SDIR, "resultado_cobre.png"))
+
+    def contorno(dr, T):
+        dr.line([T(*p) for p in ring], fill=COL["outline"], width=3)
+        for d0 in tab_d:
+            x, y = L.interpolate(d0).coords[0]
+            cx, cy = T(x, y)
+            dr.rectangle([cx - 30, cy - 30, cx + 30, cy + 30], outline=COL["tab"], width=5)
+    render("B", remaining, hole_geom, paths, True, t1 + "  -  V-bit (azul), contorno y puentes (rojo)",
+           contorno).save(os.path.join(SDIR, "trayectorias.png"))
+    try:
+        fnum = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+    except Exception:
+        fnum = ImageFont.load_default()
+
+    def dibuja_cables(dr, T):
+        for c in cables:
+            pts = [T(*p) for p in c["pts"]]
+            dr.line(pts, fill=(230, 30, 30), width=9)
+            for q in (pts[0], pts[-1]):
+                dr.ellipse([q[0] - 18, q[1] - 18, q[0] + 18, q[1] + 18], outline=(230, 30, 30), width=6)
+            mx, my = pts[len(pts) // 2] if len(pts) > 2 else ((pts[0][0] + pts[-1][0]) / 2, (pts[0][1] + pts[-1][1]) / 2)
+            t = "%s %s" % (c["w"], c["net"])
+            bw, bh = dr.textbbox((0, 0), t, font=fnum)[2:]
+            dr.rectangle([mx + 10, my - bh - 6, mx + bw + 18, my + 2], fill=(255, 255, 255))
+            dr.text((mx + 14, my - bh - 4), t, fill=(200, 0, 0), font=fnum)
+    titulo = ("CABLES POR ARRIBA (lado de componentes): %d, puntas soldadas por abajo" % len(cables)
+              if cables else "Sin cables por arriba: todo va en la cara de cobre")
+    img = render("B", remaining, hole_geom, None, False, titulo, dibuja_cables)
+    img.save(os.path.join(OUTDIR, "mapa_cables.png"))
+    img.convert("RGB").save(os.path.join(OUTDIR, "mapa_cables_1a1.pdf"), resolution=SC * 25.4)
+    with open(os.path.join(OUTDIR, "cables.csv"), "w") as f:
+        f.write("Cable;Red;X1 (mm);Y1 (mm);X2 (mm);Y2 (mm);Largo recto (mm);Largo sugerido con holgura (mm)\n")
+        for c in cables:
+            f.write("%s;%s;%.2f;%.2f;%.2f;%.2f;%.1f;%.0f\n" % (c["w"], c["net"], c["a"][0], c["a"][1], c["b"][0], c["b"][1],
+                                                            c["L"], c["L"] + 10))
+    # ---------------- gerbers y PDF ----------------
+    gb = os.path.join(OUTDIR, "gerbers")
+    shutil.rmtree(gb, ignore_errors=True)
+    os.makedirs(gb)
+    run = lambda *a: subprocess.run(["kicad-cli", *a], check=True, capture_output=True)
+    run("pcb", "export", "gerbers", "-o", gb + "/", "--layers", "B.Cu,Edge.Cuts", "--use-drill-file-origin", PCB)
+    run("pcb", "export", "drill", "-o", gb + "/", "--format", "excellon", "--drill-origin", "plot",
+        "--generate-map", "--map-format", "pdf", PCB)
+    run("pcb", "export", "pdf", "-o", os.path.join(OUTDIR, "cobre_espejo_1a1.pdf"), "--layers", "B.Cu,Edge.Cuts",
+        "--black-and-white", "--mirror", PCB)
+    run("pcb", "export", "pdf", "-o", os.path.join(OUTDIR, "plantilla_montaje_1a1.pdf"), "--layers",
+        "F.Fab,F.SilkS,F.Cu,Edge.Cuts", "--black-and-white", PCB)
+    shutil.copy(os.path.join(HERE, "..", D.PROJECT, "bom.csv"), os.path.join(OUTDIR, "bom.csv"))
+    a_ = Image.open(os.path.join(SDIR, "resultado_cobre.png"))
+    b_ = Image.open(os.path.join(OUTDIR, "mapa_cables.png"))
+    sheet = Image.new("RGB", (a_.width + b_.width + 40, a_.height + 120), COL["bg"])
+    sheet.paste(a_, (0, 120)); sheet.paste(b_, (a_.width + 40, 120))
+    try:
+        fb = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 54)
+    except Exception:
+        fb = ImageFont.load_default()
+    ImageDraw.Draw(sheet).text((40, 30), "%s - simulacion del fresado: %s" % (D.PROJECT,
+                               "0 cortos, 0 redes abiertas" if ok else "REVISAR"), fill=(240, 240, 240), font=fb)
+    sheet.thumbnail((3000, 3000))
+    sheet.save(os.path.join(SDIR, "resumen_simulacion.png"))
+    rep += ["", "CABLES POR ARRIBA:"] + ["  %-4s %-10s (%.1f, %.1f) -> (%.1f, %.1f)  %.0f mm" %
+                                         (c["w"], c["net"], c["a"][0], c["a"][1], c["b"][0], c["b"][1], c["L"]) for c in cables]
+    rep += ["", "TRABAJOS (en este orden, sin voltear la placa):"]
+    tot = 0.0
+    for j in jobs:
+        rep.append("  %-40s %6.1f min   corte %7.0f mm   bajadas %d" % (j["file"], j["min"], j["cut"], j["plunges"]))
+        tot += j["min"]
+    rep += ["  Tiempo total de maquina estimado: %.0f min (sin cambios de herramienta ni mapa de alturas)" % tot, "",
+            "RESULTADO: %s" % ("OK - el fresado deja todas las redes completas y sin cortos" if ok else "REVISAR")]
+    open(os.path.join(SDIR, "reporte.txt"), "w").write("\n".join(rep) + "\n")
+    print("\n".join(rep))
+    return 0 if ok else 1
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main_una_cara() if UNA_CARA else main())

@@ -58,7 +58,7 @@
 #define PIN_SERVO5 18 // Brazo base
 #define PIN_SERVO6 17 // Brazo hombro
 #define PIN_SERVO7 16 // Brazo pinza
-#define PIN_SERVO8 4  // Reserva
+#define PIN_SERVO8 4  // Brazo codo/muneca
 
 // Voltaje de bateria: divisor 100k / 27k (VBAT = Vadc * 127 / 27)
 #define PIN_VBAT_SENSE 34

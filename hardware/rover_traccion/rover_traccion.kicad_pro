@@ -1,0 +1,186 @@
+{
+  "board": {
+    "design_settings": {
+      "defaults": {
+        "board_outline_line_width": 0.1,
+        "copper_line_width": 0.2,
+        "copper_text_size_h": 1.5,
+        "copper_text_size_v": 1.5,
+        "copper_text_thickness": 0.3,
+        "silk_line_width": 0.15,
+        "silk_text_size_h": 1.0,
+        "silk_text_size_v": 1.0,
+        "silk_text_thickness": 0.15
+      },
+      "rules": {
+        "min_clearance": 0.2,
+        "min_track_width": 0.2,
+        "min_via_diameter": 0.6,
+        "min_through_hole_diameter": 0.3,
+        "min_hole_to_hole": 0.25,
+        "min_copper_edge_clearance": 0.4,
+        "min_hole_clearance": 0.25,
+        "min_silk_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.0,
+        "min_text_height": 0.5,
+        "min_text_thickness": 0.08
+      },
+      "rule_severities": {
+        "silk_over_copper": "ignore",
+        "silk_overlap": "ignore",
+        "silk_edge_clearance": "ignore",
+        "text_height": "ignore",
+        "text_thickness": "ignore",
+        "lib_footprint_issues": "ignore",
+        "lib_footprint_mismatch": "ignore",
+        "starved_thermal": "ignore"
+      },
+      "track_widths": [
+        0.0,
+        0.3,
+        0.5,
+        1.0,
+        2.0,
+        3.0
+      ],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        },
+        {
+          "diameter": 0.8,
+          "drill": 0.4
+        },
+        {
+          "diameter": 1.2,
+          "drill": 0.6
+        },
+        {
+          "diameter": 1.6,
+          "drill": 0.8
+        }
+      ]
+    }
+  },
+  "meta": {
+    "filename": "rover_traccion.kicad_pro",
+    "version": 1
+  },
+  "net_settings": {
+    "classes": [
+      {
+        "bus_width": 12,
+        "clearance": 0.5,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "Default",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.7,
+        "via_diameter": 2.2,
+        "via_drill": 1.0,
+        "wire_width": 6,
+        "priority": 2147483647
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.5,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "SERVO",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 2.5,
+        "via_diameter": 2.2,
+        "via_drill": 1.0,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.5,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "PWR",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 1.5,
+        "via_diameter": 2.2,
+        "via_drill": 1.0,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.5,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "GND",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 1.2,
+        "via_diameter": 2.2,
+        "via_drill": 1.0,
+        "wire_width": 6
+      }
+    ],
+    "meta": {
+      "version": 3
+    },
+    "net_colors": null,
+    "netclass_assignments": {
+      "+5V": "PWR",
+      "GND": "GND"
+    },
+    "netclass_patterns": []
+  },
+  "pcbnew": {
+    "last_paths": {},
+    "page_layout_descr_file": ""
+  },
+  "schematic": {
+    "legacy_lib_dir": "",
+    "legacy_lib_list": [],
+    "drawing": {
+      "intersheets_ref_show": false,
+      "intersheets_ref_own_page": false,
+      "intersheets_ref_short": false,
+      "intersheets_ref_prefix": "[",
+      "intersheets_ref_suffix": "]"
+    }
+  },
+  "sheets": [
+    [
+      "355c6ecd-3390-5d0c-9267-6b6959b41b17",
+      ""
+    ],
+    [
+      "34a964fe-d72a-5d85-8111-577a0026c967",
+      "Alimentacion y Pi"
+    ],
+    [
+      "2610bd18-736d-529f-9fe9-5574b58b5289",
+      "ESP32-A traccion"
+    ],
+    [
+      "acba2350-b123-5fa0-b80e-82ea8a5a49e5",
+      "Encoders"
+    ]
+  ],
+  "text_variables": {}
+}

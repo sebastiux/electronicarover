@@ -9,10 +9,12 @@ rc=0
 for model in board_model.h board_model_*.h; do
   [ -f "$model" ] || continue
   echo "################ $model"
-  $CXX $FLAGS -DBOARD_MODEL_FILE="\"$model\"" test_traction.cpp -o /tmp/test_traction
-  $CXX $FLAGS -DBOARD_MODEL_FILE="\"$model\"" test_servos.cpp -o /tmp/test_servos
-  /tmp/test_traction || rc=1
-  /tmp/test_servos || rc=1
+  # las tarjetas separadas llevan una sola ESP32: cada una corre solo su prueba
+  case "$model" in *servos*) pruebas="servos" ;; *traccion*) pruebas="traction" ;; *) pruebas="traction servos" ;; esac
+  for t in $pruebas; do
+    $CXX $FLAGS -DBOARD_MODEL_FILE="\"$model\"" test_$t.cpp -o /tmp/test_$t
+    /tmp/test_$t || rc=1
+  done
 done
 echo
 python3 ../pi/rover_link.py selftest /tmp/rover_sample_tx.txt || rc=1

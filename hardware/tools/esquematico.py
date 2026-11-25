@@ -448,7 +448,7 @@ def hoja_traccion(h):
     h.union(xr, pe[1])
     h.etiqueta("MOTOR_EN", xr - 7.62, pe[1], (-1, 0), "output")
     h.punta(r21["2"], 2.54)
-    modulo = {"ENB": "ENB", "IN4": "IN4", "IN3": "IN3", "IN2": "IN2", "IN1": "IN1", "ENA": "ENA", "GND": "GND logica"}
+    modulo = {"EN": "ENA + ENB (cable en Y)", "ENB": "ENB", "IN4": "IN4", "IN3": "IN3", "IN2": "IN2", "IN1": "IN1", "ENA": "ENA", "GND": "GND logica"}
     for k, ref in enumerate(("J41", "J42", "J43")):
         y = 40.64 + 50.8 * k
         j = h.comp(ref, 200.66, y)
@@ -459,7 +459,7 @@ def hoja_traccion(h):
         h.texto(208.28, y - 8.89, "\n".join("%d  %s" % (i + 1, modulo[t]) for i, t in enumerate(D.TB_ORDER)))
         m = re.search(r"\(([^)]*)\)", c.get("desc", ""))
         ab = m.group(1).split(" / ") if m else ["", ""]
-        h.texto(226.06, y - 8.89, "motor A (IN1/IN2): %s\nmotor B (IN3/IN4): %s" % (ab[0], ab[-1]))
+        h.texto(240.3, y - 8.89, "motor A (IN1/IN2): %s\nmotor B (IN3/IN4): %s" % (ab[0], ab[-1]))
     h.texto(15.24, 15.24, "ESP32-A: traccion (3 L298N, 6 motores Pololu 37D)", 2.0, True)
     h.texto(15.24, 22.86,
             "Cada L298N maneja 2 motores: IN1/IN2 el A, IN3/IN4 el B (sentido y PWM).\n"
@@ -533,14 +533,173 @@ def hoja_servos(h):
 
 
 # ---------------------------------------------------------------------------
+#  Tarjetas de una cara (traccion / servos)
+# ---------------------------------------------------------------------------
+def bloque_pi(h, x0, y0, j9, r_tx, r_rx, uart, pin_tx, pin_rx, pin_gnd):
+    """J9 (borna hacia el HAT de la Pi) -> resistencias de 1k -> etiquetas de la ESP32."""
+    h.marco(x0, y0, x0 + 132.08, y0 + 71.12, "Enlace con la Raspberry Pi (%s)" % uart)
+    j = h.comp(j9, x0 + 12.7, y0 + 20.32, mirror=True)
+    h.punta(j["1"], 2.54)
+    c = h.comps
+    p2, p3 = j["2"], j["3"]
+    red2, red3 = c[j9]["pins"][2], c[j9]["pins"][3]
+    # pin 2: TX de la Pi -> R -> RX de la ESP32
+    xa, ya = p2[0] + 17.78, p2[1] + 12.7
+    ra = h.comp(r_tx, xa + 3.81, ya, rot=90 if c[r_tx]["pins"][1] == red2 else 270)
+    lado_pi = ra["1"] if c[r_tx]["pins"][1] == red2 else ra["2"]
+    lado_esp = ra["2"] if lado_pi is ra["1"] else ra["1"]
+    h.cable(p2[:2], (xa, p2[1]), (xa, p2[1] + 5.08), (xa, ya), lado_pi[:2])
+    h.etiqueta(red2, xa, p2[1] + 5.08, (1, 0))
+    h.punta(lado_esp, 7.62, "output")
+    # pin 3: RX de la Pi <- R <- TX de la ESP32
+    xb, yb = p3[0] + 10.16, p3[1] + 25.4
+    rb = h.comp(r_rx, xb + 3.81, yb, rot=90 if c[r_rx]["pins"][1] == red3 else 270)
+    lado_pi = rb["1"] if c[r_rx]["pins"][1] == red3 else rb["2"]
+    lado_esp = rb["2"] if lado_pi is rb["1"] else rb["1"]
+    h.cable(p3[:2], (xb, p3[1]), (xb, yb - 7.62), (xb, yb), lado_pi[:2])
+    h.etiqueta(red3, xb, yb - 7.62, (1, 0))
+    h.punta(lado_esp, 7.62, "input")
+    h.texto(x0 + 2.54, y0 + 50.8,
+            "%s viene del HAT de bornas montado en la Raspberry Pi 5\n"
+            "(header hembra 2x20 sobre el GPIO):\n"
+            "  J9-1 GND  <-  GND (pin %d)\n"
+            "  J9-2 TX   <-  %s (pin %d)\n"
+            "  J9-3 RX   ->  %s (pin %d)\n"
+            "Cable de 3 hilos trenzado, < 50 cm.  1k en serie: protegen los 2 lados." %
+            (uart, pin_gnd, D.RPI_PINS[pin_tx], pin_tx, D.RPI_PINS[pin_rx], pin_rx))
+
+
+def nota_fuera(h, x0, y0, x1, y1, extra):
+    h.marco(x0, y0, x1, y1, "Fuera de la tarjeta")
+    h.texto(x0 + 2.54, y0 + 7.62,
+            "Bateria LiPo 3S -> fusible 15 A -> bloque de distribucion:\n"
+            "   3x L298N (12 V de motores, NO pasa por las tarjetas)\n"
+            "   step-down 12 V -> 5 V 5 A: Raspberry Pi (por su HAT de\n"
+            "      bornas, con el TVS SA5.0A en esas bornas) y J5 de\n"
+            "      cada tarjeta\n"
+            "   BEC 12 V -> 6 V >= 10 A: J6 de la tarjeta de servos\n"
+            "GND comun en estrella en el bloque de distribucion.\n" + extra)
+
+
+def hoja_alim_traccion(h):
+    h.marco(12.7, 12.7, 147.32, 88.9, "Entrada 5 V (ESP32-A y encoders)")
+    j5 = h.comp("J5", 22.86, 50.8, mirror=True)
+    yv, yg = 27.94, 81.28
+    h.cable(j5["1"][:2], (33.02, j5["1"][1]), (33.02, yv))
+    h.cable(j5["2"][:2], (35.56, j5["2"][1]), (35.56, yg))
+    h.cable((33.02, yv), (114.3, yv))
+    h.cable((35.56, yg), (91.44, yg))
+    h.potencia("+5V", 40.64, yv, (0, -1)); h.union(40.64, yv)
+    h.potencia("GND", 43.18, yg, (0, 1)); h.union(43.18, yg)
+    for x in (58.42, 91.44):
+        h.union(x, yv)
+    h.union(58.42, yg)
+    c2 = h.comp("C2", 58.42, 55.88)
+    h.cable((58.42, yv), c2["1"][:2]); h.cable(c2["2"][:2], (58.42, yg))
+    r25 = h.comp("R25", 91.44, 40.64)
+    d3 = h.comp("D3", 91.44, 68.58, rot=90)
+    h.cable((91.44, yv), r25["1"][:2])
+    h.serie(r25["2"], d3["2"], "LED5_A", d_etq=(1, 0))
+    h.cable(d3["1"][:2], (91.44, yg))
+    d5 = h.comp("D5", 124.46, 40.64, rot=180)
+    h.cable((114.3, yv), (114.3, 40.64), d5["2"][:2])
+    h.punta(d5["1"], 5.08, "output")
+    h.texto(15.24, 60.96, "Del step-down\n12 V -> 5 V")
+    h.texto(101.6, 55.88, "D5 1N5819: VIN de la ESP32-A.\nEl USB de la ESP32 no\nalimenta los encoders.\n\n"
+                          "+5V tambien alimenta los\nencoders (J7/J8, pin 2).")
+    bloque_pi(h, 152.4, 12.7, "J9", "R13", "R14", "UART2", 7, 29, 6)
+    nota_fuera(h, 12.7, 93.98, 284.48, 165.1,
+               "\nEn cada L298N: quita los jumpers de ENA y ENB y une los 2 pines al hilo EN de su borna (cable en Y).")
+
+
+def hoja_alim_servos(h):
+    h.marco(12.7, 12.7, 101.6, 60.96, "Entrada 5 V (ESP32-B)")
+    j5 = h.comp("J5", 22.86, 35.56, mirror=True)
+    d6 = h.comp("D6", 60.96, 35.56, rot=180)
+    h.cable(j5["1"][:2], d6["2"][:2])
+    h.potencia("+5V", 40.64, 35.56, (0, -1))
+    h.punta(j5["2"], 2.54)
+    h.punta(d6["1"], 5.08, "output")
+    h.texto(15.24, 45.72, "Del step-down 12 V -> 5 V.  D6 1N5819: VIN de la ESP32-B;\nel USB de la ESP32 no regresa al 5 V.")
+    # servos 6 V
+    h.marco(12.7, 66.04, 147.32, 165.1, "Servos 6 V (BEC)")
+    j6 = h.comp("J6", 22.86, 104.14, mirror=True)
+    yv2, yg2 = 81.28, 152.4
+    h.cable(j6["2"][:2], (35.56, j6["2"][1]), (35.56, yv2))
+    h.cable(j6["1"][:2], (33.02, j6["1"][1]), (33.02, yg2))
+    h.cable((35.56, yv2), (99.06, yv2))
+    h.etiqueta("SERVO_V", 99.06, yv2, (1, 0), "output")
+    h.cable((33.02, yg2), (91.44, yg2))
+    h.potencia("GND", 43.18, yg2, (0, 1)); h.union(43.18, yg2)
+    for x in (58.42, 73.66):
+        h.union(x, yv2); h.union(x, yg2)
+    h.union(91.44, yv2)
+    for ref, x in (("C3", 58.42), ("C4", 73.66)):
+        c = h.comp(ref, x, 116.84)
+        h.cable((x, yv2), c["1"][:2]); h.cable(c["2"][:2], (x, yg2))
+    r26 = h.comp("R26", 91.44, 99.06)
+    d4 = h.comp("D4", 91.44, 129.54, rot=90)
+    h.cable((91.44, yv2), r26["1"][:2])
+    h.serie(r26["2"], d4["2"], "LEDS_A", d_etq=(1, 0))
+    h.cable(d4["1"][:2], (91.44, yg2))
+    h.texto(15.24, 114.3, "Del BEC 6 V\n>= 10 A")
+    h.texto(104.14, 111.76, "C3, C4 1000 uF:\npicos de arranque\nde los 8 servos.\n\nD4 + R26 470:\nLED azul.")
+    # bateria
+    h.marco(106.68, 12.7, 284.48, 60.96, "Medicion de bateria 3S")
+    j2 = h.comp("J2", 116.84, 35.56, mirror=True)
+    h.punta(j2["1"], 2.54)
+    yb = 20.32
+    h.cable(j2["2"][:2], (129.54, j2["2"][1]), (129.54, yb), (215.9, yb))
+    h.etiqueta("VBAT_F", 129.54, yb, (0, -1))
+    h.union(147.32, yb)
+    r22 = h.comp("R22", 147.32, 30.48)
+    r23 = h.comp("R23", 147.32, 48.26)
+    c5 = h.comp("C5", 162.56, 48.26)
+    h.cable((147.32, yb), r22["1"][:2])
+    yn = 39.37
+    h.cable(r22["2"][:2], (147.32, yn), r23["1"][:2])
+    h.cable((147.32, yn), (162.56, yn), (180.34, yn))
+    h.cable((162.56, yn), c5["1"][:2])
+    h.union(147.32, yn); h.union(162.56, yn)
+    h.etiqueta("VBAT_SENSE", 180.34, yn, (1, 0), "output")
+    h.punta(r23["2"], 2.54); h.punta(c5["2"], 2.54)
+    r24 = h.comp("R24", 215.9, 30.48)
+    d2 = h.comp("D2", 215.9, 48.26, rot=90)
+    h.cable((215.9, yb), r24["1"][:2])
+    h.serie(r24["2"], d2["2"], "LED12_A", d_etq=(1, 0))
+    h.punta(d2["1"], 2.54)
+    h.texto(231.14, 25.4, "R22/R23: 12.6 V -> 2.68 V\nal ADC (IO34).  Satura\n(3.3 V) con 15.5 V.\n"
+                          "C5 estabiliza la lectura.\nD2 + R24: LED rojo, ~5 mA.")
+    bloque_pi(h, 152.4, 66.04, "J9", "R15", "R16", "UART4", 32, 33, 34)
+    nota_fuera(h, 152.4, 139.7, 284.48, 165.1, "")
+
+
+# ---------------------------------------------------------------------------
 def escribir(comps, syms, out_dir, titulo_doc):
     blocks, libs = librerias(comps, syms)
     by_ref = {c["ref"]: c for c in comps}
-    defs = [("Alimentacion", "1_alimentacion.kicad_sch", "2", "Alimentacion 5 V, servos 6 V y bateria", hoja_alimentacion),
-            ("Raspberry Pi 5", "2_raspberry_pi.kicad_sch", "3", "Raspberry Pi 5 y UART a las ESP32", hoja_pi),
-            ("ESP32-A traccion", "3_esp32a_traccion.kicad_sch", "4", "ESP32-A y bornas de los L298N", hoja_traccion),
-            ("Encoders", "4_encoders.kicad_sch", "5", "Encoders: divisores 5 V -> 3.3 V", hoja_encoders),
-            ("ESP32-B servos", "5_esp32b_servos.kicad_sch", "6", "ESP32-B, servos y bateria", hoja_servos)]
+    if D.VARIANT == "traccion":
+        defs = [("Alimentacion y Pi", "1_alimentacion_pi.kicad_sch", "2", "Entrada 5 V y enlace UART2 con la Pi", hoja_alim_traccion),
+                ("ESP32-A traccion", "2_esp32a_traccion.kicad_sch", "3", "ESP32-A y bornas de los L298N", hoja_traccion),
+                ("Encoders", "3_encoders.kicad_sch", "4", "Encoders: divisores 5 V -> 3.3 V", hoja_encoders)]
+        intro = ("Tarjeta de una sola cara.  La Raspberry Pi 5 va aparte con un HAT de bornas y llega por J9 (UART2).\n"
+                 "Los 3 L298N, la bateria y el step-down van en el chasis y llegan por bornas.\n"
+                 "Doble clic en una hoja para entrar.  Los nombres de red son los de la PCB.")
+    elif D.VARIANT == "servos":
+        defs = [("Alimentacion, bateria y Pi", "1_alimentacion_pi.kicad_sch", "2", "5 V, servos 6 V, bateria y enlace UART4", hoja_alim_servos),
+                ("ESP32-B servos", "2_esp32b_servos.kicad_sch", "3", "ESP32-B y 8 servos", hoja_servos)]
+        intro = ("Tarjeta de una sola cara.  La Raspberry Pi 5 va aparte con un HAT de bornas y llega por J9 (UART4).\n"
+                 "8 servos: 4 de direccion y 4 del brazo.  El BEC 6 V y la bateria llegan por bornas.\n"
+                 "Doble clic en una hoja para entrar.  Los nombres de red son los de la PCB.")
+    else:
+        defs = [("Alimentacion", "1_alimentacion.kicad_sch", "2", "Alimentacion 5 V, servos 6 V y bateria", hoja_alimentacion),
+                ("Raspberry Pi 5", "2_raspberry_pi.kicad_sch", "3", "Raspberry Pi 5 y UART a las ESP32", hoja_pi),
+                ("ESP32-A traccion", "3_esp32a_traccion.kicad_sch", "4", "ESP32-A y bornas de los L298N", hoja_traccion),
+                ("Encoders", "4_encoders.kicad_sch", "5", "Encoders: divisores 5 V -> 3.3 V", hoja_encoders),
+                ("ESP32-B servos", "5_esp32b_servos.kicad_sch", "6", "ESP32-B, servos y bateria", hoja_servos)]
+        intro = ("Raspberry Pi 5 (debajo, como HAT) + ESP32-A traccion + ESP32-B servos.\n"
+                 "Los 3 L298N, la bateria, el step-down 5 V y el BEC 6 V van en el chasis y llegan por bornas.\n"
+                 "Doble clic en una hoja para entrar.  Los nombres de red son los de la PCB.")
     hojas = []
     for (n, a, p, t, fn) in defs:
         h = Hoja(n, a, p, t, by_ref, libs)
@@ -565,10 +724,7 @@ def escribir(comps, syms, out_dir, titulo_doc):
         root.comp(ref, 220.98 + 15.24 * k, 88.9)
     root.texto(205.74, 76.2, "Barrenos M3\n(H1: pin de alineacion)", 1.27)
     root.texto(15.24, 15.24, titulo_doc, 2.54, True)
-    root.texto(15.24, 22.86,
-               "Raspberry Pi 5 (debajo, como HAT) + ESP32-A traccion + ESP32-B servos.\n"
-               "Los 3 L298N, la bateria, el step-down 5 V y el BEC 6 V van en el chasis y llegan por bornas.\n"
-               "Doble clic en una hoja para entrar.  Los nombres de red son los de la PCB.", 1.27)
+    root.texto(15.24, 22.86, intro, 1.27)
     filas = []
     for net in sorted({n for h in hojas for n in h.redes}):
         en = [h.nombre for h in hojas if net in h.redes]

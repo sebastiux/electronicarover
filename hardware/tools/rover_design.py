@@ -279,7 +279,7 @@ SERVOS = {  # n -> (gpio, descripcion)
     1: ("IO23", "Direccion DI"), 2: ("IO22", "Direccion DD"),
     3: ("IO21", "Direccion TI"), 4: ("IO19", "Direccion TD"),
     5: ("IO18", "Brazo base"), 6: ("TX2/IO17", "Brazo hombro"),
-    7: ("RX2/IO16", "Brazo pinza"), 8: ("IO4", "Reserva"),
+    7: ("RX2/IO16", "Brazo pinza"), 8: ("IO4", "Brazo codo/muneca"),
 }
 ESPB_UART_TX = "IO2"
 ESPB_UART_RX = "IO15"
@@ -566,3 +566,7 @@ import os as _os
 VARIANT = _os.environ.get("ROVER_VARIANT", "v1.2")
 if VARIANT == "cubiko":
     from rover_cubiko import *  # noqa: E402,F401,F403
+elif VARIANT == "traccion":
+    from rover_traccion import *  # noqa: E402,F401,F403
+elif VARIANT == "servos":
+    from rover_servos import *  # noqa: E402,F401,F403

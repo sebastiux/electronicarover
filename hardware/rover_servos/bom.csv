@@ -1,0 +1,25 @@
+Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
+2;C3,C4;1000uF 10V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 10V;Bulk servos
+1;C5;100nF;Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm;100nF;Filtro ADC VBAT
+1;D2;LED rojo 12V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (rojo);Indicador bateria
+1;D4;LED azul SERVO;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (azul);Indicador rail servos
+1;D6;1N5819;Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal;1N5819 DO-41;Schottky +5V -> VIN ESP32-B
+4;H1,H2,H3,H4;M3;MountingHole:MountingHole_3.2mm_M3;M3;Agujero de montaje M3
+1;J2;BAT SENSE (12V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Derivacion de bateria despues del fusible (solo medicion y LED, < 10 mA)
+1;J31;SERVO1;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 1 - Direccion DI (SIG arriba, GND abajo)
+1;J32;SERVO2;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 2 - Direccion DD (SIG arriba, GND abajo)
+1;J33;SERVO3;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 3 - Direccion TI (SIG arriba, GND abajo)
+1;J34;SERVO4;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 4 - Direccion TD (SIG arriba, GND abajo)
+1;J35;SERVO5;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 5 - Brazo base (SIG arriba, GND abajo)
+1;J36;SERVO6;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 6 - Brazo hombro (SIG arriba, GND abajo)
+1;J37;SERVO7;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 7 - Brazo pinza (SIG arriba, GND abajo)
+1;J38;SERVO8;rover:Servo_Header_1x03;Header macho 1x3 2.54mm;Servo 8 - Brazo codo/muneca (SIG arriba, GND abajo)
+1;J5;5V IN (buck 5V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Entrada 5 V desde el step-down (ESP32-B)
+1;J6;SERVO PWR IN (6V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Entrada BEC servos 6V
+1;J9;PI (UART4);TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-3-3.5-H_1x03_P3.50mm_Horizontal;Phoenix PT 1,5/3-3,5-H o KF350-3P 3.5mm;Hacia el HAT de bornas de la Pi: 1 GND (pin 34), 2 TXD4 = GPIO12 (pin 32), 3 RXD4 = GPIO13 (pin 33)
+2;R15,R16;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD4 (GPIO12) -> ESP32-B RX
+1;R22;100k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 100k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (alto)
+1;R23;27k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 27k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (bajo)
+1;R24;2.2k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 2.2k 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 12V
+1;R26;470;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 470 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED servos
+1;U3;ESP32-B_Servos;rover:ESP32_DevKitV1_30P_DualPitch;ESP32 DevKit V1 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15

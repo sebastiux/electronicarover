@@ -1,0 +1,11 @@
+Rover - tarjeta de TRACCION (una cara): proyecto KiCad 7
+Abre rover_traccion.kicad_pro con KiCad 7 u 8. La carpeta es autocontenida (rover.kicad_sym y
+rover.pretty con ${KIPRJMOD}; las huellas estandar van embebidas en la PCB).
+
+- Cobre solo en B.Cu. Las pistas de F.Cu NO se fresan: son la guia de los cables aislados
+  que van por arriba (puentes W1..Wn, ver puentes_alambre.csv y la serigrafia).
+- Esquematico jerarquico: indice + hojas por bloque, con notas y pines libres. Mismos
+  nombres de red que la PCB (verificado pin a pin).
+- Fresado, montaje y cableado: hardware/cnc_traccion/README.md y hardware/DOS_TARJETAS.md.
+- Regenerar: cd hardware/tools && ROVER_VARIANT=traccion python3 generate.py --route
+  (rutea y regenera el esquematico) y despues python3 cubiko_cam.py con la misma variable.

@@ -1,0 +1,22 @@
+Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_traccion (92 x 96 mm, UNA cara)
+V-bit 20 grados punta 0.10 mm a 0.10 mm -> ancho de corte 0.135 mm
+
+Pads: 128   cables por arriba: 5   taladros: 142
+Piezas de cobre tras el fresado: 127
+CORTOS: 0
+REDES ABIERTAS: 0
+
+CABLES POR ARRIBA:
+  W1   GND        (21.4, 28.9) -> (13.4, 31.9)  8 mm
+  W2   GND        (10.7, 87.0) -> (10.7, 72.2)  15 mm
+  W3   +5V        (68.0, 16.4) -> (63.0, 22.9)  8 mm
+  W4   +5V        (51.0, 38.2) -> (47.2, 70.2)  33 mm
+  W5   +5V        (49.5, 84.5) -> (26.9, 84.5)  22 mm
+
+TRABAJOS (en este orden, sin voltear la placa):
+  1_vbit_aislamiento.nc                      40.2 min   corte    4573 mm   bajadas 198
+  2_broca1.0.nc                               9.3 min   corte       0 mm   bajadas 105
+  3_fresa1mm_barrenos_contorno.nc            24.4 min   corte    1809 mm   bajadas 275
+  Tiempo total de maquina estimado: 74 min (sin cambios de herramienta ni mapa de alturas)
+
+RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

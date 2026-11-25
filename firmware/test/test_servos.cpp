@@ -62,6 +62,7 @@ int main() {
   section("Alimentacion de las ESP32 (diodos Schottky en VIN)");
   for (const char* e : {"U2", "U3"}) {
     std::string vin = sb::net(e, "15");
+    if (vin.empty()) continue;   // tarjeta de servos separada: solo lleva la ESP32-B
     std::string d;
     for (auto& rp : sb::on_net(vin)) if (rp.first[0] == 'D') d = rp.first;
     bool ok = !d.empty() && sb::net(d, "1") == vin && sb::net(d, "2") == "+5V";

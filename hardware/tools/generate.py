@@ -821,7 +821,7 @@ def main():
                       ("Servo_Header_1x03", footprint_servo())):
         open(os.path.join(OUT, "rover.pretty", name + ".kicad_mod"), "w").write(txt + "\n")
     write_tables()
-    if getattr(D, "VARIANT", "") == "cubiko":
+    if getattr(D, "VARIANT", "") in ("cubiko", "traccion", "servos"):
         # esquematico jerarquico por bloques (esquematico.py)
         import esquematico
         global SHEETS
