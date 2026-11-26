@@ -1,6 +1,6 @@
 Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 6;C11,C12,C13,C14,C15,C16;1nF;Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm;1nF;Filtro de ruido encoder M6
-1;C2;1000uF 10V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 10V;Bulk 5V
+1;C2;1000uF 16V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm;Bulk 5V
 1;D3;LED verde 5V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (verde);Indicador 5V
 1;D5;1N5819;Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal;1N5819 DO-41;Schottky +5V -> VIN ESP32-A
 4;H1,H2,H3,H4;M3;MountingHole:MountingHole_3.2mm_M3;M3;Agujero de montaje M3

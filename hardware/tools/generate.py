@@ -625,6 +625,14 @@ def build_pcb(comps, netnames, assignments, route=False):
         fp.Reference().SetTextThickness(FromMM(0.15))
         fps[c["ref"]] = fp
 
+    # barrenos a la medida de la pieza que de verdad se monta (BARRENOS = [(texto en la huella, mm)])
+    for fp in fps.values():
+        fpid = fp.GetFPIDAsString()
+        for clave, dmm in getattr(D, "BARRENOS", []):
+            if clave in fpid:
+                for p in fp.Pads():
+                    if p.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
+                        p.SetDrillSize(VECTOR2I(FromMM(dmm), FromMM(dmm)))
     # prototipado sin metalizar: anillo de cobre >= 0.5 mm donde el paso lo permite
     if D.FAB == "proto":
         for fp in fps.values():

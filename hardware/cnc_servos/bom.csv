@@ -1,5 +1,5 @@
 Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
-2;C3,C4;1000uF 10V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 10V;Bulk servos
+2;C3,C4;1000uF 16V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm;Bulk servos
 1;C5;100nF;Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm;100nF;Filtro ADC VBAT
 1;D2;LED rojo 12V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (rojo);Indicador bateria
 1;D4;LED azul SERVO;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (azul);Indicador rail servos

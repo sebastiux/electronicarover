@@ -135,10 +135,10 @@ def build():
             desc="Servo %d - %s (SIG arriba, GND abajo)" % (n, d), mpn="Header macho 1x3 2.54mm")
     add("J6", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
         {1: "GND", 2: "SERVO_V"}, J6_POS, _sch_pos(), desc="Entrada BEC servos 6V", mpn=MPN_TB2)
-    add("C3", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (62.0, 40.0, 0), _sch_pos(), desc="Bulk servos")
-    add("C4", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (66.0, 62.0, 0), _sch_pos(), desc="Bulk servos")
+    add("C3", "1000uF 16V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
+        (62.0, 40.0, 0), _sch_pos(), desc="Bulk servos", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
+    add("C4", "1000uF 16V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
+        (66.0, 62.0, 0), _sch_pos(), desc="Bulk servos", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
     add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_A"}, (57.0, 33.0, 90),
         _sch_pos(), desc="Resistencia LED servos")
     add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "GND", 2: "LEDS_A"},

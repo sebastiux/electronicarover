@@ -13,7 +13,7 @@ Supone que ya tienes la Raspberry Pi 5, las 2 ESP32 DevKit V1, los 3 L298N, los 
 | Kit de resistencias 1/4 W 1 % | 1 kit (ocupas 10k ×7, 20k ×6, 1k ×4, 100k, 27k, 2.2k, 330, 470) | [búsqueda](https://listado.mercadolibre.com.mx/kit-resistencias-1-4w-1-porciento) | Revisa que el kit traiga 20k y 27k |
 | Capacitor cerámico 1 nF (102) | 6 | [búsqueda](https://listado.mercadolibre.com.mx/capacitor-ceramico-102-1nf) | Paso 2.5 mm |
 | Capacitor cerámico 100 nF (104) | 1 | [búsqueda](https://listado.mercadolibre.com.mx/capacitor-ceramico-104-100nf) | Paso 5 mm |
-| Electrolítico 1000 µF 16 V, Ø10 mm | 3 | [búsqueda](https://listado.mercadolibre.com.mx/capacitor-electrolitico-1000uf-16v) | El diseño pide 10 V; 16 V sirve, con paso 5 mm y Ø ≤ 10 mm |
+| Electrolítico 1000 µF 16 V, Ø10 mm | 3 | [búsqueda](https://listado.mercadolibre.com.mx/capacitor-electrolitico-1000uf-16v) | Cuerpo de Ø10 mm exacto (10×13 a 10×20) y paso de 5 mm; los de Ø8 mm traen paso de 3.5 mm y no coinciden |
 | Diodo TVS SA5.0A | 1 | [búsqueda](https://listado.mercadolibre.com.mx/diodo-tvs-sa5.0a) | Protección del 5 V de la Pi |
 | Diodo Schottky 1N5819 | 2 | [búsqueda](https://listado.mercadolibre.com.mx/diodo-schottky-1n5819) | |
 | LEDs de 5 mm: rojo, verde y azul | 1 de cada uno | [búsqueda](https://listado.mercadolibre.com.mx/kit-leds-5mm-colores) | |

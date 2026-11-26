@@ -17,7 +17,7 @@ CABLES POR ARRIBA:
   W8   +5V        (67.7, 86.0) -> (28.2, 86.0)  40 mm
 
 TRABAJOS (en este orden, sin voltear la placa):
-  fresa1mm_todo.nc                           58.8 min   corte    4644 mm   bajadas 580
-  Tiempo total de maquina estimado: 59 min (sin cambios de herramienta ni mapa de alturas)
+  fresa1mm_todo.nc                           60.0 min   corte    4720 mm   bajadas 580
+  Tiempo total de maquina estimado: 60 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

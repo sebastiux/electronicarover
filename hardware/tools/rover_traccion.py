@@ -255,8 +255,8 @@ def build():
     add("J5", "5V IN (buck 5V)", "Connector:Screw_Terminal_01x02", FP_TB2,
         {1: "+5V", 2: "GND"}, (60.0, 5.6, 180), _sch_pos(),
         desc="Entrada 5 V desde el step-down (ESP32-A y encoders)", mpn=MPN_TB2)
-    add("C2", "1000uF 10V", "Device:C_Polarized", FP_CP10, {1: "+5V", 2: "GND"},
-        (69.0, 8.0, 0), _sch_pos(), desc="Bulk 5V")
+    add("C2", "1000uF 16V", "Device:C_Polarized", FP_CP10, {1: "+5V", 2: "GND"},
+        (69.0, 8.0, 0), _sch_pos(), desc="Bulk 5V", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
     add("R25", "330", "Device:R", FP_R, {1: "+5V", 2: "LED5_A"}, (57.0, 15.0, 0),
         _sch_pos(), desc="Resistencia LED 5V")
     add("D3", "LED verde 5V", "Device:LED", FP_LED, {1: "GND", 2: "LED5_A"},

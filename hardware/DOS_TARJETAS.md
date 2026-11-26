@@ -4,7 +4,7 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 | Tarjeta | Lleva | Tamaño | Cables por arriba | Fresado |
 |---|---|---|---|---|
-| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 95 × 96 mm | 8 | ~59 min |
+| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 95 × 96 mm | 8 | ~60 min |
 | **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~36 min |
 
 - **Raspberry Pi 5:** coordina a las 2 ESP32. Va aparte, con un **HAT de bornas** (header hembra 2x20 sobre el GPIO). De ahí sale un cable de 3 hilos a la borna `PI` (J9) de cada tarjeta.
@@ -48,6 +48,7 @@ Para entender el circuito completo (voltajes, señales y cada tarjeta por dentro
   - `dtoverlay=uart2-pi5` → `/dev/ttyAMA2`, tracción.
   - `dtoverlay=uart4-pi5` → `/dev/ttyAMA4`, servos.
   - `usb_max_current_enable=1`, porque la Pi se alimenta por el GPIO.
+- **En la Pi, antes de usar `rover_link.py`:** `export ROVER_ESPB_PORT=/dev/ttyAMA4` (su valor por defecto es el UART0 de la tarjeta v1.2).
 
 ## Cableado de los L298N (bornas de 6 vías de la tarjeta de tracción)
 
@@ -62,15 +63,17 @@ En cada módulo:
 
 MOTOR_EN tiene un pull-down de 10k en la tarjeta: ningún motor se mueve hasta que el firmware lo habilita.
 
-## Qué se compra distinto a la versión de 2 caras
+## Qué se compra
+
+La lista completa con cantidades, y las medidas de cada pad y barreno, están en [`LISTA_MATERIALES.md`](LISTA_MATERIALES.md). Lo que cambia respecto a la versión de 2 caras:
 
 | Qué | Cantidad | Búsqueda en Mercado Libre |
 |---|---|---|
 | HAT de bornas para el GPIO de la Raspberry Pi (40 pines) | 1 | [hat bornas gpio raspberry](https://listado.mercadolibre.com.mx/hat-bornas-gpio-raspberry) · [breakout terminal raspberry](https://listado.mercadolibre.com.mx/raspberry-pi-gpio-terminal-block-breakout) |
 | Placa fenólica FR1 **una cara** 10 × 15 cm | 2 (+1 de prueba) | [placa fenólica una cara 10x15](https://listado.mercadolibre.com.mx/placa-fenolica-una-cara-10x15) |
-| Borna KF350 paso 3.5 mm, 3 vías (encastrable) | 10 | [KF350 3 pines](https://listado.mercadolibre.com.mx/bornera-kf350-3.5mm) |
+| Borna KF350 paso 3.5 mm, 3 vías (encastrable, barreno de 1.3 mm) | 10 | [KF350 3 pines](https://listado.mercadolibre.com.mx/bornera-kf350-3.5mm) |
 | Borna KF350 paso 3.5 mm, 2 vías (encastrable) | 2 | (la misma búsqueda) |
-| Borna KF301 paso 5.08 mm, 2 vías | 4 | [KF301 2 pines](https://listado.mercadolibre.com.mx/bornera-kf301-2-pines-5.08) |
+| Borna KF301 paso 5.08 mm, 2 vías (barreno de 1.5 mm) | 4 | [KF301 2 pines](https://listado.mercadolibre.com.mx/bornera-kf301-2-pines-5.08) |
 | Cable aislado 22 AWG (para los 8 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
 
 Cómo se arman las bornas encastrables:
@@ -91,7 +94,7 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 | Pads de piezas distintas a menos de 1 mm · pistas de menos de 1 mm | 0 · 0 | 0 · 0 |
 | Cortos con un corte real de 0.90 a 1.10 mm | 0 | 0 |
 | Firmware simulado sobre el netlist (UART por el HAT, EN en Y) | 48/48 | 38/38 |
-| Simulador del Fab Lab con `fresa1mm_todo.nc` (1 herramienta, sin volteo) | Board done, 1 de 1 (~57 min) | Board done, 1 de 1 (~34 min) |
+| Simulador del Fab Lab con `fresa1mm_todo.nc` (1 herramienta, sin volteo) | Board done, 1 de 1 (~58 min) | Board done, 1 de 1 (~35 min) |
 | Generador de la app, *Traces* con 1 pasada y fresa declarada de 0.95 mm | Board done, 3 de 3 · 0 cortos | Board done, 3 de 3 · 0 cortos |
 
 ## Regenerar

@@ -3,7 +3,8 @@
 
   ESP32-A (traccion): /dev/ttyAMA2  (dtoverlay=uart2-pi5, GPIO4 TX / GPIO5 RX)
   ESP32-B (servos):   /dev/ttyAMA0  (dtoverlay=uart0-pi5, GPIO14 TX / GPIO15 RX)
-  Tarjeta Cubiko: ESP32-B en /dev/ttyAMA4 (dtoverlay=uart4-pi5, GPIO12 TX / GPIO13 RX)
+  Tarjeta Cubiko y version de 2 tarjetas de una cara: ESP32-B en /dev/ttyAMA4
+                  (dtoverlay=uart4-pi5, GPIO12 TX / GPIO13 RX)
                   -> export ROVER_ESPB_PORT=/dev/ttyAMA4
 
 Uso rapido (prueba en el banco, con ruedas al aire):

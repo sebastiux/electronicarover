@@ -4,6 +4,7 @@
 - **Una sola herramienta:** todo se fresa con la **fresa plana de 1.0 mm**, en un solo archivo.
 - **Lleva:** ESP32-B, 8 headers de servo, entrada de 6 V, medición de batería, 5 V de entrada y la borna `PI` (UART4).
 - **Arquitectura y cableado:** en `../DOS_TARJETAS.md`.
+- **Medidas de pads y barrenos, y lista completa de piezas:** en `../LISTA_MATERIALES.md`.
 
 ## Reglas de diseño (verificadas con `tools/verifica_espacios.py`)
 
@@ -30,7 +31,7 @@
 
 | Archivo | Herramienta | Qué hace | Tiempo |
 |---|---|---|---|
-| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | aislamiento (1 pasada a −0.12 mm por red), 78 barrenos de 1.0 mm, barrenos grandes en hélice y contorno con 4 puentes | ~36 min |
+| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | aislamiento (1 pasada a −0.12 mm por red), 78 barrenos de 1.0 mm, barrenos de 1.3, 1.5 y 3.2 mm en espiral y contorno con 4 puentes | ~36 min |
 
 El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, mapa de alturas y el archivo. La simulación da 0 cortos con un corte real de 0.90 a 1.10 mm.
 
@@ -42,7 +43,7 @@ El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, ma
    - D6: la banda va hacia la ESP32.
    - LEDs D2 y D4: el pad cuadrado (cátodo) va a GND.
 3. **Headers hembra 1x15 de la ESP32** (fila exterior) y **headers macho 1x3** de los servos.
-4. **C3 y C4 (1000 µF):** la pata + va al pad marcado.
+4. **C3 y C4 (1000 µF 16 V, cuerpo de Ø10 mm y paso de 5 mm):** la pata + va al pad marcado.
 5. **Bornas.**
 6. **Prueba:** sin módulos, mide continuidad SERVO_V–GND y 5V–GND (no deben pitar).
 
@@ -52,7 +53,7 @@ El procedimiento es el mismo que en la tarjeta de tracción: homing, cero XY, ma
 
 Las 2 formas se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8.
 
-**1. Nuestro G-code (`gcode/fresa1mm_todo.nc`): la forma recomendada.** Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm todo el tiempo, sin errores de GRBL. La app estima 34 min. Ya va espejado (cobre abajo).
+**1. Nuestro G-code (`gcode/fresa1mm_todo.nc`): la forma recomendada.** Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm todo el tiempo, sin errores de GRBL. La app estima 35 min. Ya va espejado (cobre abajo).
 
 ![](sim/fablab/fresa1mm_todo_terminado.png)
 

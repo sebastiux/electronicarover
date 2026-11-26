@@ -4,6 +4,7 @@
 - **Una sola herramienta:** todo (aislamiento, barrenos y contorno) se fresa con la **fresa plana de 1.0 mm**, en un solo archivo. No hay cambios de herramienta.
 - **Lleva:** ESP32-A, 3 bornas para los L298N, 2 bornas de encoders con sus 6 divisores, 5 V de entrada y la borna `PI` (UART2).
 - **Arquitectura y cableado:** en `../DOS_TARJETAS.md`.
+- **Medidas de pads y barrenos, y lista completa de piezas:** en `../LISTA_MATERIALES.md`.
 
 ## Reglas de diseño (verificadas con `tools/verifica_espacios.py`)
 
@@ -34,7 +35,7 @@
 
 | Archivo | Herramienta | Qué hace | Tiempo |
 |---|---|---|---|
-| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | 1. aislamiento: 1 pasada a −0.12 mm alrededor de cada red<br>2. 96 barrenos de 1.0 mm (bajada directa)<br>3. barrenos de más de 1.0 mm en hélice<br>4. contorno con 4 puentes | ~59 min |
+| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | 1. aislamiento: 1 pasada a −0.12 mm alrededor de cada red<br>2. 96 barrenos de 1.0 mm (bajada directa)<br>3. barrenos de 1.3 mm (borneras de 3.5 mm), 1.5 mm (bornera de 5.08 mm) y 3.2 mm (M3) en espiral<br>4. contorno con 4 puentes | ~60 min |
 
 1. Monta la fresa de 1.0 mm, haz el homing y pon el **cero XY** en la esquina del blank.
 2. Cero Z con la sonda y **mapa de alturas** sobre la tarjeta.
@@ -81,7 +82,7 @@ Pon los cables **antes** que los headers de la ESP32: W2 pasa junto al módulo.
 
 Las 2 formas se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8.
 
-**1. Nuestro G-code (`gcode/fresa1mm_todo.nc`): la forma recomendada.** Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm todo el tiempo, sin errores de GRBL. La app estima 57 min. Ya va espejado (cobre abajo).
+**1. Nuestro G-code (`gcode/fresa1mm_todo.nc`): la forma recomendada.** Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm todo el tiempo, sin errores de GRBL. La app estima 58 min. Ya va espejado (cobre abajo).
 
 ![](sim/fablab/fresa1mm_todo_terminado.png)
 

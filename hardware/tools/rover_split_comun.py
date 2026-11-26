@@ -45,6 +45,12 @@ PAD_MIN = 2.2              # pads de 2.2 mm donde el paso lo permite (anillo de 
 PAD_GAP = 1.14             # entre pads de una fila a 2.54 mm: 1.14 mm libres, mas que la fresa de 1 mm
 PAD_OVAL = True            # en paso de 2.54: pads ovalados 1.4 mm a lo largo de la fila x 2.2 mm
 ZONE_FULL = True           # pads unidos al plano de GND sin rayos de alivio termico
+# Barrenos de las borneras, abiertos para las genericas que si se consiguen (el pad no cambia):
+#  - paso 3.5 mm (Phoenix PT 1,5 pide 1.2 para su pin de 0.9; la KF350 trae pin plano de hasta
+#    ~1.15 mm de diagonal): 1.3 mm, anillo de 0.53 mm.
+#  - paso 5.08 mm (Phoenix MKDS 1,5 pide 1.3 para su pin de 0.9 x 0.9; la KF301 trae pin de
+#    ~1.0 x 0.8, hasta ~1.4 de diagonal): 1.5 mm, anillo de 0.55 mm.
+BARRENOS = [("TerminalBlock_Phoenix_PT-1,5", 1.3), ("TerminalBlock_Phoenix_MKDS-1,5", 1.5)]
 MIN_PAD_ESPACIO = CLR      # cobre libre minimo entre pads de piezas distintas (verifica_espacios.py)
 VIA_PAD_ESPACIO = CLR      # y entre el barreno de un cable y cualquier pad
 

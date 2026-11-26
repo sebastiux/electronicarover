@@ -2,6 +2,8 @@
 
 > **Versión para fresar en casa en 2 tarjetas de una cara (tracción y servos):** ver [`DOS_TARJETAS.md`](DOS_TARJETAS.md). La versión de una sola tarjeta de 2 caras para la Cubiko está en [`cubiko/README.md`](cubiko/README.md).
 
+> **Lista completa de piezas y medidas de pads y barrenos:** [`LISTA_MATERIALES.md`](LISTA_MATERIALES.md).
+
 > **Para entender el circuito:** [`esquema_didactico/`](esquema_didactico/README.md) (4 hojas: alimentación, señales y cada tarjeta por dentro).
 
 PCB de **2 capas** (F.Cu arriba y B.Cu abajo) de 200 × 150 mm. Los módulos se montan encima y la tarjeta los interconecta, así que los únicos cables que salen son los de **batería, motores/encoders, servos y reguladores**.
@@ -155,7 +157,7 @@ L298N (regulador 78M05 del módulo) ─► +5V de los encoders de sus 2 motores
   - En la ESP32-B, cada servo queda a la misma altura que su GPIO.
 - **`MOTOR_EN`** (IO13 de la ESP32-A, con pull-down) habilita los 6 canales. Los motores no se mueven mientras arranca la ESP32.
 - **Encoders:** solo el canal A, con divisor 10k/20k de 5 V a 3.3 V.
-- **Batería:** IO34 de la ESP32-B, con divisor 100k/27k. Corta los motores si la LiPo baja de 3.3 V por celda (9.9 V).
+- **Batería:** IO34 de la ESP32-B, con divisor 100k/27k. Si la LiPo baja de 3.3 V por celda (9.9 V), la ESP32-B se lo avisa a la Pi con una bandera en su telemetría (`B mv 1`). El firmware no corta los motores por sí solo: esa decisión se programa en la Pi.
 
 ### Componentes discretos
 

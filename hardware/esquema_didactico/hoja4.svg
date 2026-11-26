@@ -135,7 +135,7 @@
 <rect x="193.70" y="57.55" width="4.60" height="0.70" rx="0.00" fill="#1f2328" stroke="none"/>
 <text x="192.60" y="55.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="192.60" dy="0.00">+</tspan></text>
 <text x="199.20" y="56.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="199.20" dy="0.00">C3</tspan></text>
-<text x="199.20" y="59.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="199.20" dy="0.00">1000 µF 10V</tspan></text>
+<text x="199.20" y="59.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="199.20" dy="0.00">1000 µF 16V</tspan></text>
 <path d="M196.00,44.00 L196.00,52.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M196.00,62.00 L196.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="196.00" cy="44.00" r="0.95" fill="#e65100"/>
@@ -146,7 +146,7 @@
 <rect x="219.70" y="57.55" width="4.60" height="0.70" rx="0.00" fill="#1f2328" stroke="none"/>
 <text x="218.60" y="55.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="218.60" dy="0.00">+</tspan></text>
 <text x="225.20" y="56.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="225.20" dy="0.00">C4</tspan></text>
-<text x="225.20" y="59.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="225.20" dy="0.00">1000 µF 10V</tspan></text>
+<text x="225.20" y="59.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="225.20" dy="0.00">1000 µF 16V</tspan></text>
 <path d="M222.00,44.00 L222.00,52.00" fill="none" stroke="#e65100" stroke-width="1.00" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M222.00,62.00 L222.00,70.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="222.00" cy="44.00" r="0.95" fill="#e65100"/>

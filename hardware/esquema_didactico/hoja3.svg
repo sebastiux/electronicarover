@@ -21,7 +21,7 @@
 <rect x="49.70" y="76.55" width="4.60" height="0.70" rx="0.00" fill="#1f2328" stroke="none"/>
 <text x="48.60" y="74.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.60" fill="#1f2328" text-anchor="middle" font-weight="700" xml:space="preserve"><tspan x="48.60" dy="0.00">+</tspan></text>
 <text x="55.20" y="75.40" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#1f2328" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="55.20" dy="0.00">C2</tspan></text>
-<text x="55.20" y="78.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="55.20" dy="0.00">1000 µF 10V</tspan></text>
+<text x="55.20" y="78.60" font-family="Inter, 'DejaVu Sans', sans-serif" font-size="2.50" fill="#5b6573" text-anchor="start" font-weight="400" xml:space="preserve"><tspan x="55.20" dy="0.00">1000 µF 16V</tspan></text>
 <path d="M52.00,46.00 L52.00,71.00" fill="none" stroke="#ad1457" stroke-width="0.90" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M52.00,81.00 L52.00,106.00" fill="none" stroke="#263238" stroke-width="0.80" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="52.00" cy="46.00" r="0.91" fill="#ad1457"/>

@@ -9,7 +9,7 @@ REDES ABIERTAS: 0
 CABLES POR ARRIBA:
 
 TRABAJOS (en este orden, sin voltear la placa):
-  fresa1mm_todo.nc                           36.1 min   corte    2815 mm   bajadas 281
+  fresa1mm_todo.nc                           36.4 min   corte    2848 mm   bajadas 280
   Tiempo total de maquina estimado: 36 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

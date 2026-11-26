@@ -60,7 +60,15 @@ usb_max_current_enable=1
 ```
 
 - `uart2-pi5` es GPIO4/5 → ESP32-A, `/dev/ttyAMA2`.
-- `uart0-pi5` es GPIO14/15 → ESP32-B, `/dev/ttyAMA0`.
+- `uart0-pi5` es GPIO14/15 → ESP32-B, `/dev/ttyAMA0`. Así va en la tarjeta v1.2.
+
+**En las 2 tarjetas de una cara y en la tarjeta Cubiko** la ESP32-B va por UART4 (GPIO12/13, pines 32 y 33). Cambia la segunda línea por `dtoverlay=uart4-pi5` y, antes de usar `rover_link.py`:
+
+```bash
+export ROVER_ESPB_PORT=/dev/ttyAMA4
+```
+
+El firmware de las ESP32 es el mismo en todas las versiones.
 
 Pruebas en el banco, con las ruedas al aire:
 
