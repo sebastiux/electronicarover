@@ -2,6 +2,8 @@
 
 Aplica a la tarjeta de **tracción** (95 × 96 mm) y a la de **servos** (76 × 96 mm). Las cantidades salen de los `bom.csv` y de las PCB; las medidas de pads y barrenos, de los `.kicad_pcb`.
 
+Resumen en una imagen: [`lista_materiales.png`](lista_materiales.png).
+
 ## 1. Pads y barrenos: cuánto miden y qué pata entra
 
 Con la fresa única de 1.0 mm, los barrenos diseñados de 0.8 a 1.1 mm se hacen bajando la fresa y **quedan todos de 1.0 mm**. Los mayores se abren en espiral a su medida. No hay metalizado: el barreno final es el fresado.
