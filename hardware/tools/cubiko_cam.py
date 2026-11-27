@@ -92,8 +92,12 @@ def polyset(ps):
     return out
 
 
+_TABLEROS = []      # referencias vivas: pcbnew falla a veces si se libera un tablero y se carga otro
+
+
 def load():
     b = pcbnew.LoadBoard(PCB)
+    _TABLEROS.append(b)
     err = pcbnew.FromMM(0.005)
     layers = {"F": pcbnew.F_Cu, "B": pcbnew.B_Cu}
     net_polys = {k: {} for k in layers}
@@ -195,10 +199,17 @@ def isolation_por_red(nets, w):
     anillo a w/2 de su cobre, que en un hueco minimo pasa justo por el centro. Con la union de
     todo el cobre los anillos de 2 redes vecinas se funden y entre ellas no pasa ningun corte.
     Donde el anillo de una red cae sobre un corte ya hecho (a menos de 0.03 mm) no se repite."""
-    r = w / 2
     dentro = box(0, 0, W, H).buffer(-0.05)
     paths, swept, hechos = [], [], []
-    for n, g in sorted(nets.items(), key=lambda kv: -kv[1].area):
+    clr = getattr(D, "CLR", w)
+    # 1a pasada: un anillo por red, a w/2 de su cobre
+    trabajos = [(w / 2, g) for n, g in sorted(nets.items(), key=lambda kv: -kv[1].area)]
+    # 2a pasada (huecos de mas de 1.6 fresas): contorno de TODO el cobre junto a una fresa (w) de
+    # distancia. Limpia de 0.5 a 1.5 w de cada orilla, justo el centro de un hueco de 2 w, y como se
+    # mide al cobre mas cercano no entra donde el hueco es menor (pines a 2.54 mm): ahi no hay 2a pasada.
+    if clr > 1.6 * w:
+        trabajos.append((w, unary_union([g for g in nets.values() if not g.is_empty])))
+    for r, g in trabajos:
         if g.is_empty:
             continue
         ya = unary_union(hechos) if hechos else None
@@ -215,7 +226,7 @@ def isolation_por_red(nets, w):
         m = linemerge(nuevos)
         for part in (m.geoms if hasattr(m, "geoms") else [m]):
             paths.append(list(part.coords))
-            swept.append(part.buffer(r, resolution=8))
+            swept.append(part.buffer(w / 2, resolution=8))
             hechos.append(part.buffer(0.03, resolution=2))
     return order_paths(paths), unary_union(swept), w
 
@@ -826,9 +837,11 @@ def main_una_cara():
     una = getattr(D, "UNA_FRESA", 0)
     if una:
         # UNA sola herramienta para todo: aislamiento, barrenos y contorno en un solo archivo
-        g = G("TODO con la fresa de 1.0 mm: aislamiento (1 pasada), %d barrenos de 1.0 mm, barrenos "
-              "grandes y contorno con %d puentes" % (len(small), P["n_tabs"]), TM)
-        g.l.append("( 1/3 aislamiento: canal de 1 mm alrededor de cada red )")
+        dos = getattr(D, "CLR", una) > 1.6 * una
+        g = G("TODO con la fresa de 1.0 mm: aislamiento (%s), %d barrenos de 1.0 mm, barrenos "
+              "grandes y contorno con %d puentes" % ("2 pasadas por lado" if dos else "1 pasada",
+                                                     len(small), P["n_tabs"]), TM)
+        g.l.append("( 1/3 aislamiento: canal de 1 mm por red%s )" % (" + centro de los huecos" if dos else ""))
         for pth in paths:
             g.path(pth, -P["flat_iso_depth"], P["mill_feed"], P["mill_plunge"], "B")
         g.l.append("( 2/3 barrenos de 1.0 mm: la fresa baja y sube )")

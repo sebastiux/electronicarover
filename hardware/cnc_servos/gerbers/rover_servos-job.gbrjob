@@ -5,17 +5,17 @@
       "Application": "Pcbnew",
       "Version": "7.0.11+dfsg-1build4"
     },
-    "CreationDate": "2026-11-27T00:24:22+00:00"
+    "CreationDate": "2026-11-27T05:29:08+00:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
       "Name": "rover_servos",
       "GUID": "726f7665-725f-4736-9572-766f732e6b69",
-      "Revision": "2.1-S"
+      "Revision": "2.2-S"
     },
     "Size": {
-      "X": 76.1,
-      "Y": 108.1
+      "X": 73.6,
+      "Y": 100.1
     },
     "LayerNumber": 2,
     "BoardThickness": 1.6,
@@ -26,10 +26,10 @@
       "Layers": "Outer",
       "PadToPad": 0.2,
       "PadToTrack": 0.2,
-      "TrackToTrack": 1.3,
+      "TrackToTrack": 2.0,
       "MinLineWidth": 1.0,
-      "TrackToRegion": 1.3,
-      "RegionToRegion": 1.3
+      "TrackToRegion": 2.0,
+      "RegionToRegion": 2.0
     }
   ],
   "FilesAttributes": [

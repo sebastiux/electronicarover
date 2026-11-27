@@ -928,7 +928,7 @@ def route_board(relaxed_pass=True):
                        via_pad_gap=getattr(D, "VIA_PAD_ESPACIO", getattr(D, "MIN_PAD_ESPACIO", 0.0)),
                        min_w=(D.DEFAULT_CLASS[0] if getattr(D, "MIN_PAD_ESPACIO", 0) else 0.5),
                        reserved=reserved, early_refs=D.ROUTING_EARLY, late=D.ROUTING_LATE,
-                       first=D.ROUTING_FIRST)
+                       first=D.ROUTING_FIRST, skip=set(getattr(D, "ROUTING_SKIP", ())))
     # limpieza: quitar tramos/vias colgantes (no aportan conexion)
     for _ in range(10):
         board.BuildConnectivity()

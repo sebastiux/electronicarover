@@ -1,12 +1,13 @@
-Rover - tarjeta de TRACCION (una cara), rev. 2.1: proyecto KiCad 7
+Rover - tarjeta de TRACCION (una cara), rev. 2.2: proyecto KiCad 7
 Abre rover_traccion.kicad_pro con KiCad 7 u 8. La carpeta es autocontenida (rover.kicad_sym y
 rover.pretty con ${KIPRJMOD}; las huellas estandar van embebidas en la PCB).
 
-- Para aislar con UNA fresa plana de 1.0 mm en una pasada (LPKF, FlatCAM o la Cubiko):
-  aislamiento de 1.3 mm entre pistas, plano y piezas; pistas de 1.0 mm o mas.
-  Excepcion: pads vecinos de una fila a 2.54 mm, a 1.14 mm (regla en el .kicad_dru).
-- Las zonas llamadas "anti-tira" son relleno de cobre en los huecos de mas de 2 mm, que al
-  fresar dejarian una tira suelta. Van unidas a una red vecina. Las pistas no cambian de ancho.
+- Para aislar con UNA fresa plana de 1.0 mm en 2 pasadas por lado (LPKF, FlatCAM o la Cubiko):
+  aislamiento de 2.0 mm entre pistas, plano y piezas; pistas de 1.0 mm o mas.
+  Excepciones que fija el paso de 2.54 mm (reglas en el .kicad_dru): pads vecinos a 1.14 mm,
+  pista junto al pad del pin vecino a 1.34 mm y pistas de pines vecinos a 1.54 mm.
+- Las zonas llamadas "anti-tira" son relleno de cobre en los huecos de mas de 2 mm donde no
+  entra el plano de GND, que al fresar dejarian una tira suelta. Van unidas a una red vecina. Las pistas no cambian de ancho.
 - Ningun cobre a menos de 2 mm de la orilla.
 - Barrenos: solo 1.0, 1.3, 1.5 y 3.2 mm.
 - Cobre solo en B.Cu. Las pistas de F.Cu NO se fresan: son la guia de los cables aislados

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Revisa el espacio para soldar en la cara de cobre (B.Cu) de una tarjeta de una cara:
 
-- cobre libre entre pads (y barrenos de cable) de piezas DISTINTAS >= MIN_PAD_ESPACIO,
-  aunque sean de la misma red (asi ningun pad queda encimado ni pegado a otro);
+- cobre libre entre pads (y barrenos de cable) de piezas DISTINTAS >= MIN_PAD_ESPACIO; si son de
+  la misma red (los une una pista) basta MIN_PAD_MISMA_RED: que no queden encimados ni pegados;
 - ancho de toda pista de la cara de cobre >= ancho minimo (DEFAULT_CLASS);
 - patios (courtyards) de componentes sin traslape.
 Uso: ROVER_VARIANT=traccion python3 verifica_espacios.py
@@ -18,6 +18,7 @@ from shapely.strtree import STRtree
 O = 30.0
 MIN = getattr(D, "MIN_PAD_ESPACIO", 1.0)
 VMIN = getattr(D, "VIA_PAD_ESPACIO", MIN)
+MISMA = getattr(D, "MIN_PAD_MISMA_RED", MIN)
 WMIN = D.DEFAULT_CLASS[0]
 pcb = os.path.join(HERE, "..", D.PROJECT, D.PROJECT + ".kicad_pcb")
 b = pcbnew.LoadBoard(pcb)
@@ -32,20 +33,22 @@ for fp in b.GetFootprints():
         p.TransformShapeToPolygon(ps, pcbnew.B_Cu, 0, err)
         ol = ps.Outline(0)
         g = Polygon([(mm(ol.CPoint(i).x) - O, mm(ol.CPoint(i).y) - O) for i in range(ol.PointCount())])
-        items.append((g, fp.GetReference(), "%s.%s" % (fp.GetReference(), p.GetNumber())))
+        items.append((g, fp.GetReference(), "%s.%s" % (fp.GetReference(), p.GetNumber()), p.GetNetname()))
 for k, t in enumerate(b.GetTracks()):
     if t.GetClass() == "PCB_VIA":
         c = t.GetPosition()
         items.append((Point(mm(c.x) - O, mm(c.y) - O).buffer(mm(t.GetWidth()) / 2, 16), "VIA%d" % k,
-                      "cable (%.1f, %.1f)" % (mm(c.x) - O, mm(c.y) - O)))
-tree = STRtree([g for g, _, _ in items])
+                      "cable (%.1f, %.1f)" % (mm(c.x) - O, mm(c.y) - O), t.GetNetname()))
+tree = STRtree([it[0] for it in items])
 malos = []
-for i, (g, ref, lab) in enumerate(items):
+for i, (g, ref, lab, net) in enumerate(items):
     for j in tree.query(g.buffer(MIN)):
         if j <= i or items[j][1] == ref:
             continue
         d = g.distance(items[j][0])
         lim = VMIN if (ref.startswith("VIA") or items[j][1].startswith("VIA")) else MIN
+        if net and net == items[j][3]:
+            lim = min(lim, MISMA)
         if d < lim - 1e-3:
             malos.append((d, lab, items[j][2]))
 angostas = [(mm(t.GetWidth()), t.GetNetname()) for t in b.GetTracks()

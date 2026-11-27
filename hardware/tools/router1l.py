@@ -672,7 +672,7 @@ class Router:
 
 def route(board, classes, assignments, order_classes=None, log=print, relaxed_pass=True,
           reserved=(), early_refs=None, late=(), first=(), two_layer=False, via_sizes=None,
-          pad_side=None, via_cost_mm=3.0, no_via_under_parts=False, via_pad_gap=0.0, min_w=0.5):
+          pad_side=None, via_cost_mm=3.0, no_via_under_parts=False, via_pad_gap=0.0, min_w=0.5, skip=()):
     """classes: {clase: (ancho, holgura)}, assignments: {red: clase}.
 
     Orden: BATT, MOTOR, PWR (solo pads de potencia), GND de potencia,
@@ -682,7 +682,8 @@ def route(board, classes, assignments, order_classes=None, log=print, relaxed_pa
     r = Router(board, classes, log=log, reserved=reserved, two_layer=two_layer, via_sizes=via_sizes,
                pad_side=pad_side, via_cost_mm=via_cost_mm, no_via_under_parts=no_via_under_parts,
                via_pad_gap=via_pad_gap, min_w=min_w)
-    nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1]
+    # skip: redes que la variante ya trae completas en pistas fijas (el router no las toca)
+    nets = [n for n in r.pads_by_net if len(r.pads_by_net[n]) > 1 and n not in skip]
     early_refs = early_refs or {}
 
     def span(n):

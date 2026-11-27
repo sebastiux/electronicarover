@@ -1,7 +1,7 @@
 (kicad_sch (version 20230121) (generator eeschema)
   (uuid 355c6ecd-3390-5d0c-9267-6b6959b41b17)
   (paper "A4")
-  (title_block (title "Indice") (date "2026-11-25") (rev "2.1-S") (company "electronicarover")
+  (title_block (title "Indice") (date "2026-11-25") (rev "2.2-S") (company "electronicarover")
     (comment 3 "Rover - tarjeta de SERVOS (ESP32-B, 8 servos, bateria)")
     (comment 1 "Generado por hardware/tools/esquematico.py desde rover_design.py / rover_cubiko.py")
     (comment 2 "Las redes se nombran con etiquetas globales: el nombre es el mismo que en la PCB")

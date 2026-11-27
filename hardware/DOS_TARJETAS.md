@@ -4,13 +4,13 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 | Tarjeta | Lleva | Tamaño | Cables por arriba | Fresado |
 |---|---|---|---|---|
-| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 97 × 96 mm | 8 | 15–30 min en LPKF · ~71 min en Cubiko |
-| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 108 mm | 1 | 10–20 min en LPKF · ~48 min en Cubiko |
+| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 96.2 × 110.5 mm | 4 | 30–50 min en LPKF · ~102 min en Cubiko |
+| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 73.5 × 100 mm | 0 | 15–30 min en LPKF · ~56 min en Cubiko |
 
 - **Raspberry Pi 5:** coordina a las 2 ESP32. Va aparte, con un **HAT de bornas** (header hembra 2x20 sobre el GPIO). De ahí sale un cable de 3 hilos a la borna `PI` (J9) de cada tarjeta.
 - **ESP32:** van en headers hembra 1x15, como antes. El firmware no cambia de pines.
-- **Una sola fresa de 1.0 mm** para aislar, en una pasada, con cualquier programa (LPKF CircuitPro, FlatCAM o el G-code de aquí).
-- **Reglas en las 2 tarjetas:** aislamiento de **1.3 mm** (0.3 más que la fresa), pistas de 1.0 mm o más, relleno de cobre en los huecos que dejarían tiras sueltas, 2 mm libres en la orilla y barrenos de solo 1.0, 1.3, 1.5 y 3.2 mm. Los pads vecinos de una fila a 2.54 mm quedan a 1.14 mm. Lo revisan `tools/verifica_espacios.py` y `tools/sim_cam_union.py`.
+- **Una sola fresa de 1.0 mm** para aislar, en **2 pasadas por lado**, con cualquier programa (LPKF CircuitPro, FlatCAM o el G-code de aquí). Las dos caben en placas de 10 × 15 cm.
+- **Reglas en las 2 tarjetas:** aislamiento de **2.0 mm** (el doble de la fresa), pistas de 1.0 mm o más, relleno de cobre en los huecos que dejarían tiras sueltas, 2 mm libres en la orilla y barrenos de solo 1.0, 1.3, 1.5 y 3.2 mm. Junto a los pines a 2.54 mm el hueco no puede llegar a 2.0: queda en 1.14 mm entre pads vecinos, 1.34 mm entre una pista y el pad vecino y 1.54 mm entre pistas de pines vecinos. Lo revisan `tools/verifica_espacios.py` y `tools/sim_cam_union.py`.
 
 ## Diagrama de conexiones
 
@@ -74,7 +74,7 @@ La lista completa con cantidades, y las medidas de cada pad y barreno, están en
 | Borna KF350 paso 3.5 mm, 3 vías (encastrable, barreno de 1.3 mm) | 10 | [KF350 3 pines](https://listado.mercadolibre.com.mx/bornera-kf350-3.5mm) |
 | Borna KF350 paso 3.5 mm, 2 vías (encastrable) | 2 | (la misma búsqueda) |
 | Borna KF301 paso 5.08 mm, 2 vías (barreno de 1.5 mm) | 4 | [KF301 2 pines](https://listado.mercadolibre.com.mx/bornera-kf301-2-pines-5.08) |
-| Cable aislado 22 AWG (para los 9 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
+| Cable aislado 22 AWG (para los 4 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
 
 Cómo se arman las bornas encastrables:
 - **L298N (6 vías):** 3 + 3, ×3 bornas → 6 bornas de 3 vías.
@@ -87,9 +87,9 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 
 | Prueba | Tracción | Servos |
 |---|---|---|
-| DRC de KiCad (aislamiento 1.3 mm, orilla 2 mm) | 0 violaciones, 0 pads sin conectar | 0 violaciones, 0 pads sin conectar |
+| DRC de KiCad (aislamiento 2.0 mm, orilla 2 mm) | 0 violaciones, 0 pads sin conectar | 0 violaciones, 0 pads sin conectar |
 | Esquemático contra PCB, pin por pin | 113 pines, 0 diferencias | 87 pines, 0 diferencias |
-| Aislamiento como lo hace la LPKF (`tools/sim_cam_union.py`), corte real de 0.8 a 1.1 mm | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
+| Aislamiento como lo hace la LPKF (`tools/sim_cam_union.py`), 1 y 2 pasadas, corte real de 0.8 a 1.1 mm | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
 | Fresado con el G-code de la Cubiko (`tools/cubiko_cam.py`) | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
 | Pistas de menos de 1 mm · cobre a menos de 2 mm de la orilla | 0 · 0 | 0 · 0 |
 | Brocas | 1.0, 1.3, 1.5 y 3.2 mm | 1.0, 1.3, 1.5 y 3.2 mm |
@@ -105,5 +105,5 @@ ROVER_VARIANT=traccion python3 cubiko_cam.py
 
 - **`generate.py --route`:** rutea la tarjeta y genera su esquemático jerárquico.
 - **`cubiko_cam.py`:** genera los Gerbers, `fresa1mm_todo.nc` y la simulación en `hardware/cnc_<tarjeta>/`.
-- **`sim_cam_union.py`:** simula el aislamiento de un programa genérico (LPKF, FlatCAM) con una pasada de 1.0 mm.
+- **`sim_cam_union.py`:** simula el aislamiento de un programa genérico (LPKF, FlatCAM) con la fresa de 1.0 mm (`PASADAS=2` para las 2 pasadas por lado).
 - **Fuentes del diseño:** `tools/rover_traccion.py`, `tools/rover_servos.py` y `tools/rover_split_comun.py`.

@@ -40,10 +40,14 @@ def main():
     if os.path.exists(fcsv):
         for r in csv.DictReader(open(fcsv), delimiter=";"):
             cables.append((r["Red"], (float(r["X1(mm)"]), float(r["Y1(mm)"])), (float(r["X2(mm)"]), float(r["Y2(mm)"]))))
-    paths = [l.intersection(tarjeta) for l in contorno(copper, T / 2)]
     ok = True
     print("%s  %.0f x %.0f mm   redes %d   cables %d" % (C.D.PROJECT, C.W, C.H, len([n for n in B if n]), len(cables)))
     img_data = None
+    pasadas = int(os.environ.get("PASADAS", "1"))          # pasadas por lado: a T/2, T, 1.5 T...
+    paths = []
+    for k in range(pasadas):
+        paths += [l.intersection(tarjeta) for l in contorno(copper, T / 2 + k * T / 2)]
+    print("  %d pasada(s) por lado con fresa de %.1f mm" % (pasadas, T))
     for w in (0.8, 0.9, 1.0, 1.1):
         cut = unary_union([p.buffer(w / 2, resolution=8) for p in paths if not p.is_empty])
         rem = tarjeta.difference(cut).difference(hoyos)

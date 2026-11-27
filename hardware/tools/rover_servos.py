@@ -17,23 +17,27 @@ from rover_design import (ESP32_LEFT, ESP32_RIGHT, SERVOS,  # noqa: F401
                           add, esp_pin_number, pad_side)
 from rover_split_comun import *  # noqa: F401,F403
 from rover_split_comun import FP_ESP32, FP_TB3, FP_TB2, MPN_TB2
-FP_RV = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"   # de pie: entra entre la ESP32 y J9
 
 PROJECT = "rover_servos"
-REVISION = "2.1-S"
+REVISION = "2.2-S"
 TITLE = "Rover - tarjeta de SERVOS (ESP32-B, 8 servos, bateria)"
 
-BOARD_W = 76.0
-BOARD_H = 108.0
+BOARD_W = 73.5
+BOARD_H = 100.0
 
 ESPB_POS = (31.0, 59.0, 270)          # horizontal, USB a la izquierda: fila IO23.. mira a los servos
 ESPB_RIGHT_Y = ESPB_POS[1] + 12.7
-SERVO_Y = ESPB_RIGHT_Y + 32.0         # pad GND de cada header (SIG queda 5.08 arriba). El abanico de
-#                                       senales baja 23 mm: con aislamiento de 1.3 mm no cabe mas corto.
-SERVO_X0, SERVO_PASO = 23.0, 5.08    # headers a 5.08 mm: cada conector de servo con su espacio
-J6_POS = (BOARD_W - 5.6, SERVO_Y, 90)  # entrada 6 V en la orilla derecha (pad 1 GND abajo, en linea con el riel)
-PI_TB = (5.0, BOARD_H - 5.0, 0)       # J9 en la orilla inferior izquierda, bajo IO15/IO2
-CHASSIS_HOLES = [(3.5, 4.0), (BOARD_W - 3.5, 4.0), (3.5, 72.0), (BOARD_W - 3.5, 52.0)]
+SERVO_Y = BOARD_H - 2.75              # pad GND de cada header (SIG queda 5.08 arriba): el riel de GND
+#                                       es tambien el bus de la orilla inferior (pasa bajo J9)
+SERVO_X0, SERVO_PASO = 19.22, 5.08   # headers a 5.08 mm: cada conector de servo con su espacio
+J6_POS = (65.5, BOARD_H - 3.4, 90)    # entrada 6 V (pad 1 GND abajo, pad 2 +6 V arriba)
+PI_TB = (5.0, BOARD_H - 6.7, 0)       # J9 en la orilla inferior izquierda
+GND_IZQ = 8.0                         # GND que baja por la izquierda (de J5 al riel)
+GND_DER = 70.5                        # barra de GND de la orilla derecha (J6, C3, C4, J2)
+GND_Y = ESPB_POS[1]                   # GND que cruza por debajo del modulo
+LED_X = 59.0                          # R26 y D4, entre el servo 1 y la barra de +6 V
+VBUS_X = 65.5                         # barra de +6 V (J6, C4, C3)
+CHASSIS_HOLES = [(3.5, 4.0), (BOARD_W - 3.5, 4.0), (3.5, 64.0), (60.0, 47.0)]
 ALIGN_HOLES = []
 
 
@@ -48,40 +52,78 @@ def servo_x(n):
 
 
 def preroutes():
+    """Todo va en pistas fijas (sin cables): senales en escalera a 3.0 mm, GND y +6 V en barras."""
     out = []
-    xs = sorted(servo_x(n) for n in range(1, 9))
-    for n in range(1, 9):
-        x0, x1 = espb_right_x(SERVOS[n][0]), servo_x(n)
-        # baja recto 2.5 mm, se abre en diagonal y llega recto al pad SIG
-        out.append(("SERVO%d" % n, [(x0, ESPB_RIGHT_Y), (x0, ESPB_RIGHT_Y + 2.5), (x1, SERVO_Y - 6.5),
-                                     (x1, SERVO_Y - 5.08)], 1.0))
-    # TX de la ESP32-B a R16 (de pie, justo debajo del pin IO2)
-    # UART: TX baja recto a R16; RX a R15, un poco a la izquierda (entre los dos, 1.3 mm o mas)
-    xt, xr = espb_right_x("IO2"), espb_right_x("IO15")
-    out.append(("ESPB_TX", [(xt, ESPB_RIGHT_Y), (xt, 81.2), (19.0, 82.6), (19.0, 83.5)], 1.0))
-    out.append(("ESPB_RX", [(xr, ESPB_RIGHT_Y), (xr, 74.5), (17.9, 75.0), (17.9, 77.0)], 1.0))
-    # salidas exactas de los pines que no llevan senal de servo: el aislamiento de 1.3 mm solo deja
-    # salir la pista centrada entre los pads vecinos
-    xg = espb_right_x("IO15") - 2.54                      # pin GND (29) de la fila de abajo
-    out.append(("GND", [(xg, ESPB_RIGHT_Y), (xg, ESPB_RIGHT_Y + 1.9), (12.5, ESPB_RIGHT_Y + 4.1)], 1.0))
+
+    def T(net, pts, w=1.0):
+        out.append((net, pts, w))
+
+    yr = ESPB_RIGHT_Y                                     # fila de abajo (pines 16..30)
     yl = ESPB_POS[1] - 12.7                               # fila de arriba (pines 1..15)
-    out.append(("GND", [(xg, yl), (xg, yl - 3.6)], 1.0))  # pin GND (14)
+    ys = SERVO_Y - 5.08                                   # pads SIG
+    px = {n: espb_right_x(SERVOS[n][0]) for n in range(1, 9)}
+    hx = {n: servo_x(n) for n in range(1, 9)}
+    # ---- senales de servo: cada pista se separa a 3.0 mm de su vecina en cuanto sale del pin y
+    # gira a su header en un nivel propio (escalera): fuera de los pines el hueco es de 2.0 mm o mas
+    # (en cada grupo de pines vecinos se abre primero la de la derecha; las pistas acaban 0.2 mm antes
+    #  del centro del pad SIG para no acercarse al riel de +6 V mas que el propio pad)
+    ye = ys - 0.2
+
+    def abre(x, y, x2):                                   # diagonal a 45 grados de (x, y) a x2
+        return [(x, y), (x2, y + abs(x2 - x))]
+
+    T("SERVO8", [(px[8], yr), (px[8], 81.3), (hx[8], 81.3), (hx[8], ye)])
+    T("SERVO7", [(px[7], yr)] + abre(px[7], 75.4, px[7] + 0.46) + [(px[7] + 0.46, 84.3), (hx[7], 84.3), (hx[7], ye)])
+    T("SERVO6", [(px[6], yr)] + abre(px[6], 73.9, hx[6]) + [(hx[6], ye)])
+    T("SERVO5", [(px[5], yr)] + abre(px[5], 77.4, hx[5]) + [(hx[5], ye)])
+    T("SERVO4", [(px[4], yr)] + abre(px[4], 75.6, 37.5) + [(37.5, 84.0), (hx[4], 84.0), (hx[4], ye)])
+    T("SERVO3", [(px[3], yr)] + abre(px[3], 73.9, 40.5) + [(40.5, 81.0), (hx[3], 81.0), (hx[3], ye)])
+    T("SERVO2", [(px[2], yr), (px[2], 78.3), (hx[2], 78.3), (hx[2], ye)])
+    T("SERVO1", [(px[1], yr), (px[1], 75.3), (hx[1], 75.3), (hx[1], ye)])
+    # ---- UART: salen hacia la izquierda, RX arriba y TX abajo, a R15/R16 (acostadas) y a J9
+    xt, xr = espb_right_x("IO2"), espb_right_x("IO15")
+    jx9, jy9 = PI_TB[0], PI_TB[1]
+    T("ESPB_RX", [(xr, yr), (xr, 75.3), (9.0, 75.3)])
+    T("ESPB_TX", [(xt, yr), (xt, 78.3), (13.2, 78.3), (13.2, 79.0)])
+    T("PI_TXD4", [(9.0, 82.92), (9.0, 84.5), (jx9 + 3.5, 85.0), (jx9 + 3.5, jy9)])
+    T("PI_RXD4", [(13.2, 86.62), (13.2, 88.4), (jx9 + 7.0, 89.6), (jx9 + 7.0, jy9)])
+    # ---- +5V, VIN, medicion de bateria
+    T("+5V", [(5.6, 20.0), (10.5, 20.0), (13.22, 22.72), (13.22, 24.84)], 1.5)
+    T("VIN_B", [(13.22, 35.0), (13.22, yl)])
     xv = ESPB_POS[0] + 17.78 - 2.54 * ESP32_LEFT.index(next(n for n in ESP32_LEFT if ESPB_VBAT in n))
-    out.append(("VBAT_SENSE", [(xv, yl), (xv, 28.0), (34.0, 24.0), (34.0, 20.0)], 1.0))   # hasta C5 pad 1
+    T("VBAT_SENSE", [(xv, yl), (xv, 30.0)])                       # C5, R23 y R22 sobre esta pista
+    jx2 = BOARD_W - 5.6
+    T("VBAT_F", [(jx2, 20.92), (xv - 7.62, 20.92), (xv - 7.62, 30.0)])
+    T("LED12_A", [(55.0, 28.54), (55.0, 31.86)])
+    # ---- +6 V de servos: riel de los headers, barra a J6 y a los 2 capacitores, LED
+    xs = sorted(hx.values())
     jx, jy, _ = J6_POS
-    # 6 V: sube y luego a J6; GND: sigue y luego sube (sin acercarse entre si)
-    # rieles de los headers: 1.4 mm (entre pads a 2.54 no cabe mas). De la fila a J6 el 6 V sube a la
-    # altura de su pad y sigue con 2.4 mm; el GND llega recto.
-    out.append(("SERVO_V", [(x, SERVO_Y - 2.54) for x in xs] + [(xs[-1] + 2.2, SERVO_Y - 2.54)], 1.4))
-    out.append(("SERVO_V", [(xs[-1] + 2.2, SERVO_Y - 2.54), (xs[-1] + 4.74, SERVO_Y - 5.08)], 1.4))
-    out.append(("SERVO_V", [(xs[-1] + 4.74, SERVO_Y - 5.08), (jx, jy - 5.08)], 2.4))
-    out.append(("GND", [(x, SERVO_Y) for x in xs] + [(jx, jy)], 1.4))
+    T("SERVO_V", [(x, SERVO_Y - 2.54) for x in xs] + [(xs[-1] + 2.2, SERVO_Y - 2.54)], 1.4)
+    T("SERVO_V", [(xs[-1] + 2.2, SERVO_Y - 2.54), (xs[-1] + 4.74, SERVO_Y - 5.08)], 1.4)
+    T("SERVO_V", [(xs[-1] + 4.74, SERVO_Y - 5.08), (jx, jy - 5.08)], 2.4)
+    T("SERVO_V", [(jx, jy - 5.08), (VBUS_X, 72.0)], 2.4)
+    T("SERVO_V", [(LED_X, 87.0), (LED_X, 90.0), (xs[-1] + 4.74, SERVO_Y - 5.08)])
+    T("LEDS_A", [(LED_X, 79.38), (LED_X, 76.2)])
+    # ---- GND: todo en cobre
+    xg = espb_right_x("IO15") - 2.54                      # los 2 pines GND de la ESP32 (uno por fila)
+    T("GND", [(xg, yl), (xg, yr)])                        # unidos por debajo del modulo
+    T("GND", [(GND_IZQ, GND_Y), (GND_DER, GND_Y)], 1.5)   # cruza bajo el modulo, de lado a lado
+    T("GND", [(5.6, 25.08), (GND_IZQ, 27.48), (GND_IZQ, 68.5), (4.4, 72.1), (4.4, SERVO_Y)], 1.5)   # J5 -> riel
+    T("GND", [(4.4, jy9), (jx9, jy9)])                    # J9 pin 1
+    T("GND", [(4.4, SERVO_Y)] + [(x, SERVO_Y) for x in xs] + [(60.0, SERVO_Y), (61.5, jy), (jx, jy)], 1.4)
+    T("GND", [(jx, jy), (GND_DER, jy), (GND_DER, 28.6), (jx2, 26.0)], 1.5)     # J6 -> C4 -> C3 -> J2
+    T("GND", [(LED_X, 73.66), (LED_X, GND_Y)])              # catodo del LED de servos
+    T("GND", [(xv + 7.62, 36.5), (xv + 7.62, 38.5), (GND_DER, 38.5)])          # R23
+    T("GND", [(xv + 5.0, 42.0), (xv + 7.62, 39.38)])                            # C5
+    T("GND", [(55.0, 34.4), (55.0, 38.5)])                                     # catodo del LED de bateria
     return out
 
 
 ROUTING_FIRST = ["ESPB_TX", "ESPB_RX", "PI_TXD4", "PI_RXD4"] + ["SERVO%d" % n for n in range(1, 9)]
 ROUTING_EARLY = {"GND": set(),
                  "SERVO_V": {"J6", "C3", "C4", "J31", "J32", "J33", "J34", "J35", "J36", "J37", "J38"}}
+# GND, +5V y +6 V van completas en pistas fijas (preroutes): el router no las toca
+ROUTING_SKIP = {"GND", "+5V", "SERVO_V"}
 
 
 def external_nodes():
@@ -117,9 +159,9 @@ def build():
         {1: "GND", 2: "PI_TXD4", 3: "PI_RXD4"}, PI_TB, _sch_pos(),
         desc="Hacia el HAT de bornas de la Pi: 1 GND (pin 34), 2 TXD4 = GPIO12 (pin 32), 3 RXD4 = GPIO13 (pin 33)",
         mpn="Phoenix PT 1,5/3-3,5-H o KF350-3P 3.5mm")
-    add("R15", "1k", "Device:R", FP_RV, {1: "ESPB_RX", 2: "PI_TXD4"}, (17.9, 77.0, 270),
+    add("R15", "1k", "Device:R", FP_R, {1: "ESPB_RX", 2: "PI_TXD4"}, (9.0, 75.3, 270),
         _sch_pos(), desc="Serie UART Pi TXD4 (GPIO12) -> ESP32-B RX")
-    add("R16", "1k", "Device:R", FP_RV, {1: "ESPB_TX", 2: "PI_RXD4"}, (19.0, 83.5, 270),
+    add("R16", "1k", "Device:R", FP_R, {1: "ESPB_TX", 2: "PI_RXD4"}, (13.2, 79.0, 270),
         _sch_pos(), desc="Serie UART ESP32-B TX -> Pi RXD4 (GPIO13)")
 
     add("J5", "5V IN (buck 5V)", "Connector:Screw_Terminal_01x02", FP_TB2,
@@ -131,16 +173,16 @@ def build():
     add("J2", "BAT SENSE (12V)", "Connector:Screw_Terminal_01x02", FP_TB2,
         {1: "GND", 2: "VBAT_F"}, (BOARD_W - 5.6, 26.0, 90), _sch_pos(),
         desc="Derivacion de bateria despues del fusible (solo medicion y LED, < 10 mA)", mpn=MPN_TB2)
-    add("R22", "100k", "Device:R", FP_R, {1: "VBAT_F", 2: "VBAT_SENSE"}, (34.0, 12.0, 0),
+    add("R22", "100k", "Device:R", FP_R, {1: "VBAT_F", 2: "VBAT_SENSE"}, (33.54, 30.0, 0),
         _sch_pos(), desc="Divisor VBAT (alto)")
-    add("R23", "27k", "Device:R", FP_R, {1: "VBAT_SENSE", 2: "GND"}, (34.0, 16.0, 0),
+    add("R23", "27k", "Device:R", FP_R, {1: "VBAT_SENSE", 2: "GND"}, (41.16, 36.5, 0),
         _sch_pos(), desc="Divisor VBAT (bajo)")
-    add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (34.0, 20.0, 0),
+    add("C5", "100nF", "Device:C", FP_C, {1: "VBAT_SENSE", 2: "GND"}, (41.16, 42.0, 0),
         _sch_pos(), desc="Filtro ADC VBAT")
-    add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_A"}, (34.0, 7.6, 0),
+    add("R24", "2.2k", "Device:R", FP_R, {1: "VBAT_F", 2: "LED12_A"}, (55.0, 20.92, 270),
         _sch_pos(), desc="Resistencia LED 12V")
     add("D2", "LED rojo 12V", "Device:LED", FP_LED, {1: "GND", 2: "LED12_A"},
-        (48.04, 7.6, 180), _sch_pos(), desc="Indicador bateria")
+        (55.0, 34.4, 90), _sch_pos(), desc="Indicador bateria")
 
     for n in range(1, 9):
         g, d = SERVOS[n]
@@ -150,13 +192,13 @@ def build():
     add("J6", "SERVO PWR IN (6V)", "Connector:Screw_Terminal_01x02", FP_TB2,
         {1: "GND", 2: "SERVO_V"}, J6_POS, _sch_pos(), desc="Entrada BEC servos 6V", mpn=MPN_TB2)
     add("C3", "1000uF 16V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (62.0, 40.0, 0), _sch_pos(), desc="Bulk servos", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
+        (VBUS_X, 72.0, 0), _sch_pos(), desc="Bulk servos", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
     add("C4", "1000uF 16V", "Device:C_Polarized", FP_CP10, {1: "SERVO_V", 2: "GND"},
-        (66.0, 62.0, 0), _sch_pos(), desc="Bulk servos", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
-    add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_A"}, (57.0, 33.0, 90),
+        (VBUS_X, 83.0, 0), _sch_pos(), desc="Bulk servos", mpn="1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm")
+    add("R26", "470", "Device:R", FP_R, {1: "SERVO_V", 2: "LEDS_A"}, (LED_X, 87.0, 90),
         _sch_pos(), desc="Resistencia LED servos")
     add("D4", "LED azul SERVO", "Device:LED", FP_LED, {1: "GND", 2: "LEDS_A"},
-        (51.0, 25.38, 0), _sch_pos(), desc="Indicador rail servos")
+        (LED_X, 73.66, 270), _sch_pos(), desc="Indicador rail servos")
 
     for i, (x, y) in enumerate(CHASSIS_HOLES):
         add("H%d" % (i + 1), "M3", "Mechanical:MountingHole", FP_MH, {}, (x, y, 0), _sch_pos(),
@@ -169,11 +211,11 @@ def pcb_labels(silk, at, comps):
     x, y, _ = at("J5")
     silk("5V IN: + -", x - 2.54, y + 6.4, 0.8)
     x, y, _ = at("J6")
-    silk("SERVO 6V: - +", x - 7.4, y - 2.5, 0.8, rot=90)
+    silk("6V: - +", x - 7.0, y - 2.5, 0.8, rot=90)
     x, y, _ = at("J2")
     silk("BAT 12V", x - 7.4, y - 2.5, 0.8, rot=90)
     x, y, _ = at("J9")
-    silk("PI: GND TX RX", x + 3.5, y - 4.6, 0.8)
+    silk("PI: GND TX RX", x + 3.5, y - 3.3, 0.8)
     for n in range(1, 9):
         x, y, _ = at("J%d" % (30 + n))
         silk("S%d" % n, x, y + 2.3, 0.7)

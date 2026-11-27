@@ -1,6 +1,6 @@
 # Lista de materiales y medidas para soldar (2 tarjetas de una cara)
 
-Aplica a la tarjeta de **tracción** (97 × 96 mm) y a la de **servos** (76 × 108 mm), rev. 2.1. Las cantidades salen de los `bom.csv` y de las PCB; las medidas de pads y barrenos, de los `.kicad_pcb`.
+Aplica a la tarjeta de **tracción** (96.2 × 110.5 mm) y a la de **servos** (73.5 × 100 mm), rev. 2.2. Las cantidades salen de los `bom.csv` y de las PCB; las medidas de pads y barrenos, de los `.kicad_pcb`.
 
 Resumen en una imagen: [`lista_materiales.png`](lista_materiales.png).
 
@@ -16,9 +16,7 @@ El archivo de taladro trae solo 4 medidas: **1.0, 1.3, 1.5 y 3.2 mm**. Los barre
 | Header hembra 1x15 (zócalo de la ESP32) | ovalado 1.4 × 2.2 mm | 1.0 mm | 0.20 / 0.60 mm | cola plana ~0.64 × 0.40 mm (0.75–0.86); cuadrada de 0.64 en algunas (0.91–0.95) | 0.05–0.25 mm | Entra |
 | Header macho 1x3 (servo) | ovalado 1.4 × 2.2 mm | 1.0 mm | 0.20 / 0.60 mm | cuadrada 0.64 mm (0.90; máx. de norma 0.98) | 0.02–0.15 mm | Entra, justo |
 | Resistencia 1/4 W acostada (7.62 mm) | redondo 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.45–0.60 mm | 0.4–0.5 mm | Entra |
-| Resistencia 1/4 W de pie (2.54 mm) | ovalado 1.4 × 2.2 mm | 1.0 mm | 0.20 / 0.60 mm | redonda 0.45–0.60 mm | 0.4–0.5 mm | Entra |
-| Cerámico 1 nF (paso 2.5 mm) | ovalado 1.36 × 2.2 mm | 1.0 mm | 0.18 / 0.60 mm | redonda 0.4–0.6 mm | 0.4–0.6 mm | Entra |
-| Cerámico 100 nF (paso 5 mm) | redondo 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.4–0.6 mm | 0.4–0.6 mm | Entra |
+| Cerámico 1 nF y 100 nF (paso 5 mm) | redondo 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.4–0.6 mm | 0.4–0.6 mm | Entra |
 | Electrolítico 1000 µF (paso 5 mm) | 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.6 mm (0.55–0.65) | 0.35 mm | Entra, **si el cuerpo es de Ø10 mm** |
 | Schottky 1N5819 (DO-41, 10.16 mm) | 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.71–0.86 mm | 0.14 mm | Entra |
 | LED de 5 mm (paso 2.54 mm) | 1.4 × 2.2 mm | 1.0 mm | 0.20 / 0.60 mm | cuadrada 0.5 mm (0.71; máx. de hoja 0.92) | 0.08–0.29 mm | Entra |
@@ -33,8 +31,8 @@ El archivo de taladro trae solo 4 medidas: **1.0, 1.3, 1.5 y 3.2 mm**. Los barre
 
 | Tarjeta | 1.0 mm | 1.3 mm | 1.5 mm | 3.2 mm | Total |
 |---|---|---|---|---|---|
-| Tracción | 96 (80 de piezas + 16 de cables) | 31 | 2 | 4 | 133 |
-| Servos | 80 (78 de piezas + 2 del cable) | 3 | 6 | 4 | 93 |
+| Tracción | 88 (80 de piezas + 8 de cables) | 31 | 2 | 4 | 125 |
+| Servos | 78 (todos de piezas) | 3 | 6 | 4 | 91 |
 
 ### Mide esto antes de fresar
 
@@ -60,11 +58,11 @@ Lo más seguro: fresa primero en un retazo una fila de barrenos de 1.0, 1.3 y 1.
 
 | Pieza | Cantidad | Referencias |
 |---|---|---|
-| Resistencia 10k, 1/4 W | 7 | R1, R2, R3, R21 (acostadas) · R4, R5, R6 (de pie) |
-| Resistencia 20k, 1/4 W | 6 | R7, R8, R9 (acostadas) · R10, R11, R12 (de pie) |
+| Resistencia 10k, 1/4 W | 7 | R1–R6, R21 (todas acostadas) |
+| Resistencia 20k, 1/4 W | 6 | R7–R12 (todas acostadas) |
 | Resistencia 1k, 1/4 W | 2 | R13, R14 |
 | Resistencia 330 Ω, 1/4 W | 1 | R25 |
-| Capacitor cerámico 1 nF (102), paso 2.5 mm | 6 | C11–C16 |
+| Capacitor cerámico 1 nF (102), patas a 5 mm | 6 | C11–C16 (si viene a 2.5 mm, abre las patas) |
 | Electrolítico 1000 µF 16 V, Ø10 mm, paso 5 mm | 1 | C2 |
 | LED 5 mm verde | 1 | D3 |
 | Schottky 1N5819 (DO-41) | 1 | D5 |
@@ -72,13 +70,13 @@ Lo más seguro: fresa primero en un retazo una fila de barrenos de 1.0, 1.3 y 1.
 | Bornera KF350 de 3 vías, paso 3.5 mm | 9 | J41, J42, J43 (3+3 cada una) · J7, J8 (una cada una) · J9 |
 | Bornera KF350 de 2 vías, paso 3.5 mm | 2 | J7, J8 (3+2) |
 | Bornera KF301 de 2 vías, paso 5.08 mm | 1 | J5 |
-| Cable 22 AWG para los 8 puentes | ~25 cm | W1–W8 (7 de GND y 1 de +5V) |
+| Cable 22 AWG para los 4 puentes | ~15 cm | W1–W4 (3 de GND y 1 de +5V) |
 
 ### Tarjeta de servos
 
 | Pieza | Cantidad | Referencias |
 |---|---|---|
-| Resistencia 1k, 1/4 W | 2 | R15, R16 (de pie) |
+| Resistencia 1k, 1/4 W | 2 | R15, R16 (acostadas) |
 | Resistencia 100k, 1/4 W | 1 | R22 |
 | Resistencia 27k, 1/4 W | 1 | R23 |
 | Resistencia 2.2k, 1/4 W | 1 | R24 |
@@ -92,7 +90,6 @@ Lo más seguro: fresa primero en un retazo una fila de barrenos de 1.0, 1.3 y 1.
 | Header macho 1x3, paso 2.54 mm | 8 | J31–J38 (servos) |
 | Bornera KF350 de 3 vías, paso 3.5 mm | 1 | J9 |
 | Bornera KF301 de 2 vías, paso 5.08 mm | 3 | J2, J5, J6 |
-| Cable 22 AWG para 1 puente | ~2 cm | W1 (6 V, entre C3 y C4) |
 
 ### Total a comprar para las 2 tarjetas
 

@@ -1,5 +1,5 @@
 Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
-6;C11,C12,C13,C14,C15,C16;1nF;Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm;1nF;Filtro de ruido encoder M6
+6;C11,C12,C13,C14,C15,C16;1nF;Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm;1nF;Filtro de ruido encoder M6
 1;C2;1000uF 16V;Capacitor_THT:CP_Radial_D10.0mm_P5.00mm;1000uF 16V radial, cuerpo de 10 mm de diametro, paso 5 mm;Bulk 5V
 1;D3;LED verde 5V;LED_THT:LED_D5.0mm;LED 5mm THT tradicional (verde);Indicador 5V
 1;D5;1N5819;Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal;1N5819 DO-41;Schottky +5V -> VIN ESP32-A
@@ -11,10 +11,8 @@ Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;J7;ENC M1 M2 M3;TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-5-3.5-H_1x05_P3.50mm_Horizontal;Phoenix PT 1,5/5-3,5-H o KF350 3.5mm (3+2);Borna 5 vias paso 3.5 mm: A1 A2 A3 +5V GND (cable Pololu: verde GND, azul VCC, amarillo A)
 1;J8;ENC M6 M5 M4;TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-5-3.5-H_1x05_P3.50mm_Horizontal;Phoenix PT 1,5/5-3,5-H o KF350 3.5mm (3+2);Borna 5 vias paso 3.5 mm: GND +5V A6 A5 A4 (cable Pololu: verde GND, azul VCC, amarillo A)
 1;J9;PI (UART2);TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-3-3.5-H_1x03_P3.50mm_Horizontal;Phoenix PT 1,5/3-3,5-H o KF350-3P 3.5mm;Hacia el HAT de bornas de la Pi: 1 GND (pin 6), 2 RXD2 = GPIO5 (pin 29), 3 TXD2 = GPIO4 (pin 7)
-3;R10,R11,R12;20k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical;Resistencia 20k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M6 (a GND)
+6;R7,R8,R9,R10,R11,R12;20k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 20k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M6 (a GND)
 2;R13,R14;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD2 -> ESP32-A RX
 1;R25;330;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 330 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 5V
-4;R1,R2,R3,R21;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M3 (serie)
-3;R4,R5,R6;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M6 (serie)
-3;R7,R8,R9;20k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 20k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M3 (a GND)
+7;R1,R2,R3,R4,R5,R6,R21;10k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 10k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor encoder M6 (serie)
 1;U2;ESP32-A_Traccion;rover:ESP32_DevKitV1_30P_1x15;ESP32 DevKit V1 + 2x header hembra 1x15;ESP32 DevKit V1 30 pines sobre 2x header hembra 1x15

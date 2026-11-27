@@ -17,7 +17,7 @@ Cant;Referencias;Valor;Footprint;Parte sugerida;Descripcion
 1;J5;5V IN (buck 5V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Entrada 5 V desde el step-down (ESP32-B)
 1;J6;SERVO PWR IN (6V);TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal;Phoenix MKDS 1,5/2-5,08 o KF301-2P;Entrada BEC servos 6V
 1;J9;PI (UART4);TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-3-3.5-H_1x03_P3.50mm_Horizontal;Phoenix PT 1,5/3-3,5-H o KF350-3P 3.5mm;Hacia el HAT de bornas de la Pi: 1 GND (pin 34), 2 TXD4 = GPIO12 (pin 32), 3 RXD4 = GPIO13 (pin 33)
-2;R15,R16;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD4 (GPIO12) -> ESP32-B RX
+2;R15,R16;1k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 1k 1/4W (0.25W) THT pelicula metalica/carbon;Serie UART Pi TXD4 (GPIO12) -> ESP32-B RX
 1;R22;100k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 100k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (alto)
 1;R23;27k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 27k 1/4W (0.25W) THT pelicula metalica/carbon;Divisor VBAT (bajo)
 1;R24;2.2k;Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal;Resistencia 2.2k 1/4W (0.25W) THT pelicula metalica/carbon;Resistencia LED 12V
