@@ -1,14 +1,16 @@
-Rover - tarjeta de SERVOS (una cara): proyecto KiCad 7
+Rover - tarjeta de SERVOS (una cara), rev. 2.1: proyecto KiCad 7
 Abre rover_servos.kicad_pro con KiCad 7 u 8. La carpeta es autocontenida (rover.kicad_sym y
 rover.pretty con ${KIPRJMOD}; las huellas estandar van embebidas en la PCB).
 
-- Una sola fresa de 1.0 mm: hueco de 1.0 mm en todo el cobre, pistas de 1.0 mm o mas, pads
-  ovalados 1.4 x 2.2 en filas a 2.54 mm. Todo el fresado va en cnc_servos/gcode/fresa1mm_todo.nc.
-- La ESP32 lleva UNA fila de barrenos por lado (25.4 mm entre filas).
+- Para aislar con UNA fresa plana de 1.0 mm en una pasada (LPKF, FlatCAM o la Cubiko):
+  aislamiento de 1.3 mm entre pistas, plano y piezas; pistas de 1.0 mm o mas.
+  Excepcion: pads vecinos de una fila a 2.54 mm, a 1.14 mm (regla en el .kicad_dru).
+- Las zonas llamadas "anti-tira" son relleno de cobre en los huecos de mas de 2 mm, que al
+  fresar dejarian una tira suelta. Van unidas a una red vecina. Las pistas no cambian de ancho.
+- Ningun cobre a menos de 2 mm de la orilla.
+- Barrenos: solo 1.0, 1.3, 1.5 y 3.2 mm.
 - Cobre solo en B.Cu. Las pistas de F.Cu NO se fresan: son la guia de los cables aislados
-  que van por arriba (puentes W1..Wn, ver puentes_alambre.csv y la serigrafia).
-- Esquematico jerarquico: indice + hojas por bloque, con notas y pines libres. Mismos
-  nombres de red que la PCB (verificado pin a pin).
-- Fresado, montaje y cableado: hardware/cnc_servos/README.md y hardware/DOS_TARJETAS.md.
+  que van por arriba (W1..Wn, ver puentes_alambre.csv).
+- Gerbers y taladro: hardware/cnc_servos/gerbers/. Montaje: hardware/cnc_servos/README.md.
 - Regenerar: cd hardware/tools && ROVER_VARIANT=servos python3 generate.py --route
-  (rutea y regenera el esquematico) y despues python3 cubiko_cam.py con la misma variable.
+  y despues python3 cubiko_cam.py con la misma variable.

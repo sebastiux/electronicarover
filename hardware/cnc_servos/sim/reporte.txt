@@ -1,15 +1,16 @@
-Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_servos (76 x 96 mm, UNA cara)
+Genmitsu Cubiko - CAM y simulacion de la tarjeta rover_servos (76 x 108 mm, UNA cara)
 UNA sola herramienta: fresa plana de 1.0 mm (aislamiento a 0.12 mm, barrenos y contorno)
 
-Pads: 87   cables por arriba: 0   taladros: 91
-Piezas de cobre tras el fresado: 50
+Pads: 87   cables por arriba: 1   taladros: 93
+Piezas de cobre tras el fresado: 47
 CORTOS: 0
 REDES ABIERTAS: 0
 
 CABLES POR ARRIBA:
+  W1   SERVO_V    (64.5, 54.5) -> (64.5, 47.5)  7 mm
 
 TRABAJOS (en este orden, sin voltear la placa):
-  fresa1mm_todo.nc                           36.4 min   corte    2848 mm   bajadas 280
-  Tiempo total de maquina estimado: 36 min (sin cambios de herramienta ni mapa de alturas)
+  fresa1mm_todo.nc                           47.6 min   corte    4218 mm   bajadas 231
+  Tiempo total de maquina estimado: 48 min (sin cambios de herramienta ni mapa de alturas)
 
 RESULTADO: OK - el fresado deja todas las redes completas y sin cortos

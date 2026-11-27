@@ -1,7 +1,7 @@
 (kicad_sch (version 20230121) (generator eeschema)
   (uuid 0301c9be-4c23-5ab6-90f7-16422c571267)
   (paper "A4")
-  (title_block (title "Encoders: divisores 5 V -> 3.3 V") (date "2026-11-25") (rev "2.0-T") (company "electronicarover")
+  (title_block (title "Encoders: divisores 5 V -> 3.3 V") (date "2026-11-25") (rev "2.1-T") (company "electronicarover")
     (comment 3 "Rover - tarjeta de TRACCION (ESP32-A, 3x L298N, encoders)")
     (comment 1 "Generado por hardware/tools/esquematico.py desde rover_design.py / rover_cubiko.py")
     (comment 2 "Las redes se nombran con etiquetas globales: el nombre es el mismo que en la PCB")

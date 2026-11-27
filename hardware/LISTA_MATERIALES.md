@@ -1,12 +1,12 @@
 # Lista de materiales y medidas para soldar (2 tarjetas de una cara)
 
-Aplica a la tarjeta de **tracción** (95 × 96 mm) y a la de **servos** (76 × 96 mm). Las cantidades salen de los `bom.csv` y de las PCB; las medidas de pads y barrenos, de los `.kicad_pcb`.
+Aplica a la tarjeta de **tracción** (97 × 96 mm) y a la de **servos** (76 × 108 mm), rev. 2.1. Las cantidades salen de los `bom.csv` y de las PCB; las medidas de pads y barrenos, de los `.kicad_pcb`.
 
 Resumen en una imagen: [`lista_materiales.png`](lista_materiales.png).
 
 ## 1. Pads y barrenos: cuánto miden y qué pata entra
 
-Con la fresa única de 1.0 mm, los barrenos diseñados de 0.8 a 1.1 mm se hacen bajando la fresa y **quedan todos de 1.0 mm**. Los mayores se abren en espiral a su medida. No hay metalizado: el barreno final es el fresado.
+El archivo de taladro trae solo 4 medidas: **1.0, 1.3, 1.5 y 3.2 mm**. Los barrenos de resistencias, capacitores, LED y diodos van todos a 1.0 mm (no hay de 0.8, 0.9 ni 1.1). No hay metalizado: el barreno final es el taladrado.
 
 - **Anillo** = cobre que queda alrededor del barreno, por lado. En pads ovalados van 2 valores: a lo largo de la fila / a lo ancho.
 - **Pata real** = medida de hoja de datos; entre paréntesis, la diagonal o el diámetro máximo que debe pasar.
@@ -20,7 +20,7 @@ Con la fresa única de 1.0 mm, los barrenos diseñados de 0.8 a 1.1 mm se hacen 
 | Cerámico 1 nF (paso 2.5 mm) | ovalado 1.36 × 2.2 mm | 1.0 mm | 0.18 / 0.60 mm | redonda 0.4–0.6 mm | 0.4–0.6 mm | Entra |
 | Cerámico 100 nF (paso 5 mm) | redondo 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.4–0.6 mm | 0.4–0.6 mm | Entra |
 | Electrolítico 1000 µF (paso 5 mm) | 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.6 mm (0.55–0.65) | 0.35 mm | Entra, **si el cuerpo es de Ø10 mm** |
-| Schottky 1N5819 (DO-41, 10.16 mm) | 2.2 mm | 1.0 mm (diseño 1.1) | 0.60 mm | redonda 0.71–0.86 mm | 0.14 mm | Entra |
+| Schottky 1N5819 (DO-41, 10.16 mm) | 2.2 mm | 1.0 mm | 0.60 mm | redonda 0.71–0.86 mm | 0.14 mm | Entra |
 | LED de 5 mm (paso 2.54 mm) | 1.4 × 2.2 mm | 1.0 mm | 0.20 / 0.60 mm | cuadrada 0.5 mm (0.71; máx. de hoja 0.92) | 0.08–0.29 mm | Entra |
 | Bornera de 3.5 mm (KF350 / Phoenix PT 1,5) | ovalado 2.36 × 2.4 mm | **1.3 mm** | 0.53 / 0.55 mm | Phoenix: redonda 0.9 mm. KF350: plana, hasta ~1.15 de diagonal | 0.15–0.40 mm | Entra |
 | Bornera de 5.08 mm (KF301 / Phoenix MKDS 1,5) | 2.6 mm | **1.5 mm** | 0.55 mm | Phoenix: 0.9 × 0.9 (1.27). KF301: ~1.0 × 0.8 (1.28; hasta ~1.42) | 0.08–0.23 mm | Entra |
@@ -34,7 +34,7 @@ Con la fresa única de 1.0 mm, los barrenos diseñados de 0.8 a 1.1 mm se hacen 
 | Tarjeta | 1.0 mm | 1.3 mm | 1.5 mm | 3.2 mm | Total |
 |---|---|---|---|---|---|
 | Tracción | 96 (80 de piezas + 16 de cables) | 31 | 2 | 4 | 133 |
-| Servos | 78 | 3 | 6 | 4 | 91 |
+| Servos | 80 (78 de piezas + 2 del cable) | 3 | 6 | 4 | 93 |
 
 ### Mide esto antes de fresar
 
@@ -51,7 +51,7 @@ Lo más seguro: fresa primero en un retazo una fila de barrenos de 1.0, 1.3 y 1.
 
 - Los pads ovalados tienen 0.2 mm de anillo a lo largo de la fila y 0.6 mm a lo ancho: apoya el cautín en el lado largo, 2–3 s por pata.
 - El FR1 suelta el cobre con el calor y con la fuerza. No fuerces una pata que no baja; repasa ese barreno.
-- **Barreno de montaje junto a J43 (tracción, esquina superior izquierda):** la pista de MOTOR_EN pasa a 3.7 mm de su centro. Ahí usa tornillo sin rondana metálica del lado del cobre, o separador y rondana de nylon. En los otros 7 barrenos el cobre más cercano que no es GND está a 5 mm o más.
+- **Barrenos de montaje de tracción:** junto a J43 (esquina superior izquierda) la pista de MOTOR_EN pasa a 3.9 mm del centro, y en la esquina inferior derecha el +5V pasa a 4.4 mm. Ahí usa tornillo sin rondana metálica del lado del cobre, o separador y rondana de nylon. En los demás barrenos el cobre más cercano que no es GND está a 6.7 mm o más.
 - Suelda los headers de la ESP32 con el módulo insertado como guía. Para sacar la ESP32, haz palanca pareja en los dos extremos.
 
 ## 2. Piezas soldadas
@@ -72,7 +72,7 @@ Lo más seguro: fresa primero en un retazo una fila de barrenos de 1.0, 1.3 y 1.
 | Bornera KF350 de 3 vías, paso 3.5 mm | 9 | J41, J42, J43 (3+3 cada una) · J7, J8 (una cada una) · J9 |
 | Bornera KF350 de 2 vías, paso 3.5 mm | 2 | J7, J8 (3+2) |
 | Bornera KF301 de 2 vías, paso 5.08 mm | 1 | J5 |
-| Cable 22 AWG para los 8 puentes | ~19 cm | W1–W8 (6 de GND, 1 de MOTOR_EN, 1 de +5V) |
+| Cable 22 AWG para los 8 puentes | ~25 cm | W1–W8 (7 de GND y 1 de +5V) |
 
 ### Tarjeta de servos
 
@@ -92,6 +92,7 @@ Lo más seguro: fresa primero en un retazo una fila de barrenos de 1.0, 1.3 y 1.
 | Header macho 1x3, paso 2.54 mm | 8 | J31–J38 (servos) |
 | Bornera KF350 de 3 vías, paso 3.5 mm | 1 | J9 |
 | Bornera KF301 de 2 vías, paso 5.08 mm | 3 | J2, J5, J6 |
+| Cable 22 AWG para 1 puente | ~2 cm | W1 (6 V, entre C3 y C4) |
 
 ### Total a comprar para las 2 tarjetas
 

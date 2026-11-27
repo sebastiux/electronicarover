@@ -4,13 +4,13 @@ Esta versión reparte el controlador en **2 tarjetas de una sola cara** (cobre s
 
 | Tarjeta | Lleva | Tamaño | Cables por arriba | Fresado |
 |---|---|---|---|---|
-| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 95 × 96 mm | 8 | ~60 min |
-| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 96 mm | 0 | ~36 min |
+| **Tracción** (`cnc_traccion/`) | ESP32-A, bornas de los 3 L298N, encoders | 97 × 96 mm | 8 | 15–30 min en LPKF · ~71 min en Cubiko |
+| **Servos** (`cnc_servos/`) | ESP32-B, 8 servos (4 de dirección y 4 del brazo), batería | 76 × 108 mm | 1 | 10–20 min en LPKF · ~48 min en Cubiko |
 
 - **Raspberry Pi 5:** coordina a las 2 ESP32. Va aparte, con un **HAT de bornas** (header hembra 2x20 sobre el GPIO). De ahí sale un cable de 3 hilos a la borna `PI` (J9) de cada tarjeta.
 - **ESP32:** van en headers hembra 1x15, como antes. El firmware no cambia de pines.
-- **Una sola fresa de 1.0 mm:** cada tarjeta se fresa completa (aislamiento, barrenos y contorno) con la fresa plana de 1.0 mm, en un solo archivo `fresa1mm_todo.nc`. No hay cambios de herramienta.
-- **Reglas en las 2 tarjetas:** hueco de 1.0 mm en todo el cobre (igual a la fresa), pistas de 1.0 mm o más, pads de 2.2 mm (ovalados de 1.4 × 2.2 en filas a 2.54 mm, con 1.14 mm entre ellos), cada ESP32 en una sola fila de barrenos por lado y GND unido en sólido (sin rayos). Lo revisa `tools/verifica_espacios.py`.
+- **Una sola fresa de 1.0 mm** para aislar, en una pasada, con cualquier programa (LPKF CircuitPro, FlatCAM o el G-code de aquí).
+- **Reglas en las 2 tarjetas:** aislamiento de **1.3 mm** (0.3 más que la fresa), pistas de 1.0 mm o más, relleno de cobre en los huecos que dejarían tiras sueltas, 2 mm libres en la orilla y barrenos de solo 1.0, 1.3, 1.5 y 3.2 mm. Los pads vecinos de una fila a 2.54 mm quedan a 1.14 mm. Lo revisan `tools/verifica_espacios.py` y `tools/sim_cam_union.py`.
 
 ## Diagrama de conexiones
 
@@ -32,15 +32,15 @@ Para entender el circuito completo (voltajes, señales y cada tarjeta por dentro
 
 ## Cableado de la Raspberry Pi (HAT de bornas)
 
-| Borna del HAT (pin del GPIO) | Va a |
+| Borna del HAT (pin del GPIO) | Va a (tornillo, visto por el lado de componentes) |
 |---|---|
 | 5V (pines 2 y 4) | + del step-down 5 V (cable de 18 AWG o más) |
-| GND (pin 6) | − del step-down y J9-1 de la tarjeta de tracción |
-| GPIO5 = RXD2 (pin 29) | J9-2 de tracción |
-| GPIO4 = TXD2 (pin 7) | J9-3 de tracción |
-| GND (pin 34) | J9-1 de la tarjeta de servos |
-| GPIO12 = TXD4 (pin 32) | J9-2 de servos |
-| GPIO13 = RXD4 (pin 33) | J9-3 de servos |
+| GND (pin 6) | − del step-down y J9 de tracción, tornillo de **abajo** |
+| GPIO5 = RXD2 (pin 29) | J9 de tracción, tornillo de **en medio** |
+| GPIO4 = TXD2 (pin 7) | J9 de tracción, tornillo de **arriba** |
+| GND (pin 34) | J9 de servos, tornillo **izquierdo** |
+| GPIO12 = TXD4 (pin 32) | J9 de servos, tornillo de **en medio** |
+| GPIO13 = RXD4 (pin 33) | J9 de servos, tornillo **derecho** |
 
 - **TVS SA5.0A:** atorníllalo en las bornas 5V y GND del HAT. La banda (cátodo) va al 5V.
 - **Cables UART:** trenzados (TX, RX y GND juntos), de menos de 50 cm.
@@ -74,7 +74,7 @@ La lista completa con cantidades, y las medidas de cada pad y barreno, están en
 | Borna KF350 paso 3.5 mm, 3 vías (encastrable, barreno de 1.3 mm) | 10 | [KF350 3 pines](https://listado.mercadolibre.com.mx/bornera-kf350-3.5mm) |
 | Borna KF350 paso 3.5 mm, 2 vías (encastrable) | 2 | (la misma búsqueda) |
 | Borna KF301 paso 5.08 mm, 2 vías (barreno de 1.5 mm) | 4 | [KF301 2 pines](https://listado.mercadolibre.com.mx/bornera-kf301-2-pines-5.08) |
-| Cable aislado 22 AWG (para los 8 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
+| Cable aislado 22 AWG (para los 9 cables por arriba) | 1 m | [cable 22 awg](https://listado.mercadolibre.com.mx/cable-calibre-22-kit-colores) |
 
 Cómo se arman las bornas encastrables:
 - **L298N (6 vías):** 3 + 3, ×3 bornas → 6 bornas de 3 vías.
@@ -87,15 +87,13 @@ Lo que ya **no** hace falta: el header hembra 2x20 y los pines para vías. El re
 
 | Prueba | Tracción | Servos |
 |---|---|---|
-| DRC de KiCad | 0 violaciones, 0 pads sin conectar | 0 violaciones, 0 pads sin conectar |
-| Conectividad con pads solo abajo y los cables por arriba | 0 conexiones abiertas | 0 conexiones abiertas |
+| DRC de KiCad (aislamiento 1.3 mm, orilla 2 mm) | 0 violaciones, 0 pads sin conectar | 0 violaciones, 0 pads sin conectar |
 | Esquemático contra PCB, pin por pin | 113 pines, 0 diferencias | 87 pines, 0 diferencias |
-| Simulación del fresado (`tools/cubiko_cam.py`) | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
-| Pads de piezas distintas a menos de 1 mm · pistas de menos de 1 mm | 0 · 0 | 0 · 0 |
-| Cortos con un corte real de 0.90 a 1.10 mm | 0 | 0 |
+| Aislamiento como lo hace la LPKF (`tools/sim_cam_union.py`), corte real de 0.8 a 1.1 mm | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
+| Fresado con el G-code de la Cubiko (`tools/cubiko_cam.py`) | 0 cortos, 0 redes abiertas | 0 cortos, 0 redes abiertas |
+| Pistas de menos de 1 mm · cobre a menos de 2 mm de la orilla | 0 · 0 | 0 · 0 |
+| Brocas | 1.0, 1.3, 1.5 y 3.2 mm | 1.0, 1.3, 1.5 y 3.2 mm |
 | Firmware simulado sobre el netlist (UART por el HAT, EN en Y) | 48/48 | 38/38 |
-| Simulador del Fab Lab con `fresa1mm_todo.nc` (1 herramienta, sin volteo) | Board done, 1 de 1 (~58 min) | Board done, 1 de 1 (~35 min) |
-| Generador de la app, *Traces* con 1 pasada y fresa declarada de 0.95 mm | Board done, 3 de 3 · 0 cortos | Board done, 3 de 3 · 0 cortos |
 
 ## Regenerar
 
@@ -106,5 +104,6 @@ ROVER_VARIANT=traccion python3 cubiko_cam.py
 ```
 
 - **`generate.py --route`:** rutea la tarjeta y genera su esquemático jerárquico.
-- **`cubiko_cam.py`:** genera `fresa1mm_todo.nc` y la simulación en `hardware/cnc_<tarjeta>/`.
+- **`cubiko_cam.py`:** genera los Gerbers, `fresa1mm_todo.nc` y la simulación en `hardware/cnc_<tarjeta>/`.
+- **`sim_cam_union.py`:** simula el aislamiento de un programa genérico (LPKF, FlatCAM) con una pasada de 1.0 mm.
 - **Fuentes del diseño:** `tools/rover_traccion.py`, `tools/rover_servos.py` y `tools/rover_split_comun.py`.

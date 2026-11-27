@@ -147,7 +147,8 @@ void loop() {
       position[i] += (output[i] < 0) ? -(int32_t)d : (int32_t)d;
       pps[i] = d * 1000u / (dt ? dt : 1);
       int t = (stalled_mask & (1 << i)) ? 0 : target[i];
-      output[i] = motor::ramp(output[i], t, cfg::RAMP_STEP);
+      // deshabilitado: la salida se queda en 0, asi al llegar "EN 1" la rampa siempre parte de cero
+      output[i] = enabled ? motor::ramp(output[i], t, cfg::RAMP_STEP) : 0;
       if (enabled && stall[i].update(output[i], pps[i], now)) {
         stalled_mask |= (1 << i);
         output[i] = 0;

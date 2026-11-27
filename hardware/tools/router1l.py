@@ -27,6 +27,7 @@ RM = 0.75 * G       # margen de rasterizado
 JUMPER_PAD = 2.0    # diametro del pad del barreno del puente
 JUMPER_DRILL = 1.0  # taladro (alambre hasta AWG18)
 JUMPER_WIRE = 0.8   # ancho del alambre en F.Cu (guia)
+EDGE_EXTRA = 0.0    # mm extra de margen a la orilla (lo fija generate.py desde D.BORDE)
 JUMPER_CLR = 0.3
 VIA_COST_MM = 14.0       # costo de cada barreno de puente (mm equivalentes)
 WIRE_COST_FACTOR = 2.5   # el alambre cuesta 2.5x por mm frente a la pista de cobre
@@ -194,12 +195,13 @@ class Router:
         b = self.board
         # fuera de la tarjeta (con esquinas redondeadas de 3 mm)
         R = 3.0
-        out = (g.XX < g.bx0) | (g.XX > g.bx1) | (g.YY < g.by0) | (g.YY > g.by1)
+        e = EDGE_EXTRA          # el cobre no se acerca a la orilla: clearance de la clase + e
+        out = (g.XX < g.bx0 + e) | (g.XX > g.bx1 - e) | (g.YY < g.by0 + e) | (g.YY > g.by1 - e)
         for (cx, cy) in [(g.bx0 + R, g.by0 + R), (g.bx1 - R, g.by0 + R), (g.bx0 + R, g.by1 - R), (g.bx1 - R, g.by1 - R)]:
             corner = (np.abs(g.XX - cx) <= R + 0.01) & (np.abs(g.YY - cy) <= R + 0.01)
             corner &= (np.sign(g.XX - cx) == np.sign(cx - (g.bx0 + g.bx1) / 2)) & \
                        (np.sign(g.YY - cy) == np.sign(cy - (g.by0 + g.by1) / 2))
-            out |= corner & ((g.XX - cx) ** 2 + (g.YY - cy) ** 2 > R * R)
+            out |= corner & ((g.XX - cx) ** 2 + (g.YY - cy) ** 2 > max(R - e, 0.0) ** 2)
         g.B[out] = -1
         g.F[out] = -1
         self.pads_by_net = {}

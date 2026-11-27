@@ -1,0 +1,9 @@
+(version 1)
+# Fresa de 1.0 mm: entre pistas, plano y piezas hay 1.3 mm. Excepciones: lo que va a paso de
+# 2.54 mm (pads vecinos de un header y los rieles de los headers de servo) queda a 1.14 mm.
+(rule "pads de una misma fila"
+  (constraint clearance (min 1.10mm))
+  (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference"))
+(rule "rieles de los headers de servo"
+  (constraint clearance (min 1.10mm))
+  (condition "A.NetName == 'SERVO_V' && (B.NetName == 'GND' || B.Type == 'Pad')"))

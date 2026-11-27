@@ -81,8 +81,8 @@ static const Node NODES[] = {
 };
 struct Value { const char* ref; const char* value; };
 static const Value VALUES[] = {
-  {"C3", "1000uF 10V"},
-  {"C4", "1000uF 10V"},
+  {"C3", "1000uF 16V"},
+  {"C4", "1000uF 16V"},
   {"C5", "100nF"},
   {"D2", "LED rojo 12V"},
   {"D4", "LED azul SERVO"},

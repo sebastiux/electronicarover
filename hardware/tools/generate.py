@@ -476,20 +476,19 @@ def netclass_json(name, track, clr, vd, vdr):
 
 
 def write_rules():
-    """Reglas extra de DRC (.kicad_dru): pads de una misma pieza en fila de 2.54 mm a PAD_FILA_CLR."""
+    """Reglas extra de DRC (.kicad_dru): D.REGLAS_DRC = [(nombre, minimo mm, condicion)]."""
     path = os.path.join(OUT, D.PROJECT + ".kicad_dru")
-    clr = getattr(D, "PAD_FILA_CLR", None)
-    if clr is None:
+    reglas = getattr(D, "REGLAS_DRC", None)
+    if not reglas:
         if os.path.exists(path):
             os.remove(path)
         return
-    open(path, "w").write(
-        "(version 1)\n"
-        "# Una sola fresa de 1.0 mm: entre pistas, plano y piezas hay 1.2 mm; entre los pads de una\n"
-        "# misma fila a 2.54 mm (headers de la ESP32 y de los servos) solo cabe 1.04 mm, mas que la fresa.\n"
-        "(rule \"pads de una misma fila\"\n"
-        "  (constraint clearance (min %.2fmm))\n"
-        "  (condition \"A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference\"))\n" % clr)
+    txt = ["(version 1)",
+           "# Fresa de 1.0 mm: entre pistas, plano y piezas hay %.1f mm. Excepciones: lo que va a paso de" % getattr(D, "CLR", 1.0),
+           "# 2.54 mm (pads vecinos de un header y los rieles de los headers de servo) queda a 1.14 mm."]
+    for nombre, clr, cond in reglas:
+        txt += ['(rule "%s"' % nombre, "  (constraint clearance (min %.2fmm))" % clr, '  (condition "%s"))' % cond]
+    open(path, "w").write("\n".join(txt) + "\n")
 
 
 def write_project(netnames):
@@ -514,7 +513,7 @@ def write_project(netnames):
                              "silk_text_thickness": 0.15},
                 "rules": {"min_clearance": 0.2, "min_track_width": 0.2, "min_via_diameter": 0.6,
                           "min_through_hole_diameter": 0.3, "min_hole_to_hole": 0.25,
-                          "min_copper_edge_clearance": 0.4, "min_hole_clearance": 0.25,
+                          "min_copper_edge_clearance": round(getattr(D, "BORDE", 0.5) - 0.1, 2), "min_hole_clearance": 0.25,
                           "min_silk_clearance": 0.0, "solder_mask_to_copper_clearance": 0.0,
                           "min_text_height": 0.5, "min_text_thickness": 0.08},
                 "rule_severities": {"silk_over_copper": "ignore", "silk_overlap": "ignore",
@@ -723,7 +722,8 @@ def build_pcb(comps, netnames, assignments, route=False):
         board.Add(z)
         return z
 
-    rect = [(0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)]
+    bo = getattr(D, "BORDE", 0.5)            # el plano tampoco se acerca a la orilla
+    rect = [(bo, bo), (W - bo, bo), (W - bo, H - bo), (bo, H - bo)]
     # plano de GND (en las dos caras si la PCB es de 2 capas)
     zone(pcbnew.B_Cu, "GND", rect, clearance=getattr(D, "ZONE_CLR", 0.5))
     if D.LAYERS == 2 and (D.FAB != "proto" or getattr(D, "TOP_GND_POUR", False)):
@@ -817,7 +817,15 @@ def quita_cables_sobrantes(board):
     cab = cables_de_la_placa(board)
     cab.sort(key=lambda c: -c[5])
     quitados = 0
+    # los cables pre-trazados (preroutes con "F.Cu") son fijos: no se prueban ni se quitan
+    fijos = set()
+    for pr in D.preroutes():
+        if pr[0] != "VIA" and len(pr) > 3 and pr[3] == "F.Cu":
+            fijos |= {(pr[0], round(pr[1][0][0], 1), round(pr[1][0][1], 1)),
+                      (pr[0], round(pr[1][-1][0], 1), round(pr[1][-1][1], 1))}
     for (net, xa, ya, xb, yb, L) in cab:
+        if (net, round(xa - 30.0, 1), round(ya - 30.0, 1)) in fijos or (net, round(xa, 1), round(ya, 1)) in fijos:
+            continue
         f = [t for t in board.GetTracks() if t.GetClass() != "PCB_VIA" and t.GetLayer() == pcbnew.F_Cu
              and t.GetNetname() == net]
         ends = {(round(xa, 1), round(ya, 1)), (round(xb, 1), round(yb, 1))}
@@ -875,6 +883,7 @@ def label_jumpers(board, jumpers):
 def route_board(relaxed_pass=True):
     import pcbnew
     import router1l
+    router1l.EDGE_EXTRA = max(0.0, getattr(D, "BORDE", 0.0) - D.DEFAULT_CLASS[1])
     pcb_path = os.path.join(OUT, D.PROJECT + ".kicad_pcb")
     board = pcbnew.LoadBoard(pcb_path)
     for t in list(board.GetTracks()):
@@ -1002,6 +1011,10 @@ def main():
     write_project(netnames)
     if route:
         route_board()
+        if getattr(D, "ANTI_TIRAS", False):
+            # relleno de los huecos de mas de 2 fresas (dejarian tiras sueltas al fresar)
+            import subprocess
+            subprocess.run([sys.executable, os.path.join(HERE, "anti_tiras.py")], check=True)
     print("OK ->", OUT)
 
 

@@ -20,17 +20,18 @@ from rover_split_comun import FP_ESP32, FP_TB3, FP_TB2, MPN_TB2
 FP_RV = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"   # de pie: entra entre la ESP32 y J9
 
 PROJECT = "rover_servos"
-REVISION = "2.0-S"
+REVISION = "2.1-S"
 TITLE = "Rover - tarjeta de SERVOS (ESP32-B, 8 servos, bateria)"
 
 BOARD_W = 76.0
-BOARD_H = 96.0
+BOARD_H = 108.0
 
 ESPB_POS = (31.0, 59.0, 270)          # horizontal, USB a la izquierda: fila IO23.. mira a los servos
 ESPB_RIGHT_Y = ESPB_POS[1] + 12.7
-SERVO_Y = ESPB_RIGHT_Y + 20.3         # pad GND de cada header (SIG queda 5.08 arriba)
-SERVO_X0, SERVO_PASO = 23.0, 5.08     # headers a 5.08 mm: cada conector de servo con su espacio
-J6_POS = (BOARD_W - 5.6, 80.0, 90)    # entrada 6 V en la orilla derecha (pad 1 GND abajo)
+SERVO_Y = ESPB_RIGHT_Y + 32.0         # pad GND de cada header (SIG queda 5.08 arriba). El abanico de
+#                                       senales baja 23 mm: con aislamiento de 1.3 mm no cabe mas corto.
+SERVO_X0, SERVO_PASO = 23.0, 5.08    # headers a 5.08 mm: cada conector de servo con su espacio
+J6_POS = (BOARD_W - 5.6, SERVO_Y, 90)  # entrada 6 V en la orilla derecha (pad 1 GND abajo, en linea con el riel)
 PI_TB = (5.0, BOARD_H - 5.0, 0)       # J9 en la orilla inferior izquierda, bajo IO15/IO2
 CHASSIS_HOLES = [(3.5, 4.0), (BOARD_W - 3.5, 4.0), (3.5, 72.0), (BOARD_W - 3.5, 52.0)]
 ALIGN_HOLES = []
@@ -55,13 +56,26 @@ def preroutes():
         out.append(("SERVO%d" % n, [(x0, ESPB_RIGHT_Y), (x0, ESPB_RIGHT_Y + 2.5), (x1, SERVO_Y - 6.5),
                                      (x1, SERVO_Y - 5.08)], 1.0))
     # TX de la ESP32-B a R16 (de pie, justo debajo del pin IO2)
-    out.append(("ESPB_TX", [(espb_right_x("IO2"), ESPB_RIGHT_Y), (espb_right_x("IO2"), ESPB_RIGHT_Y + 2.5),
-                            (20.5, ESPB_RIGHT_Y + 3.3), (20.5, 77.0)], 1.0))
+    # UART: TX baja recto a R16; RX a R15, un poco a la izquierda (entre los dos, 1.3 mm o mas)
+    xt, xr = espb_right_x("IO2"), espb_right_x("IO15")
+    out.append(("ESPB_TX", [(xt, ESPB_RIGHT_Y), (xt, 81.2), (19.0, 82.6), (19.0, 83.5)], 1.0))
+    out.append(("ESPB_RX", [(xr, ESPB_RIGHT_Y), (xr, 74.5), (17.9, 75.0), (17.9, 77.0)], 1.0))
+    # salidas exactas de los pines que no llevan senal de servo: el aislamiento de 1.3 mm solo deja
+    # salir la pista centrada entre los pads vecinos
+    xg = espb_right_x("IO15") - 2.54                      # pin GND (29) de la fila de abajo
+    out.append(("GND", [(xg, ESPB_RIGHT_Y), (xg, ESPB_RIGHT_Y + 1.9), (12.5, ESPB_RIGHT_Y + 4.1)], 1.0))
+    yl = ESPB_POS[1] - 12.7                               # fila de arriba (pines 1..15)
+    out.append(("GND", [(xg, yl), (xg, yl - 3.6)], 1.0))  # pin GND (14)
+    xv = ESPB_POS[0] + 17.78 - 2.54 * ESP32_LEFT.index(next(n for n in ESP32_LEFT if ESPB_VBAT in n))
+    out.append(("VBAT_SENSE", [(xv, yl), (xv, 28.0), (34.0, 24.0), (34.0, 20.0)], 1.0))   # hasta C5 pad 1
     jx, jy, _ = J6_POS
     # 6 V: sube y luego a J6; GND: sigue y luego sube (sin acercarse entre si)
-    out.append(("SERVO_V", [(x, SERVO_Y - 2.54) for x in xs] + [(xs[-1] + 3.0, SERVO_Y - 2.54),
-                                                            (xs[-1] + 3.0, jy - 5.08), (jx, jy - 5.08)], 1.4))
-    out.append(("GND", [(x, SERVO_Y) for x in xs] + [(jx - 4.4, SERVO_Y), (jx, jy)], 1.4))
+    # rieles de los headers: 1.4 mm (entre pads a 2.54 no cabe mas). De la fila a J6 el 6 V sube a la
+    # altura de su pad y sigue con 2.4 mm; el GND llega recto.
+    out.append(("SERVO_V", [(x, SERVO_Y - 2.54) for x in xs] + [(xs[-1] + 2.2, SERVO_Y - 2.54)], 1.4))
+    out.append(("SERVO_V", [(xs[-1] + 2.2, SERVO_Y - 2.54), (xs[-1] + 4.74, SERVO_Y - 5.08)], 1.4))
+    out.append(("SERVO_V", [(xs[-1] + 4.74, SERVO_Y - 5.08), (jx, jy - 5.08)], 2.4))
+    out.append(("GND", [(x, SERVO_Y) for x in xs] + [(jx, jy)], 1.4))
     return out
 
 
@@ -103,9 +117,9 @@ def build():
         {1: "GND", 2: "PI_TXD4", 3: "PI_RXD4"}, PI_TB, _sch_pos(),
         desc="Hacia el HAT de bornas de la Pi: 1 GND (pin 34), 2 TXD4 = GPIO12 (pin 32), 3 RXD4 = GPIO13 (pin 33)",
         mpn="Phoenix PT 1,5/3-3,5-H o KF350-3P 3.5mm")
-    add("R15", "1k", "Device:R", FP_RV, {1: "ESPB_RX", 2: "PI_TXD4"}, (16.0, 76.5, 270),
+    add("R15", "1k", "Device:R", FP_RV, {1: "ESPB_RX", 2: "PI_TXD4"}, (17.9, 77.0, 270),
         _sch_pos(), desc="Serie UART Pi TXD4 (GPIO12) -> ESP32-B RX")
-    add("R16", "1k", "Device:R", FP_RV, {1: "ESPB_TX", 2: "PI_RXD4"}, (20.5, 77.0, 270),
+    add("R16", "1k", "Device:R", FP_RV, {1: "ESPB_TX", 2: "PI_RXD4"}, (19.0, 83.5, 270),
         _sch_pos(), desc="Serie UART ESP32-B TX -> Pi RXD4 (GPIO13)")
 
     add("J5", "5V IN (buck 5V)", "Connector:Screw_Terminal_01x02", FP_TB2,

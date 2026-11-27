@@ -186,7 +186,7 @@ static const Value VALUES[] = {
   {"C14", "1nF"},
   {"C15", "1nF"},
   {"C16", "1nF"},
-  {"C2", "1000uF 10V"},
+  {"C2", "1000uF 16V"},
   {"D3", "LED verde 5V"},
   {"D5", "1N5819"},
   {"H1", "M3"},

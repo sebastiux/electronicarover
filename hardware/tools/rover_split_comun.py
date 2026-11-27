@@ -27,13 +27,21 @@ FP_TB3 = "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-3-3.5-H_1x03_P3.50m
 FP_TB2 = "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal"
 MPN_TB2 = "Phoenix MKDS 1,5/2-5,08 o KF301-2P"
 
-# Reglas para fresar TODO con una sola fresa plana de 1.0 mm (aislamiento, barrenos y contorno):
-# la fresa abre un canal de 1 mm, asi que entre cobre de redes distintas debe haber >= 1.0 mm.
-# Nuestro CAM (cubiko_cam.py) corta cada red por separado y en un hueco de 1.0 pasa por el centro.
-# En un CAM que desplaza TODO el cobre junto (la app del Fab Lab, FlatCAM) se declara la fresa
-# de 0.95 mm: asi encuentra camino en cada hueco de 1.0 con UNA pasada (ver cnc_*/README.md).
+# Reglas para fresar TODO con una sola fresa plana de 1.0 mm (aislamiento, barrenos y contorno).
+# El hueco entre cobre de redes distintas es de 1.3 mm (CLR), mas ancho que la fresa.
 UNA_FRESA = 1.0            # diametro de la unica herramienta (mm)
-CLR = 1.0                  # separacion entre pistas, plano y piezas
+CLR = 1.3                  # separacion entre pistas, plano y piezas: 0.3 mm MAS que la fresa de 1.0.
+#   Con huecos de exactamente 1.0 el CAM de la LPKF (y cualquiera que desplace todo el cobre junto) no
+#   mete la fresa y la pista queda unida al plano. Con 1.3 las 2 pasadas (una por lado) se traslapan.
+PAD_FILA_CLR = 1.1         # unica excepcion (.kicad_dru): pads vecinos de una fila a 2.54 mm (1.14 mm)
+PASO = 1.0 + CLR           # paso entre carriles de pistas de 1.0 mm
+BORDE = 2.0                # ningun cobre (pistas ni plano) a menos de 2 mm de la orilla
+ANTI_TIRAS = True          # rellena los huecos de mas de 2 fresas, que dejarian tiras sueltas (anti_tiras.py)
+# reglas extra de DRC (nombre, minimo en mm, condicion): lo que a paso de 2.54 mm no puede crecer
+REGLAS_DRC = [
+    ("pads de una misma fila", PAD_FILA_CLR, "A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference"),
+    ("rieles de los headers de servo", PAD_FILA_CLR, "A.NetName == 'SERVO_V' && (B.NetName == 'GND' || B.Type == 'Pad')"),
+]
 NETCLASSES = [
     ("SERVO", 2.5, CLR, 2.4, 1.0, ["SERVO_V"]),
     ("PWR", 1.5, CLR, 2.4, 1.0, ["+5V"]),
@@ -50,7 +58,10 @@ ZONE_FULL = True           # pads unidos al plano de GND sin rayos de alivio ter
 #    ~1.15 mm de diagonal): 1.3 mm, anillo de 0.53 mm.
 #  - paso 5.08 mm (Phoenix MKDS 1,5 pide 1.3 para su pin de 0.9 x 0.9; la KF301 trae pin de
 #    ~1.0 x 0.8, hasta ~1.4 de diagonal): 1.5 mm, anillo de 0.55 mm.
-BARRENOS = [("TerminalBlock_Phoenix_PT-1,5", 1.3), ("TerminalBlock_Phoenix_MKDS-1,5", 1.5)]
+# Solo 4 brocas: 1.0, 1.3, 1.5 y 3.2 mm. No se usan 0.8, 0.9 ni 1.1 (no siempre las hay): las patas de
+# resistencias, ceramicos, LED y el 1N5819 (0.45 a 0.86 mm) entran en 1.0 mm.
+BARRENOS = [("TerminalBlock_Phoenix_PT-1,5", 1.3), ("TerminalBlock_Phoenix_MKDS-1,5", 1.5),
+            ("Resistor_THT:", 1.0), ("Capacitor_THT:C_Disc", 1.0), ("LED_THT:", 1.0), ("Diode_THT:", 1.0)]
 MIN_PAD_ESPACIO = CLR      # cobre libre minimo entre pads de piezas distintas (verifica_espacios.py)
 VIA_PAD_ESPACIO = CLR      # y entre el barreno de un cable y cualquier pad
 

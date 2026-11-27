@@ -1,7 +1,7 @@
 (kicad_sch (version 20230121) (generator eeschema)
   (uuid fb9ef495-f0d3-56c4-8167-d30a54936587)
   (paper "A4")
-  (title_block (title "Entrada 5 V y enlace UART2 con la Pi") (date "2026-11-25") (rev "2.0-T") (company "electronicarover")
+  (title_block (title "Entrada 5 V y enlace UART2 con la Pi") (date "2026-11-25") (rev "2.1-T") (company "electronicarover")
     (comment 3 "Rover - tarjeta de TRACCION (ESP32-A, 3x L298N, encoders)")
     (comment 1 "Generado por hardware/tools/esquematico.py desde rover_design.py / rover_cubiko.py")
     (comment 2 "Las redes se nombran con etiquetas globales: el nombre es el mismo que en la PCB")

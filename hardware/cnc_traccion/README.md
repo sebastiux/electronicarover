@@ -1,106 +1,72 @@
-# Tarjeta de tracción (una cara): fresado y montaje
+# Tarjeta de tracción (una cara): fabricación y montaje
 
-- **Tarjeta:** 95 × 96 mm, cobre solo abajo.
-- **Una sola herramienta:** todo (aislamiento, barrenos y contorno) se fresa con la **fresa plana de 1.0 mm**, en un solo archivo. No hay cambios de herramienta.
+- **Tarjeta:** 97 × 96 mm, cobre solo abajo (B.Cu), rev. 2.1.
 - **Lleva:** ESP32-A, 3 bornas para los L298N, 2 bornas de encoders con sus 6 divisores, 5 V de entrada y la borna `PI` (UART2).
-- **Arquitectura y cableado:** en `../DOS_TARJETAS.md`.
-- **Medidas de pads y barrenos, y lista completa de piezas:** en `../LISTA_MATERIALES.md`.
+- **Arquitectura y cableado:** en `../DOS_TARJETAS.md`. **Piezas y medidas de pads y barrenos:** en `../LISTA_MATERIALES.md`.
 
-## Reglas de diseño (verificadas con `tools/verifica_espacios.py`)
+## Reglas de diseño
 
-- **Hueco de 1.0 mm en todo el cobre** (pista–pista, pista–pad, pad–pad, plano–todo). Es justo el ancho de la fresa: cada hueco se fresa con una sola pasada por el centro.
-- **Pistas:** toda conexión de al menos **1.0 mm**; +5V y GND de 1.5 mm.
-- **Pads:** redondos de **2.2 mm**. En las filas a 2.54 mm (headers de la ESP32) son **ovalados de 1.4 × 2.2 mm**: quedan 1.14 mm libres entre pad y pad, más que la fresa.
-- **ESP32 en una sola fila de barrenos por lado** (25.4 mm entre filas, 30 barrenos de 1.0 mm). La huella anterior traía una segunda fila a 1.27 mm (para módulos de 22.86 mm) que encimaba los pads; ya no existe.
-- **GND sin rayos:** los pads de GND van unidos al plano en sólido. En la simulación se ven como un barreno dentro del cobre, sin anillo: el plano mismo es el pad, no está incompleto.
+Pensadas para aislar con **una fresa plana de 1.0 mm en una pasada**, con cualquier programa (LPKF CircuitPro, FlatCAM, o el G-code de este repositorio).
 
-## Bornas
+- **Aislamiento de 1.3 mm** entre pistas, plano y piezas: 0.3 mm más que la fresa. Con huecos de exactamente 1.0 mm el programa no mete la fresa y la pista queda unida al plano.
+- **Pistas:** las mismas que antes: 1.0 mm o más; +5V y GND de 1.5 mm.
+- **Única excepción:** los pads vecinos de una fila a 2.54 mm (headers de la ESP32, piezas de pie) quedan a 1.14 mm. No pueden separarse más sin adelgazar el pad.
+- **Sin tiras sueltas:** donde entre dos cobres quedaban más de 2 mm, las dos pasadas de la fresa no se juntaban y dejaban una tira de cobre suelta en medio. Esos huecos llevan ahora un relleno de cobre unido a una de las redes vecinas, así el hueco es de 1.3 mm y se limpia completo (`tools/anti_tiras.py`). En KiCad se ve como cobre extra junto a algunas pistas; las pistas no cambiaron de ancho.
+- **Orilla:** ningún cobre a menos de 2 mm del borde.
+- **Barrenos:** solo 4 medidas: **1.0, 1.3, 1.5 y 3.2 mm**. No hay de 0.8, 0.9 ni 1.1.
+- **GND sin rayos:** los pads de GND van unidos al plano en sólido.
 
-| Borna | Orilla | Pines | Va a |
+## Bornas (vistas por el lado de componentes)
+
+| Borna | Orilla | Orden físico | Va a |
 |---|---|---|---|
-| J43 · J42 · J41 | izquierda, de arriba a abajo | EN, IN4, IN3, IN2, IN1, GND | L298N #3 (M5/M6) · #2 (M3/M4) · #1 (M1/M2). EN a ENA y ENB con cable en Y |
-| J8 | inferior izquierda | GND, +5V, A6, A5, A4 | Encoders de M6, M5 y M4 (cable Pololu: verde GND, azul VCC, amarillo A) |
-| J7 | inferior derecha | **A1, A2, A3, +5V, GND** | Encoders de M1, M2 y M3 |
-| J5 | superior centro | +5V, GND | Step-down 5 V |
-| J9 `PI` | derecha | **GND, RXD2, TXD2** | HAT de bornas de la Pi: pines **6, 29 y 7** |
+| J43 · J42 · J41 | izquierda | de arriba a abajo: EN, IN4, IN3, IN2, IN1, GND | L298N #3 (M5/M6) · #2 (M3/M4) · #1 (M1/M2). EN a ENA y ENB con cable en Y |
+| J5 | arriba | de izquierda a derecha: **GND, +5V** (el +5V es el tornillo junto a C2) | Step-down 5 V |
+| J9 `PI` | derecha | de arriba a abajo: **TXD2, RXD2, GND** | HAT de la Pi: pin 7 (GPIO4), pin 29 (GPIO5), pin 6 |
+| J8 | abajo, izquierda | de izquierda a derecha: GND, +5V, A6, A5, A4 | Encoders de M6, M5 y M4 |
+| J7 | abajo, derecha | de izquierda a derecha: A1, A2, A3, +5V, GND | Encoders de M1, M2 y M3 |
 
-## Divisores de los encoders
+Antes de conectar, comprueba con el multímetro que el tornillo GND de cada borna da continuidad con el plano grande de cobre.
 
-- **M1–M3:** a la derecha de la ESP32, con resistencias acostadas, a 5 mm entre filas y 13 mm entre bloques.
-- **M4–M6:** en fila **debajo del módulo**, junto a J8, con las resistencias **de pie**. Así el plano de GND de cada bloque sale entre los pines de J8.
+## Fabricación
 
-## Fresado en la Cubiko (una herramienta, sin voltear)
+**Archivos:** `gerbers/rover_traccion-B_Cu.gbl` (cobre), `-Edge_Cuts.gm1` (contorno) y `rover_traccion.drl` (barrenos).
 
-**Material:** FR1 de **una cara**, 1.6 mm. Pégalo con cinta doble cara al mártir, con el **cobre arriba**. La tarjeta queda en X 3–98 y Y 2–98 desde la esquina frontal izquierda del blank.
+### En una LPKF ProtoMat (CircuitPro)
 
-| Archivo | Herramienta | Qué hace | Tiempo |
-|---|---|---|---|
-| `gcode/fresa1mm_todo.nc` | fresa plana de 1.0 mm | 1. aislamiento: 1 pasada a −0.12 mm alrededor de cada red<br>2. 96 barrenos de 1.0 mm (bajada directa)<br>3. barrenos de 1.3 mm (borneras de 3.5 mm), 1.5 mm (bornera de 5.08 mm) y 3.2 mm (M3) en espiral<br>4. contorno con 4 puentes | ~60 min |
+1. Importa el cobre como capa **inferior** (Bottom), el contorno y el taladro. CircuitPro espeja la capa inferior; ya fresada, vista por el cobre debe verse como `cobre_espejo_1a1.pdf`.
+2. Aislamiento con la **fresa plana de 1.0 mm**, una pasada. En la vista previa no debe marcar zonas sin aislar.
+3. Brocas: 1.0, 1.3 y 1.5 mm. Los 4 barrenos de 3.2 mm los hace la fresa de contorno.
+4. Tiempo aproximado: 15 a 30 min de máquina.
 
-1. Monta la fresa de 1.0 mm, haz el homing y pon el **cero XY** en la esquina del blank.
-2. Cero Z con la sonda y **mapa de alturas** sobre la tarjeta.
-3. Corre `fresa1mm_todo.nc`.
-4. Corta los puentes y lija el borde.
+`sim/aislamiento_lpkf.png` es la simulación de ese aislamiento (vista por el lado de componentes): 0 cortos y 0 redes abiertas con un corte real de 0.8 a 1.1 mm. En verde, el cobre que queda sin conexión: el marco de 2 mm de la orilla, los pads de los pines de la ESP32 que no se usan y una isla ancha entre los divisores.
 
-- **Aislamiento por red:** cada red lleva su propio canal a 0.5 mm de su cobre. En un hueco de 1.0 mm el canal pasa justo por el centro y lo limpia completo. Donde dos canales caerían uno encima del otro, se fresa una sola vez.
-- **Tolerancia:** la simulación da 0 cortos con un corte real de 0.90 a 1.10 mm (fresa gastada o con cabeceo).
-- **Velocidades y GRBL:** avance 120 mm/min, bajada 60 mm/min, 10 000 rpm. El resto, como en `../cubiko/README.md`, "Parámetros de fresado".
-- **Geometría:** el G-code va espejado (ves la cara de cobre desde arriba). `cobre_espejo_1a1.pdf` muestra cómo queda.
+### En la Cubiko (G-code)
+
+`gcode/fresa1mm_todo.nc` hace todo con la fresa de 1.0 mm, ~71 min. FR1 de una cara con el cobre arriba; la tarjeta queda en X 3–100 y Y 2–98. Homing, cero XY en la esquina del blank, cero Z con la sonda y mapa de alturas.
 
 ## Montaje
 
-**1. Los 8 cables por arriba** (`mapa_cables_1a1.pdf`, `cables.csv`). Cable aislado de 22 AWG por el lado de los componentes. Cada punta entra por su barreno y se suelda **por abajo**.
+**1. Los 8 cables por arriba** (`mapa_cables_1a1.pdf`, `cables.csv`). Cable aislado de 22 AWG por el lado de los componentes; cada punta entra por su barreno y se suelda por abajo. Ponlos **antes** que los headers de la ESP32: W2 pasa junto al extremo USB del módulo.
 
 | Cable | Red | Largo con holgura | Dónde |
 |---|---|---|---|
 | W1 | GND | 21 mm | junto a J5 (entrada 5 V) |
-| W2 | MOTOR_EN | 15 mm | junto a la ESP32, del lado de R21 (pull-down) |
-| W3 | GND | 22 mm | entre J43 y J42 |
-| W4 | GND | 22 mm | junto a J41 |
+| W2 | GND | 46 mm | arriba de la ESP32 (lado USB), hacia la borna J43 |
+| W3 | GND | 27 mm | a la derecha de la ESP32, entre R21 y los divisores |
+| W4 | GND | 26 mm | orilla izquierda, junto a J41 |
 | W5 | GND | 16 mm | arriba de los divisores M6 y M5 |
 | W6 | GND | 16 mm | arriba de los divisores M5 y M4 |
-| W7 | GND | 24 mm | entre los divisores M1–M3 |
-| W8 | +5V | 50 mm | +5V de J7 a J8 (encoders), por la orilla inferior |
+| W7 | GND | 38 mm | entre los divisores M1–M3 |
+| W8 | +5V | 53 mm | +5V de J7 a J8, por la orilla inferior |
 
-Pon los cables **antes** que los headers de la ESP32: W2 pasa junto al módulo.
+MOTOR_EN ya no lleva cable: va por cobre.
 
-**2. Las piezas bajas.**
-- Resistencias, capacitores de 1 nF y D5 (1N5819, banda del lado de la ESP32).
-- Las de M4–M6 van **de pie**: el cuerpo sobre el pad cuadrado y la otra pata doblada hacia abajo.
-- LED D3: el pad cuadrado es el cátodo (pata corta) y va a GND.
+**2. Las piezas bajas.** Resistencias, capacitores de 1 nF y D5 (1N5819, banda del lado de la ESP32). Las de M4–M6 van **de pie**. LED D3: el pad cuadrado es el cátodo (pata corta) y va a GND.
 
-**3. El resto.** Headers hembra 1x15 de la ESP32 (fila exterior, 25.4 mm), C2 y las bornas.
+**3. El resto.** Headers hembra 1x15 de la ESP32 (25.4 mm entre filas), C2 (la pata + al pad cuadrado) y las bornas.
 
-**4. Prueba.** Sin módulos, mide continuidad 5V–GND: no debe pitar. Luego enciende con la fuente limitada en corriente.
-
-## Simulación
-
-- **`sim/reporte.txt`:** 0 cortos y 0 redes abiertas, contando los 8 cables.
-- **`sim/resultado_cobre.png` y `sim/trayectorias.png`:** cómo queda el cobre y por dónde pasan las herramientas.
-
-## Simulación en el Fab Lab (fablab.sebs.mx/cnc)
-
-Las 2 formas se corrieron en el gemelo de la Cubiko (modo *Simulation*): homing, material 142 × 100 × 1.6, cero XY en la esquina, Z0 con la sonda y mapa de alturas 11 × 8.
-
-**1. Nuestro G-code (`gcode/fresa1mm_todo.nc`): la forma recomendada.** Resultado: **Board done, 1 de 1**, con la fresa de 1.0 mm todo el tiempo, sin errores de GRBL. La app estima 58 min. Ya va espejado (cobre abajo).
-
-![](sim/fablab/fresa1mm_todo_terminado.png)
-
-Acercamiento a los pines de la ESP32: una sola fila de barrenos por lado y cada pad separado por el canal de 1 mm.
-
-![](sim/fablab/zoom_pines_esp32.png)
-
-**2. El generador de la app (Gerbers → *Traces* con 1 pasada).** La app desplaza todo el cobre junto el radio de la fresa. En un hueco de exactamente 1.0 mm, con la fresa declarada de 1.0 mm no encuentra camino y deja unidas las redes. Declarando la fresa un poco más angosta sí pasa por el centro de cada hueco, y la fresa real de 1.0 mm lo limpia completo:
-
-| Fresa declarada en *Traces* (1 pasada) | Cortos (corte real de 1.0 mm) |
-|---|---|
-| 0.90 mm | 0 |
-| **0.95 mm** (punta 0.94, ángulo 5°, profundidad 0.12) | **0** |
-| 1.00 mm | 2 |
-| 1.01 mm | 3 |
-
-Con 0.95 mm: **Board done, 3 de 3** (*Traces*, *Holes* con 1.0 mm y *Outline* con 1.0 mm), 0 cortos y ningún pad dañado. La app pide permitir valores fuera de rango, porque *Traces* espera una fresa en V. Ojo: la app **no espeja** el cobre inferior; para fresar de verdad usa `fresa1mm_todo.nc`.
-
-![](sim/fablab/app_1pasada_terminado.png)
-
-Registros: `sim/fablab/registro.txt` y `sim/fablab/registro_app_1pasada.txt`.
+**4. Pruebas antes de energizar** (sin módulos, con multímetro):
+- 5V–GND en J5: no debe pitar.
+- Entre el pin 1 (EN) y el pin 6 (GND) de J41, J42 y J43: unos 10 kΩ (es R21, el pull-down de MOTOR_EN).
+- Con los L298N alimentados y sin la ESP32: el pin 1 de cada borna contra GND debe dar ~0 V, nunca 5 V. Quita los jumpers de ENA y ENB.
